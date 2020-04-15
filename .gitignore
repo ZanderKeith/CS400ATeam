@@ -1,0 +1,7 @@
+# Do NOT track files that are specific to each person's environment
+*.classpath
+*.project
+*.prefs
+
+# Don't need to track .class files
+*.class
