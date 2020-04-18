@@ -70,7 +70,7 @@ public class Main extends Application {
 			
 			
 			Scene mainScene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
-
+//hi
 			// Add the stuff and set the primary stage
 			primaryStage.setTitle(APP_TITLE);
 			primaryStage.setScene(mainScene);
