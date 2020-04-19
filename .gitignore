@@ -5,3 +5,4 @@
 
 # Don't need to track .class files
 *.class
+/bin/

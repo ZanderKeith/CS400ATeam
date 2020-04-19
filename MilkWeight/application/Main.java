@@ -135,7 +135,7 @@ public class Main extends Application {
 		ComboBox farmComboBox = new ComboBox();
 		ObservableList<String> farmItems = FXCollections.observableArrayList("Boggis", "Bunce",
 				"Bean");
-		yearComboBox.setItems(farmItems);
+		farmComboBox.setItems(farmItems);
 
 		// Buttons
 		Button homeButton = new Button("Home");
@@ -209,8 +209,6 @@ public class Main extends Application {
 				percentWeightLabel);
 
 		// Create ID/Year/Submit group
-		
-		
 		HBox farmIDGroup = new HBox();
 		farmIDGroup.getChildren().addAll(farmIDLabel, farmComboBox);
 
@@ -220,8 +218,9 @@ public class Main extends Application {
 		HBox monthGroup = new HBox();
 		monthGroup.getChildren().addAll(monthLabel, monthComboBox);
 
-		VBox IDYearSubmitGroup = new VBox();
+		HBox IDYearSubmitGroup = new HBox();
 		IDYearSubmitGroup.getChildren().addAll(farmIDGroup, yearGroup, monthGroup, submitButton);
+		IDYearSubmitGroup.setSpacing(15.0);
 
 		BorderPane reportPanel = new BorderPane();
 		reportPanel.setBottom(IDYearSubmitGroup);
