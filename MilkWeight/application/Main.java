@@ -55,52 +55,51 @@ public class Main extends Application {
 	private static final int WINDOW_WIDTH = 800;
 	private static final int WINDOW_HEIGHT = 640;
 	private static final String APP_TITLE = "MilkWeight";
-	
-	
+
 	private void homeButtonAction() {
 		System.out.println("Home Button Pressed");
 	}
-	
+
 	private void importFileButtonAction() {
 		System.out.println("Import File Button Pressed");
 	}
-	
+
 	private void exportAsCSVButtonAction() {
 		System.out.println("Export as CSV File Button Pressed");
 	}
-	
+
 	private void addNewFarmButtonAction() {
 		System.out.println("Add new farm Button Pressed");
 	}
-	
+
 	private void addNewMilkDataButtonAction() {
 		System.out.println("Add new milk data Button Pressed");
 	}
-	
+
 	private void editMilkDataButtonAction() {
 		System.out.println("Edit milk data Button Pressed");
 	}
-	
+
 	private void farmReportButtonAction() {
 		System.out.println("Farm Report Button Pressed");
 	}
-	
+
 	private void annualReportButtonAction() {
 		System.out.println("Annual Report Button Pressed");
 	}
-	
+
 	private void monthlyReportButtonAction() {
 		System.out.println("Monthly Report Button Pressed");
 	}
-	
+
 	private void dateRangeReportButtonAction() {
 		System.out.println("Date Range Report Button Pressed");
 	}
-	
+
 	private void submitButtonAction() {
 		System.out.println("Submit Button Pressed");
 	}
-	
+
 	/**
 	 * Sets up all GUI elements.
 	 */
@@ -109,104 +108,126 @@ public class Main extends Application {
 		// Labels
 		Label fileLabel = new Label("File");
 		Label reportLabel = new Label("Report");
-		Label farmIDLabel = new Label("Farm ID");
-		Label yearLabel = new Label("Year(Enter \"all\" for all available data)");
+		Label monthLabel = new Label("Month: ");
+		Label yearLabel = new Label("Year: ");
+		Label farmIDLabel = new Label("Farm ID: ");
 		Label farmReportLabel = new Label("Farm Report");
 		Label chartLabel = new Label("Farm no., Date + Report");
 		Label totalWeightLabel = new Label("Total Weight Sold: + weight + lb");
 		Label percentWeightLabel = new Label("Percent of total + something%");
-		
+
 		// Text Fields
 		TextField farmIDField = new TextField("");
 		TextField yearField = new TextField("");
-		
+
+		// Drop Downs
+		ComboBox monthComboBox = new ComboBox();
+		ObservableList<String> monthItems = FXCollections.observableArrayList("January",
+				"February", "March", "April", "May", "June", "July", "August", "September",
+				"October", "November", "December", "ALL");
+		monthComboBox.setItems(monthItems);
+
+		ComboBox yearComboBox = new ComboBox();
+		ObservableList<String> yearItems = FXCollections.observableArrayList("2017", "2018",
+				"2019", "2020", "ALL");
+		yearComboBox.setItems(yearItems);
+
+		ComboBox farmComboBox = new ComboBox();
+		ObservableList<String> farmItems = FXCollections.observableArrayList("Boggis", "Bunce",
+				"Bean");
+		yearComboBox.setItems(farmItems);
+
 		// Buttons
 		Button homeButton = new Button("Home");
 		homeButton.setOnAction(e -> homeButtonAction());
-		
+
 		Button importFileButton = new Button("Import File");
 		importFileButton.setOnAction(e -> importFileButtonAction());
-		
+
 		Button exportAsCSVButton = new Button("Export as CSV");
 		exportAsCSVButton.setOnAction(e -> exportAsCSVButtonAction());
-		
+
 		Button addNewFarmButton = new Button("Add new farm");
 		addNewFarmButton.setOnAction(e -> addNewFarmButtonAction());
-		
+
 		Button addNewMilkDataButton = new Button("Add new milk data");
 		addNewMilkDataButton.setOnAction(e -> addNewMilkDataButtonAction());
-		
+
 		Button editMilkDataButton = new Button("Edit milk data");
 		editMilkDataButton.setOnAction(e -> editMilkDataButtonAction());
-		
+
 		Button farmReportButton = new Button("Farm Report");
 		farmReportButton.setOnAction(e -> farmReportButtonAction());
-		
+
 		Button annualReportButton = new Button("Annual Report");
 		annualReportButton.setOnAction(e -> annualReportButtonAction());
-		
+
 		Button monthlyReportButton = new Button("Monthly Report");
 		monthlyReportButton.setOnAction(e -> monthlyReportButtonAction());
-		
+
 		Button dateRangeReportButton = new Button("Date Range Report");
 		dateRangeReportButton.setOnAction(e -> dateRangeReportButtonAction());
-		
+
 		Button submitButton = new Button("Submit");
 		submitButton.setOnAction(e -> submitButtonAction());
-		
-		
-		
-		
+
 		// Create left panel of buttons (dependencies first)
 		VBox fileOptionGroup = new VBox();
-		fileOptionGroup.getChildren().addAll(fileLabel, importFileButton, exportAsCSVButton, addNewFarmButton, addNewMilkDataButton, editMilkDataButton);
-		
-		VBox reportOptionGroup = new VBox(reportLabel, farmReportButton, annualReportButton, monthlyReportButton, dateRangeReportButton);
-		
+		fileOptionGroup.getChildren().addAll(fileLabel, importFileButton, exportAsCSVButton,
+				addNewFarmButton, addNewMilkDataButton, editMilkDataButton);
+
+		VBox reportOptionGroup = new VBox(reportLabel, farmReportButton, annualReportButton,
+				monthlyReportButton, dateRangeReportButton);
+
 		ImageView cowImage = new ImageView();
 		cowImage.setImage(new Image("cow.jpg"));
-		cowImage.setFitHeight(WINDOW_HEIGHT/8);
+		cowImage.setFitHeight(WINDOW_HEIGHT / 8);
 		cowImage.setPreserveRatio(true);
-		
+
 		VBox leftOptionPanel = new VBox();
-		leftOptionPanel.setSpacing(20); //TODO no magic numbers in spacing. define constants elsewhere
-		leftOptionPanel.setPadding(new Insets(15, 15, 15, 15)); //TODO verify insets are allowed (javafx.geometry)
+		leftOptionPanel.setSpacing(20); // TODO no magic numbers in spacing. define constants
+										// elsewhere
+		leftOptionPanel.setPadding(new Insets(15, 15, 15, 15)); // TODO verify insets are allowed
+																// (javafx.geometry)
 		leftOptionPanel.setStyle("-fx-background-color: #00FF00;");
-		leftOptionPanel.getChildren().addAll(homeButton, fileOptionGroup, reportOptionGroup, cowImage);
-		
+		leftOptionPanel.getChildren().addAll(homeButton, fileOptionGroup, reportOptionGroup,
+				cowImage);
+
 		// Create report panel (dependencies first)
-		
+
 		// Create Chart group
 		// this image is just a placeholder for the actual chart.
 		ImageView placeholdImage = new ImageView();
 		placeholdImage.setImage(new Image("basically.png"));
-		placeholdImage.setFitHeight(WINDOW_HEIGHT/2);
+		placeholdImage.setFitHeight(WINDOW_HEIGHT / 2);
 		placeholdImage.setPreserveRatio(true);
-		
+
 		VBox chartGroup = new VBox();
 		chartGroup.setPadding(new Insets(15, 15, 15, 15));
 		chartGroup.setStyle("-fx-border-color: black");
-		chartGroup.getChildren().setAll(placeholdImage, chartLabel, totalWeightLabel, percentWeightLabel);
-		
+		chartGroup.getChildren().setAll(placeholdImage, chartLabel, totalWeightLabel,
+				percentWeightLabel);
+
 		// Create ID/Year/Submit group
+		
+		
 		HBox farmIDGroup = new HBox();
-		farmIDGroup.getChildren().addAll(farmIDLabel, farmIDField);
-		
+		farmIDGroup.getChildren().addAll(farmIDLabel, farmComboBox);
+
 		HBox yearGroup = new HBox();
-		yearGroup.getChildren().addAll(yearLabel, yearField);
+		yearGroup.getChildren().addAll(yearLabel, yearComboBox);
 		
+		HBox monthGroup = new HBox();
+		monthGroup.getChildren().addAll(monthLabel, monthComboBox);
+
 		VBox IDYearSubmitGroup = new VBox();
-		IDYearSubmitGroup.getChildren().addAll(farmIDGroup, yearGroup, submitButton);
-		
-		
-		
-		
+		IDYearSubmitGroup.getChildren().addAll(farmIDGroup, yearGroup, monthGroup, submitButton);
+
 		BorderPane reportPanel = new BorderPane();
 		reportPanel.setBottom(IDYearSubmitGroup);
 		reportPanel.setCenter(chartGroup);
 		reportPanel.setPadding(new Insets(15, 15, 15, 15));
-		
-		
+
 		// Main layout is Border Pane example (top,left,center,right,bottom)
 		BorderPane root = new BorderPane();
 
@@ -222,9 +243,9 @@ public class Main extends Application {
 		primaryStage.show();
 	}
 
-
 	/**
 	 * TODO method header needed?
+	 * 
 	 * @param args
 	 */
 	public static void main(String[] args) {
