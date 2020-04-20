@@ -152,11 +152,7 @@ public class Main extends Application {
 
 		}
 
-		@Override
-		public void handle(ActionEvent arg0) {
-			reportPanel.setCenter(chartGroup);
-		}
-	}
+	
 
 	/**
 	 * Sets up all GUI elements.
