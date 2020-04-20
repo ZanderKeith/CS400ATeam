@@ -121,18 +121,18 @@ public class Main extends Application {
 		TextField yearField = new TextField("");
 
 		// Drop Downs
-		ComboBox monthComboBox = new ComboBox();
+		ComboBox<String> monthComboBox = new ComboBox<String>();
 		ObservableList<String> monthItems = FXCollections.observableArrayList("January",
 				"February", "March", "April", "May", "June", "July", "August", "September",
 				"October", "November", "December", "ALL");
 		monthComboBox.setItems(monthItems);
 
-		ComboBox yearComboBox = new ComboBox();
+		ComboBox<String> yearComboBox = new ComboBox<String>();
 		ObservableList<String> yearItems = FXCollections.observableArrayList("2017", "2018",
 				"2019", "2020", "ALL");
 		yearComboBox.setItems(yearItems);
 
-		ComboBox farmComboBox = new ComboBox();
+		ComboBox<String> farmComboBox = new ComboBox<String>();
 		ObservableList<String> farmItems = FXCollections.observableArrayList("Boggis", "Bunce",
 				"Bean");
 		farmComboBox.setItems(farmItems);
