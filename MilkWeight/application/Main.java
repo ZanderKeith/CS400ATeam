@@ -26,6 +26,8 @@ import java.util.List;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
@@ -55,6 +57,10 @@ public class Main extends Application {
 	private static final int WINDOW_WIDTH = 800;
 	private static final int WINDOW_HEIGHT = 640;
 	private static final String APP_TITLE = "MilkWeight";
+	
+	BorderPane reportPanel = new BorderPane();
+    VBox chartGroup = new VBox();
+    VBox inputs = new VBox();
 
 	private void homeButtonAction() {
 		System.out.println("Home Button Pressed");
@@ -99,7 +105,58 @@ public class Main extends Application {
 	private void submitButtonAction() {
 		System.out.println("Submit Button Pressed");
 	}
-
+	
+	/**
+	 * EventHandler to create text field when a user want to input text data.
+	 * 
+	 */
+	class InputHandler implements EventHandler<ActionEvent> {
+	  Button button;
+	  String text;
+	  Button submit;
+	  TextField textBox;
+	  
+	  InputHandler (Button button, String text, Button submit, TextField textBox) {
+	    this.button = button;
+	    this.text = text;
+	    this.submit = submit;
+	    this.textBox = textBox;
+	  }
+	  
+      @Override
+      public void handle(ActionEvent arg0) {
+        textBox.setPromptText(text);
+        inputs = new VBox(textBox, submit);
+        reportPanel.setCenter(inputs);
+      }  
+	}
+	
+	class InputSubmitHandler implements EventHandler<ActionEvent> {
+	  TextField textBox;
+	  Button submit;
+	  
+	  InputSubmitHandler(Button submit, TextField textBox) {
+	    this.textBox = textBox;
+	  }
+	  
+	  @Override
+	  public void handle(ActionEvent arg0) {
+	    System.out.println("User entered: \"" + textBox.getText() + "\"");
+	    textBox.clear();
+	  }
+	}
+	
+	class OutputRequestHandler implements EventHandler<ActionEvent> {
+	  OutputRequestHandler() {
+        
+      }
+      
+      @Override
+      public void handle(ActionEvent arg0) {
+        reportPanel.setCenter(chartGroup);
+      }
+	}
+	
 	/**
 	 * Sets up all GUI elements.
 	 */
@@ -119,6 +176,7 @@ public class Main extends Application {
 		// Text Fields
 		TextField farmIDField = new TextField("");
 		TextField yearField = new TextField("");
+		TextField inputText = new TextField();
 
 		// Drop Downs
 		ComboBox<String> monthComboBox = new ComboBox<String>();
@@ -140,15 +198,24 @@ public class Main extends Application {
 		// Buttons
 		Button homeButton = new Button("Home");
 		homeButton.setOnAction(e -> homeButtonAction());
+		
+		// used in the event a user wants to input a file or farm
+		Button inputSubmit = new Button("Submit");
+		InputSubmitHandler inputSubmitHandler = new InputSubmitHandler(inputSubmit, inputText);
+		inputSubmit.setOnAction(inputSubmitHandler);
 
 		Button importFileButton = new Button("Import File");
+		InputHandler fileHandler = new InputHandler(importFileButton, "Enter file name", inputSubmit, inputText);
 		importFileButton.setOnAction(e -> importFileButtonAction());
+	    importFileButton.setOnAction(fileHandler);
 
 		Button exportAsCSVButton = new Button("Export as CSV");
 		exportAsCSVButton.setOnAction(e -> exportAsCSVButtonAction());
 
 		Button addNewFarmButton = new Button("Add new farm");
+		InputHandler farmHandler = new InputHandler(addNewFarmButton, "Enter farm ID", inputSubmit, inputText);
 		addNewFarmButton.setOnAction(e -> addNewFarmButtonAction());
+		addNewFarmButton.setOnAction(farmHandler);
 
 		Button addNewMilkDataButton = new Button("Add new milk data");
 		addNewMilkDataButton.setOnAction(e -> addNewMilkDataButtonAction());
@@ -170,6 +237,8 @@ public class Main extends Application {
 
 		Button submitButton = new Button("Submit");
 		submitButton.setOnAction(e -> submitButtonAction());
+		OutputRequestHandler outputRequester = new OutputRequestHandler();
+		submitButton.setOnAction(outputRequester);
 
 		// Create left panel of buttons (dependencies first)
 		VBox fileOptionGroup = new VBox();
@@ -202,7 +271,6 @@ public class Main extends Application {
 		placeholdImage.setFitHeight(WINDOW_HEIGHT / 2);
 		placeholdImage.setPreserveRatio(true);
 
-		VBox chartGroup = new VBox();
 		chartGroup.setPadding(new Insets(15, 15, 15, 15));
 		chartGroup.setStyle("-fx-border-color: black");
 		chartGroup.getChildren().setAll(placeholdImage, chartLabel, totalWeightLabel,
@@ -221,8 +289,7 @@ public class Main extends Application {
 		HBox IDYearSubmitGroup = new HBox();
 		IDYearSubmitGroup.getChildren().addAll(farmIDGroup, yearGroup, monthGroup, submitButton);
 		IDYearSubmitGroup.setSpacing(15.0);
-
-		BorderPane reportPanel = new BorderPane();
+		
 		reportPanel.setBottom(IDYearSubmitGroup);
 		reportPanel.setCenter(chartGroup);
 		reportPanel.setPadding(new Insets(15, 15, 15, 15));
