@@ -59,7 +59,7 @@ public class Main extends Application {
 	// FARM
 	//
 
-	ArrayList<Farm> farms = new ArrayList<Farm>();
+	static ArrayList<Farm> farms = new ArrayList<Farm>();
 
 	//
 	// GUI STUFF
@@ -108,6 +108,12 @@ public class Main extends Application {
 	private void farmReportButtonAction() {
 		root.setCenter(reportPanel);
 		System.out.println("Farm Report Button Pressed");
+		for (int i = 1; i < 13; i++) {
+			System.out.println("Month: " + i);
+			for (Farm farm : farms) {
+				System.out.println(farm.getFarmID() + ": " + farm.getTotalWeightMonth(2019, i));
+			}
+		}
 	}
 
 	private void annualReportButtonAction() {
@@ -165,9 +171,11 @@ public class Main extends Application {
 		@Override
 		public void handle(ActionEvent arg0) {
 			System.out.println("User entered: \"" + textBox.getText() + "\"");
-			farms = Report.parseFile(textBox.getText(), farms);
-			textBox.clear();
 			// This is super cringe rn sorry team, just here to make it work and no further
+			// Shouldn't take long to move though, just this one line is what's needed to get the input
+			Main.farms = Report.parseFile(textBox.getText(), farms);
+			textBox.clear();
+			
 		}
 	}
 

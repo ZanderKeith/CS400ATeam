@@ -37,7 +37,7 @@ public class TrieTree {
 
 		private TrieTreeYearNode(int year) {
 			this.year = year;
-			months = new TrieTreeMonthNode[12];
+			this.months = new TrieTreeMonthNode[12];
 		}
 	}
 
@@ -70,7 +70,7 @@ public class TrieTree {
 	private HashMap<Integer, TrieTreeYearNode> treeYearMap;
 
 	public TrieTree() {
-		treeYearMap = new HashMap<Integer, TrieTreeYearNode>();
+		this.treeYearMap = new HashMap<Integer, TrieTreeYearNode>();
 	}
 
 	/**
@@ -86,12 +86,12 @@ public class TrieTree {
 	 */
 	public void insert(int year, int month, int day, int weight) {
 		// First, check if this year is already in the array
-		if (!treeYearMap.containsKey(year)) {
-			treeYearMap.put(year, new TrieTreeYearNode(year));
+		if (!this.treeYearMap.containsKey(year)) {
+			this.treeYearMap.put(year, new TrieTreeYearNode(year));
 		}
 
 		// Next, check if we have already added data for that month
-		if (treeYearMap.get(year).months[month - 1] == null) {
+		if (this.treeYearMap.get(year).months[month - 1] == null) {
 			int lengthOfMonth;
 			if (month == 2 && isLeapYear(year)) {
 				lengthOfMonth = 29;
@@ -102,13 +102,13 @@ public class TrieTree {
 			} else {
 				lengthOfMonth = 31;
 			}
-			treeYearMap.get(year).months[month - 1] = new TrieTreeMonthNode(lengthOfMonth);
+			this.treeYearMap.get(year).months[month - 1] = new TrieTreeMonthNode(lengthOfMonth);
 		}
 
 		// Next, we check if we have already added data for that day
-		if (treeYearMap.get(year).months[month - 1].days[day - 1] == null) {
-			treeYearMap.get(year).months[month - 1].days[day - 1] = new TrieTreeDayNode(day);
-			treeYearMap.get(year).months[month - 1].days[day - 1].weight = weight;
+		if (this.treeYearMap.get(year).months[month - 1].days[day - 1] == null) {
+			this.treeYearMap.get(year).months[month - 1].days[day - 1] = new TrieTreeDayNode(day);
+			this.treeYearMap.get(year).months[month - 1].days[day - 1].weight = weight;
 		}
 	}
 
@@ -135,23 +135,23 @@ public class TrieTree {
 		if (!contains(year, month, day)) {
 			return 0;
 		}
-		return treeYearMap.get(year).months[month - 1].days[day - 1].weight;
+		return this.treeYearMap.get(year).months[month - 1].days[day - 1].weight;
 	}
 
 	// True if data for date exists, false otherwise
 	public boolean contains(int year, int month, int day) {
 		// First, check if we have data for that year
-		if (!treeYearMap.containsKey(year)) {
+		if (!this.treeYearMap.containsKey(year)) {
 			return false;
 		}
 
 		// Next, check if we have data for that year and month
-		if (treeYearMap.get(year).months[month - 1] == null) {
+		if (this.treeYearMap.get(year).months[month - 1] == null) {
 			return false;
 		}
 
 		// Finally, we check for the day
-		if (treeYearMap.get(year).months[month - 1].days[day - 1] == null) {
+		if (this.treeYearMap.get(year).months[month - 1].days[day - 1] == null) {
 			return false;
 		}
 
@@ -168,10 +168,10 @@ public class TrieTree {
 		}
 
 		// We need to set the data for the specific date to be null
-		treeYearMap.get(year).months[month - 1].days[day - 1] = null;
+		this.treeYearMap.get(year).months[month - 1].days[day - 1] = null;
 
 		// Checking if the month has any data left
-		TrieTreeMonthNode currentMonth = treeYearMap.get(year).months[month - 1];
+		TrieTreeMonthNode currentMonth = this.treeYearMap.get(year).months[month - 1];
 		for (int i = 0; i < currentMonth.days.length; i++) {
 			if (currentMonth.days[i] != null) {
 				return true;
@@ -179,10 +179,10 @@ public class TrieTree {
 		}
 
 		// No more days of that month have any data, so we set the month as null
-		treeYearMap.get(year).months[month - 1] = null;
+		this.treeYearMap.get(year).months[month - 1] = null;
 
 		// Lastly, we check if the year has any data left
-		TrieTreeYearNode currentYear = treeYearMap.get(year);
+		TrieTreeYearNode currentYear = this.treeYearMap.get(year);
 		for (int i = 0; i < currentYear.months.length; i++) {
 			if (currentYear.months[i] != null) {
 				return true;
@@ -190,7 +190,7 @@ public class TrieTree {
 		}
 
 		// No more months of the year have data, remove year from the hash map
-		treeYearMap.remove(year);
+		this.treeYearMap.remove(year);
 		return true;
 	}
 
