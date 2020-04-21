@@ -22,6 +22,7 @@
 package application;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javafx.application.Application;
@@ -32,6 +33,11 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
+import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -75,6 +81,12 @@ public class Main extends Application {
 	private BorderPane homePanel = new BorderPane();
 	private VBox chartGroup = new VBox();
 	private VBox inputs = new VBox();
+	
+	// Chart stuff
+	private CategoryAxis dateAxis = new CategoryAxis();
+	private NumberAxis percentAxis = new NumberAxis();
+	private BarChart<String,Number> chart = new BarChart<String,Number>(dateAxis, percentAxis);
+	
 
 	private void homeButtonAction() {
 		root.setCenter(homePanel);
@@ -106,14 +118,31 @@ public class Main extends Application {
 	}
 
 	private void farmReportButtonAction() {
-		root.setCenter(reportPanel);
 		System.out.println("Farm Report Button Pressed");
-		for (int i = 1; i < 13; i++) {
-			System.out.println("Month: " + i);
-			for (Farm farm : farms) {
-				System.out.println(farm.getFarmID() + ": " + farm.getTotalWeightMonth(2019, i));
+		root.setCenter(reportPanel);
+		
+		
+		//GRAPHING
+		chart.getData().clear(); // Clear chart
+		Series[] seriesArray = new Series[farms.size()]; // make array for series
+		int index = 0;
+		for (Farm farm : farms) {
+			seriesArray[index] = new XYChart.Series(); // Create new series
+			// Set newly added series' name to that of farm
+			seriesArray[index].setName(farm.getFarmID());
+			// Add all months data to series
+			for (int i = 1; i < 13; i++) {
+				//TODO dynamically set year
+				seriesArray[index].getData().add(new XYChart.Data(Integer.toString(i), farm.getTotalWeightMonth(2019, i)));
 			}
+			index++;
 		}
+		
+		for (int i = 0; i < farms.size(); i++) {
+			chart.getData().add(seriesArray[i]);
+		}
+		//GRAPHING
+		
 	}
 
 	private void annualReportButtonAction() {
@@ -310,7 +339,7 @@ public class Main extends Application {
 
 		chartGroup.setPadding(new Insets(15, 15, 15, 15));
 		chartGroup.setStyle("-fx-border-color: black");
-		chartGroup.getChildren().setAll(placeholdImage, chartLabel, totalWeightLabel,
+		chartGroup.getChildren().setAll(chart, chartLabel, totalWeightLabel,
 				percentWeightLabel);
 
 		// Create ID/Year/Submit group

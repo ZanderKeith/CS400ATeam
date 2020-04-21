@@ -151,8 +151,12 @@ public class TrieTree {
 		}
 
 		// Finally, we check for the day
-		if (this.treeYearMap.get(year).months[month - 1].days[day - 1] == null) {
-			return false;
+		try {
+			if (this.treeYearMap.get(year).months[month - 1].days[day - 1] == null) {
+				return false;
+			}
+		} catch (ArrayIndexOutOfBoundsException e) {
+			return false; // Trying to get day that doesn't exist in month. IGNORE
 		}
 
 		// If we made it this far, the trie tree contains data for the given day
