@@ -69,17 +69,27 @@ public class Farm {
 	 * @return total milk weight from all available data
 	 */
 	public int getTotalWeightAll() {
-		return -1;
+		int totalWeight = 0;
+		for (Integer year : milkData.getYearList()) {
+			totalWeight += getTotalWeightYear(year);
+		}
+		return totalWeight;
 	}
 
 	/**
-	 * TODO
+	 * Iterates through all days in a year and calculates the total milk weight
 	 * 
 	 * @param year
 	 * @return total milk weight of the year
 	 */
 	public int getTotalWeightYear(int year) {
-		return -1;
+		int totalWeight = 0; //running total
+		
+		// Sum over the months in a year
+		for (int i = 1; i <= 12; i++) {
+			totalWeight += getTotalWeightMonth(year, i);
+		}
+		return totalWeight;
 	}
 
 	/**
@@ -101,7 +111,11 @@ public class Farm {
 	}
 
 	/**
-	 * TODO
+	 * 
+	 * Returns the total milk from the time starting at year1/month1/day1
+	 * until year2/month2/day2, including both entered days.
+	 * 
+	 * If an invalid range is entered, this method returns 0.
 	 * 
 	 * @param year1
 	 * @param month1
@@ -113,7 +127,62 @@ public class Farm {
 	 */
 	public int getTotalWeightRange(int year1, int month1, int day1, int year2, int month2,
 			int day2) {
-		return -1;
+		// Invalid range returns 0.  Or should we throw error?
+		if (year1 > year2) {
+			return 0;
+		}
+		if (year1 == year2 && month1 > month2) {
+			return 0;
+		}
+		if (year1 == year2 && month1 == month2 && day1 > day2) {
+			return 0;
+		}
+		
+		int totalWeight = 0;
+		
+		// We will consider two separate cases, whether or not year1 = year2
+		if (year1 == year2) {
+			// Again, separate cases whether or not month1 = month2
+			if (month1 == month2) {
+				for (int i = day1; i <= day2; i++) {
+					totalWeight += milkData.get(year1, month1, i);
+				}
+			}
+			
+			// Case where months aren't equal
+			else {
+				// First, add in the rest of the days of month1
+				for (int day = day1; day <= 31; day++) {
+					totalWeight += milkData.get(year1, month1, day);
+				}
+				
+				// Next, add in months in between month1 and month2
+				for (int month = month1 + 1; month < month2; month++) {
+					totalWeight += getTotalWeightMonth(year1, month);
+				}
+				
+				// Finally, add in the days before month2/day2
+				for (int day = 1; day <= day2; day++) {
+					totalWeight += milkData.get(year1, month2, day);
+				}
+			}
+		}
+		
+		// Case where year1 < year2
+		else {
+			// First, we add up all of the milk from year1 using our previous work
+			totalWeight += getTotalWeightRange(year1,month1,day1,year1,12,31);
+			
+			// Next, we add in all of the years in between
+			for (int year = year1 + 1; year < year2; year++) {
+				totalWeight += getTotalWeightYear(year);
+			}
+			
+			// Finally, add up all of the milk from year2
+			totalWeight += getTotalWeightRange(year2,1,1,year2,month2,day2);
+		}
+			
+		return totalWeight;
 	}
 
 	// Getter but no setter because we don't want to change farm's ID

@@ -20,7 +20,10 @@
  */
 package application;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * TrieTree - This class holds the data for a TrieTree. This Trie is sorted
@@ -196,6 +199,20 @@ public class TrieTree {
 		// No more months of the year have data, remove year from the hash map
 		this.treeYearMap.remove(year);
 		return true;
+	}
+	
+	/**
+	 * This method returns a sorted list of integers containing all of 
+	 * the years in which this trietree has data for
+	 * @return
+	 */
+	public List<Integer> getYearList() {
+		List<Integer> yearList = new ArrayList<Integer>();
+		for (Integer year : treeYearMap.keySet()) {
+			yearList.add(year);
+		}
+		Collections.sort(yearList);
+		return yearList;
 	}
 
 }
