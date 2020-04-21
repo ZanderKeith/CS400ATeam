@@ -232,7 +232,7 @@ public class Main extends Application {
 		inputSubmit.setOnAction(inputSubmitHandler);
 
 		Button importFileButton = new Button("Import File");
-		InputHandler fileHandler = new InputHandler(importFileButton, "Enter file name",
+		InputHandler fileHandler = new InputHandler(importFileButton, "Enter file name. Example : C:\\Users\\<User>\\eclipse-workspace\\CS400ATeam\\MilkWeight\\csv\\small\\2019-1.csv",
 				inputSubmit, inputText);
 		importFileButton.setOnAction(e -> importFileButtonAction());
 		importFileButton.setOnAction(fileHandler);

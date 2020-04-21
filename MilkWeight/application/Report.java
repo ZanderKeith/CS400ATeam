@@ -37,37 +37,64 @@ public class Report {
 	/**
 	 * Takes in source file's name and adds data to all farms in farmList
 	 * 
+	 * TEST DIRECTORY
+	 * C:\Users\16125\eclipse-workspace\CS400ATeam\MilkWeight\csv\small\2019-1.csv
+	 * TODO Gonna have to clean this up eventually, just getting it working for now
+	 * 
 	 * @param sourceFile
-	 * @param farmID
-	 * @param milkData
-	 * @return altered trieTree with new data added
+	 * @param farmList
+	 * @return altered farms with new data added
 	 */
 	public static ArrayList<Farm> parseFile(String sourceFile, ArrayList<Farm> farmList) {
+		try {
+			FileReader fr = new FileReader(sourceFile);
+			BufferedReader buff = new BufferedReader(fr);
+			String fileLine = buff.readLine(); // Skip first entry of CSV
+			String[] CSVLine;
+			String[] dateLine;
+			boolean match; // one way flag for while parsing
+			// Keep going until reach end of file
+			while ((fileLine = buff.readLine()) != null) {
+				match = false;
+				CSVLine = fileLine.split(",");
+				dateLine = CSVLine[0].split("-");
+				// Find farm with matching ID
+				for (Farm farm : farmList) {
+					if (farm.getFarmID().equals(CSVLine[1])) {
+						match = true;
+						farm.addInput(Integer.parseInt(dateLine[0]),
+								Integer.parseInt(dateLine[1]), Integer.parseInt(dateLine[2]),
+								Integer.parseInt(CSVLine[2]));
+						break;
+					}
+				}
+				// no farm with matching ID created yet
+				if (!match) {
+					Farm newFarm = new Farm(CSVLine[1]);
+					newFarm.addInput(Integer.parseInt(dateLine[0]),
+							Integer.parseInt(dateLine[1]), Integer.parseInt(dateLine[2]),
+							Integer.parseInt(CSVLine[2]));
+					farmList.add(newFarm);
+				}
+
+			}
+		} catch (Exception e) {
+			System.out.println("UNEXPECTED EXCEPTION PARSING FILE");
+		}
 		return farmList;
 	}
-	
+
 	/**
-	 * Get all farm ID's from a specified source file.
-	 * TODO actual exception handling
+	 * Get all farm ID's from a specified source file. TODO actual exception
+	 * handling
+	 * 
 	 * @param sourceFile
 	 * @return
 	 */
 	private ArrayList<String> getFarmsInSource(String sourceFile) {
 		ArrayList<String> farmIDs = new ArrayList<String>();
-		try {
-			FileReader fr = new FileReader(sourceFile);
-			BufferedReader buff = new BufferedReader(fr);
-			String fileLine = buff.readLine(); // Skip first entry of CSV
-			while((fileLine = buff.readLine()) != null) {
-				farmIDs.add(fileLine.split(",")[1]); // Second item in each line is farm ID
-			}
-		} catch (Exception e) {
-			System.out.println("UNEXPECTED EXCEPTION PARSING FILE");
-		}
-		
+
 		return null;
 	}
-	
-	
 
 }
