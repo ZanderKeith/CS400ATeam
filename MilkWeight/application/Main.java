@@ -21,6 +21,8 @@
  */
 package application;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javafx.application.Application;
@@ -31,6 +33,11 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
+import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -54,16 +61,35 @@ public class Main extends Application {
 	// NOTE: this.getParameters().getRaw() will get these also
 	private List<String> args;
 
-	private static final int WINDOW_WIDTH = 800;
+	//
+	// FARM
+	//
+
+	static ArrayList<Farm> farms = new ArrayList<Farm>();
+
+	//
+	// GUI STUFF
+	//
+
+	private static final int WINDOW_WIDTH = 1000;
 	private static final int WINDOW_HEIGHT = 640;
 	private static final String APP_TITLE = "MilkWeight";
 
-	BorderPane reportPanel = new BorderPane();
-	VBox chartGroup = new VBox();
-	VBox inputs = new VBox();
+	private BorderPane root = new BorderPane();
+	private BorderPane reportPanel = new BorderPane();
+	private BorderPane notImplementedPanel = new BorderPane();
+	private BorderPane homePanel = new BorderPane();
+	private VBox chartGroup = new VBox();
+	private VBox inputs = new VBox();
+	
+	// Chart stuff
+	private CategoryAxis dateAxis = new CategoryAxis();
+	private NumberAxis percentAxis = new NumberAxis();
+	private BarChart<String,Number> chart = new BarChart<String,Number>(dateAxis, percentAxis);
+	
 
 	private void homeButtonAction() {
-		reportPanel.setCenter(chartGroup);
+		root.setCenter(homePanel);
 		System.out.println("Home Button Pressed");
 	}
 
@@ -72,35 +98,66 @@ public class Main extends Application {
 	}
 
 	private void exportAsCSVButtonAction() {
+		root.setCenter(notImplementedPanel);
 		System.out.println("Export as CSV File Button Pressed");
 	}
 
 	private void addNewFarmButtonAction() {
+		root.setCenter(notImplementedPanel);
 		System.out.println("Add new farm Button Pressed");
 	}
 
 	private void addNewMilkDataButtonAction() {
+		root.setCenter(notImplementedPanel);
 		System.out.println("Add new milk data Button Pressed");
 	}
 
 	private void editMilkDataButtonAction() {
+		root.setCenter(notImplementedPanel);
 		System.out.println("Edit milk data Button Pressed");
 	}
 
 	private void farmReportButtonAction() {
 		System.out.println("Farm Report Button Pressed");
+		root.setCenter(reportPanel);
+		
+		
+		//GRAPHING
+		chart.getData().clear(); // Clear chart
+		Series[] seriesArray = new Series[farms.size()]; // make array for series
+		int index = 0;
+		for (Farm farm : farms) {
+			seriesArray[index] = new XYChart.Series(); // Create new series
+			// Set newly added series' name to that of farm
+			seriesArray[index].setName(farm.getFarmID());
+			// Add all months data to series
+			for (int i = 1; i < 13; i++) {
+				//TODO dynamically set year
+				seriesArray[index].getData().add(new XYChart.Data(Integer.toString(i), farm.getTotalWeightMonth(2019, i)));
+			}
+			index++;
+		}
+		
+		for (int i = 0; i < farms.size(); i++) {
+			chart.getData().add(seriesArray[i]);
+		}
+		//GRAPHING
+		
 	}
 
 	private void annualReportButtonAction() {
 		System.out.println("Annual Report Button Pressed");
+		root.setCenter(notImplementedPanel);
 	}
 
 	private void monthlyReportButtonAction() {
 		System.out.println("Monthly Report Button Pressed");
+		root.setCenter(notImplementedPanel);
 	}
 
 	private void dateRangeReportButtonAction() {
 		System.out.println("Date Range Report Button Pressed");
+		root.setCenter(notImplementedPanel);
 	}
 
 	private void submitButtonAction() {
@@ -128,7 +185,7 @@ public class Main extends Application {
 		public void handle(ActionEvent arg0) {
 			textBox.setPromptText(text);
 			inputs = new VBox(textBox, submit);
-			reportPanel.setCenter(inputs);
+			root.setCenter(inputs);
 		}
 	}
 
@@ -143,7 +200,11 @@ public class Main extends Application {
 		@Override
 		public void handle(ActionEvent arg0) {
 			System.out.println("User entered: \"" + textBox.getText() + "\"");
+			// This is super cringe rn sorry team, just here to make it work and no further
+			// Shouldn't take long to move though, just this one line is what's needed to get the input
+			Main.farms = Report.parseFile(textBox.getText(), farms);
 			textBox.clear();
+			
 		}
 	}
 
@@ -155,7 +216,7 @@ public class Main extends Application {
 		@Override
 		public void handle(ActionEvent arg0) {
 			reportPanel.setCenter(chartGroup);
-			
+
 		}
 
 	}
@@ -208,7 +269,7 @@ public class Main extends Application {
 		inputSubmit.setOnAction(inputSubmitHandler);
 
 		Button importFileButton = new Button("Import File");
-		InputHandler fileHandler = new InputHandler(importFileButton, "Enter file name",
+		InputHandler fileHandler = new InputHandler(importFileButton, "Enter file name. Example : C:\\Users\\<User>\\eclipse-workspace\\CS400ATeam\\MilkWeight\\csv\\small\\2019-1.csv",
 				inputSubmit, inputText);
 		importFileButton.setOnAction(e -> importFileButtonAction());
 		importFileButton.setOnAction(fileHandler);
@@ -220,7 +281,7 @@ public class Main extends Application {
 		InputHandler farmHandler = new InputHandler(addNewFarmButton, "Enter farm ID",
 				inputSubmit, inputText);
 		addNewFarmButton.setOnAction(e -> addNewFarmButtonAction());
-		addNewFarmButton.setOnAction(farmHandler);
+		// addNewFarmButton.setOnAction(farmHandler);
 
 		Button addNewMilkDataButton = new Button("Add new milk data");
 		addNewMilkDataButton.setOnAction(e -> addNewMilkDataButtonAction());
@@ -278,7 +339,7 @@ public class Main extends Application {
 
 		chartGroup.setPadding(new Insets(15, 15, 15, 15));
 		chartGroup.setStyle("-fx-border-color: black");
-		chartGroup.getChildren().setAll(placeholdImage, chartLabel, totalWeightLabel,
+		chartGroup.getChildren().setAll(chart, chartLabel, totalWeightLabel,
 				percentWeightLabel);
 
 		// Create ID/Year/Submit group
@@ -299,12 +360,18 @@ public class Main extends Application {
 		reportPanel.setCenter(chartGroup);
 		reportPanel.setPadding(new Insets(15, 15, 15, 15));
 
-		// Main layout is Border Pane example (top,left,center,right,bottom)
-		BorderPane root = new BorderPane();
+		// Home panel with instructions
+		homePanel.setTop(new Label(
+				"Welcome! \n How to use: \n Go to import CSV file and input path to file you want to read, then click submit \n Then go to Farm Report to see data. There you can select a farm ID and year to see data."));
+		homePanel.setMinWidth(800);
+
+		// Not implemented panel
+		notImplementedPanel.setTop(new Label("NOT IMPLEMENTED"));
+		notImplementedPanel.setCenter(placeholdImage);
 
 		// Add panels to root pane
 		root.setLeft(leftOptionPanel);
-		root.setCenter(reportPanel);
+		root.setCenter(homePanel);
 
 		Scene mainScene = new Scene(root);
 
