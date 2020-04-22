@@ -45,8 +45,9 @@ public class Report {
 	 * @param sourceFile
 	 * @param farmList
 	 * @return altered farms with new data added
+	 * @throws Exception 
 	 */
-	public static ArrayList<Farm> parseFile(String sourceFile, ArrayList<Farm> farmList) {
+	public static ArrayList<Farm> parseFile(String sourceFile, ArrayList<Farm> farmList) throws Exception {
 		try {
 			FileReader fr = new FileReader(sourceFile);
 			BufferedReader buff = new BufferedReader(fr);
@@ -81,6 +82,7 @@ public class Report {
 			}
 		} catch (Exception e) {
 			System.out.println("UNEXPECTED EXCEPTION PARSING FILE");
+			throw new Exception();
 		}
 		return farmList;
 	}
@@ -157,7 +159,7 @@ public class Report {
 	 * main method just to see if it works
 	 * comment this out for the Main.java
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		ArrayList<Farm> farms = new ArrayList<Farm>();
 		Report.parseFile("./csv/small/2019-1.csv", farms);
 		Report.parseFile("./csv/small/2019-2.csv", farms);

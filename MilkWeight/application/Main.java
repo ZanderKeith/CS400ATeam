@@ -38,6 +38,8 @@ import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Series;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -202,7 +204,13 @@ public class Main extends Application {
 			System.out.println("User entered: \"" + textBox.getText() + "\"");
 			// This is super cringe rn sorry team, just here to make it work and no further
 			// Shouldn't take long to move though, just this one line is what's needed to get the input
-			Main.farms = Report.parseFile(textBox.getText(), farms);
+			try {
+				Main.farms = Report.parseFile(textBox.getText(), farms);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			System.out.println(farms.size());
 			textBox.clear();
 			
 		}
@@ -265,8 +273,35 @@ public class Main extends Application {
 
 		// used in the event a user wants to input a file or farm
 		Button inputSubmit = new Button("Submit");
-		InputSubmitHandler inputSubmitHandler = new InputSubmitHandler(inputSubmit, inputText);
+		//InputSubmitHandler inputSubmitHandler = new InputSubmitHandler(inputSubmit, inputText);
+		/*
 		inputSubmit.setOnAction(inputSubmitHandler);
+		*/
+		
+		inputSubmit.setOnAction((event) ->{
+			System.out.println("User entered: \"" + inputText.getText() + "\"");
+			// This is super cringe rn sorry team, just here to make it work and no further
+			// Shouldn't take long to move though, just this one line is what's needed to get the input
+			try {
+				Main.farms = Report.parseFile(inputText.getText(), farms);
+			}
+			catch(Exception e) {
+				Alert alert = new Alert(AlertType.INFORMATION);
+				alert.setTitle("File Error");
+				alert.setHeaderText(null);
+				alert.setContentText("We are sorry, but was unable to read the file. Please check the file path.");
+				alert.showAndWait();
+			}
+			
+			
+			inputText.clear();
+			if (farms.size()!=0) {				
+				ObservableList<String> newFarms = FXCollections.observableArrayList();
+				farms.forEach(e -> newFarms.add(e.getFarmID()));
+				farmComboBox.setItems(newFarms);
+			}			
+		});
+		
 
 		Button importFileButton = new Button("Import File");
 		InputHandler fileHandler = new InputHandler(importFileButton, "Enter file name. Example : C:\\Users\\<User>\\eclipse-workspace\\CS400ATeam\\MilkWeight\\csv\\small\\2019-1.csv",
