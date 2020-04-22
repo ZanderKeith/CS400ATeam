@@ -13,7 +13,12 @@
  * 
  * OS:			Windows 10
  * 
- * List Collaborators: Name, email@wisc.edu, lecture number
+ * List Collaborators:
+ * Zander Keith,   zkeith@wisc.edu,   LEC001
+ * Daniel Levy,    dslevy2@wisc.edu,  LEC001
+ * Matthew Holmes, mrholmes@wisc.edu, LEC001
+ * Solly Parenti,  sparenti@wisc.edu, LEC001
+ * Hyejin Yeon,    hyeon2@wisc.edu,   LEC001
  * 
  * Other Credits: describe other source (websites or people)
  * 
@@ -315,7 +320,7 @@ public class Main extends Application {
 				monthlyReportButton, dateRangeReportButton);
 
 		ImageView cowImage = new ImageView();
-		cowImage.setImage(new Image("cow.jpg"));
+		cowImage.setImage(new Image("file:cow.jpg")); // file: prefix completes a valid relative URI
 		cowImage.setFitHeight(WINDOW_HEIGHT / 8);
 		cowImage.setPreserveRatio(true);
 
@@ -333,7 +338,7 @@ public class Main extends Application {
 		// Create Chart group
 		// this image is just a placeholder for the actual chart.
 		ImageView placeholdImage = new ImageView();
-		placeholdImage.setImage(new Image("basically.png"));
+		placeholdImage.setImage(new Image("file:basically.png")); // file: prefix completes a valid relative URI
 		placeholdImage.setFitHeight(WINDOW_HEIGHT / 2);
 		placeholdImage.setPreserveRatio(true);
 

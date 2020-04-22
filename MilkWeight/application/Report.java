@@ -1,5 +1,5 @@
 /**
- * Main.java created by zkeith on personal laptop in MilkWeight
+ * Report.java created by zkeith on personal laptop in MilkWeight
  *
  * Author: 		Zander Keith (zkeith@wisc.edu)
  * Date: 		Apr 20, 2020
@@ -13,7 +13,12 @@
  * 
  * OS:			Windows 10
  * 
- * List Collaborators: Name, email@wisc.edu, lecture number
+ * List Collaborators:
+ * Zander Keith,   zkeith@wisc.edu,   LEC001
+ * Daniel Levy,    dslevy2@wisc.edu,  LEC001
+ * Matthew Holmes, mrholmes@wisc.edu, LEC001
+ * Solly Parenti,  sparenti@wisc.edu, LEC001
+ * Hyejin Yeon,    hyeon2@wisc.edu,   LEC001
  * 
  * Other Credits: describe other source (websites or people)
  * 
