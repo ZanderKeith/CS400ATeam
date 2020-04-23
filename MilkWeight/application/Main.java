@@ -24,10 +24,12 @@ package application;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.TreeSet;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableSet;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -89,7 +91,15 @@ public class Main extends Application {
 	private NumberAxis percentAxis = new NumberAxis();
 	private BarChart<String,Number> chart = new BarChart<String,Number>(dateAxis, percentAxis);
 	
-
+	
+	// User Input stuff
+	private String userFarmChoice = "";
+	private String userMonthChoice = "";
+	private String userYearChoice = "";
+	
+	// Test Report to the user
+	private ArrayList<String> textReport = null;
+	
 	private void homeButtonAction() {
 		root.setCenter(homePanel);
 		System.out.println("Home Button Pressed");
@@ -120,9 +130,9 @@ public class Main extends Application {
 	}
 
 	private void farmReportButtonAction() {
+
 		System.out.println("Farm Report Button Pressed");
 		root.setCenter(reportPanel);
-		
 		
 		//GRAPHING
 		chart.getData().clear(); // Clear chart
@@ -256,16 +266,26 @@ public class Main extends Application {
 				"February", "March", "April", "May", "June", "July", "August", "September",
 				"October", "November", "December", "ALL");
 		monthComboBox.setItems(monthItems);
-
+		monthComboBox.setOnAction((event) -> {
+			this.userMonthChoice = monthComboBox.getValue();
+			System.out.println("User picked the month : "+ userMonthChoice);
+		});
 		ComboBox<String> yearComboBox = new ComboBox<String>();
 		ObservableList<String> yearItems = FXCollections.observableArrayList("2017", "2018",
 				"2019", "2020", "ALL");
 		yearComboBox.setItems(yearItems);
-
+		yearComboBox.setOnAction((event) -> {
+			this.userYearChoice = yearComboBox.getValue();
+			System.out.println("User picked the year : "+ userYearChoice);
+		});
 		ComboBox<String> farmComboBox = new ComboBox<String>();
 		ObservableList<String> farmItems = FXCollections.observableArrayList("Boggis", "Bunce",
 				"Bean");
 		farmComboBox.setItems(farmItems);
+		farmComboBox.setOnAction((event) -> {
+			this.userFarmChoice = farmComboBox.getValue();
+			System.out.println("User picked farm : "+ userFarmChoice);
+		});
 
 		// Buttons
 		Button homeButton = new Button("Home");
@@ -273,6 +293,7 @@ public class Main extends Application {
 
 		// used in the event a user wants to input a file or farm
 		Button inputSubmit = new Button("Submit");
+
 		//InputSubmitHandler inputSubmitHandler = new InputSubmitHandler(inputSubmit, inputText);
 		/*
 		inputSubmit.setOnAction(inputSubmitHandler);
@@ -284,20 +305,30 @@ public class Main extends Application {
 			// Shouldn't take long to move though, just this one line is what's needed to get the input
 			try {
 				Main.farms = Report.parseFile(inputText.getText(), farms);
-			}
-			catch(Exception e) {
 				Alert alert = new Alert(AlertType.INFORMATION);
-				alert.setTitle("File Error");
+				alert.setTitle("File Read");
 				alert.setHeaderText(null);
-				alert.setContentText("We are sorry, but was unable to read the file. Please check the file path.");
+				alert.setContentText("Successful! Your file has been recorded.");
 				alert.showAndWait();
 			}
-			
+			catch(Exception e) {
+				Alert alert = new Alert(AlertType.WARNING);
+				alert.setTitle("File Error");
+				alert.setHeaderText(null);
+				alert.setContentText("We are sorry. We were unable to read the file. Please check your file path and try again.");
+				alert.showAndWait();
+			}		
 			
 			inputText.clear();
 			if (farms.size()!=0) {				
 				ObservableList<String> newFarms = FXCollections.observableArrayList();
+				ObservableList<String> newYearItems = FXCollections.observableArrayList();
+				TreeSet<String> allYears = new TreeSet<String>();
+				farms.forEach(e -> allYears.addAll(e.getYearList()));
 				farms.forEach(e -> newFarms.add(e.getFarmID()));
+				newYearItems.addAll(allYears);
+				newYearItems.add("ALL");
+				yearComboBox.setItems(newYearItems);
 				farmComboBox.setItems(newFarms);
 			}			
 		});
@@ -338,8 +369,43 @@ public class Main extends Application {
 
 		Button submitButton = new Button("Submit");
 		submitButton.setOnAction(e -> submitButtonAction());
-		OutputRequestHandler outputRequester = new OutputRequestHandler();
-		submitButton.setOnAction(outputRequester);
+		//OutputRequestHandler outputRequester = new OutputRequestHandler();
+		submitButton.setOnAction((event) ->{
+			System.out.println("User may have selected farmID, Year, and Month");
+			
+			Farm userFarm = null;
+			
+
+			for (Farm f : farms) {
+				if (f.getFarmID().equals(userFarmChoice)) {
+					userFarm = f;
+				}
+			}
+			try {
+				if (userYearChoice.equals("ALL")) this.userYearChoice = "-1";
+				this.textReport = Report.farmReport(userFarm, 
+						Integer.parseInt(this.userYearChoice), this.userMonthChoice);
+				System.out.println("User Selected Report is produced");
+				
+				if (this.textReport==null) {
+					Alert alert = new Alert(AlertType.WARNING);
+					alert.setTitle("Invalid Time Range");
+					alert.setHeaderText("Year: All, " + "Month: " + this.userMonthChoice +" is not supported.");
+					alert.setContentText("We are sorry."+System.lineSeparator()+"We don't support reports for specific months across all years.");
+					alert.showAndWait();
+				}
+				else {
+					
+				
+				chartGroup.getChildren().setAll(chart,new Label(this.textReport.get(0)),
+						new Label(this.textReport.get(1)), new Label(this.textReport.get(2)));
+				}
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+
+			}
+		});
 
 		// Create left panel of buttons (dependencies first)
 		VBox fileOptionGroup = new VBox();

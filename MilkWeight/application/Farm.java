@@ -21,6 +21,11 @@
  */
 package application;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
 /**
  * Farm - Stores milk data related to specific farm and can retrieve it from
  * various time windows
@@ -188,6 +193,14 @@ public class Farm {
 	// Getter but no setter because we don't want to change farm's ID
 	public String getFarmID() {
 		return this.farmID;
+	}
+	
+	public Set<String> getYearList(){
+		TreeSet<String> castList = new TreeSet<String>();
+		for(Integer i : milkData.getYearList()) {
+			castList.add(Integer.toString(i));
+		}
+		return castList;
 	}
 
 }
