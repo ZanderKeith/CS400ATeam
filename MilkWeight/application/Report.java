@@ -161,7 +161,7 @@ public class Report {
 			percent = ((double) farmID.getTotalWeightAll())/(total)*100;
 			data.add(farmID.getFarmID() + " Report from All Availble Data");
 			data.add("Total Weight Sold from All Availble Data from All Farms: " + Double.toString(total)+" lb");
-			data.add("Percent : " + String.format("%.2f", percent) + " %");
+			data.add("Percent for " + farmID.getFarmID() +" : " + String.format("%.2f", percent) + " %");
 			return data;			
 		}
 		else if (month == -1) {
@@ -172,7 +172,7 @@ public class Report {
 			percent = ((double) farmID.getTotalWeightYear(year))/(total)*100;
 			data.add(farmID.getFarmID() + " Report for " + Integer.toString(year));
 			data.add("Total Weight Sold for Year " + Integer.toString(year) +" from All Farms: " + Double.toString(total)+" lb");
-			data.add("Percent : " + String.format("%.2f", percent) + " %");
+			data.add("Percent for " + farmID.getFarmID() +" : " + String.format("%.2f", percent) + " %");
 			return data;			
 		}
 		else {
@@ -184,7 +184,7 @@ public class Report {
 			percent = ((double) farmID.getTotalWeightMonth(year,month))/(total)*100;
 			data.add(farmID.getFarmID() + " Report for " + Month.values()[month]+", "+Integer.toString(year));
 			data.add("Total Weight Sold for "+monthString+", "+ Integer.toString(year) + " from ALL Farms : " + Double.toString(total)+" lb");
-			data.add("Percent : " + String.format("%.2f", percent) + " %");
+			data.add("Percent for " + farmID.getFarmID() +" : " + String.format("%.2f", percent) + " %");
 			return data;
 			
 		}
@@ -198,7 +198,7 @@ public class Report {
 		Report.parseFile("./csv/small/2019-1.csv", farms);
 		Report.parseFile("./csv/small/2019-2.csv", farms);
 		Main.farms=farms;
-		System.out.println(Report.farmReport(farms.get(2),  -1, "ALL"));
+		System.out.println(Report.farmReport(farms.get(1),  -1, "ALL"));
 		System.out.println(Report.farmReport(farms.get(2),2019,"January"));
 		System.out.println(Report.farmReport(farms.get(2),2019,"ALL"));
 		

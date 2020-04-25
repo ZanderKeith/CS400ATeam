@@ -33,6 +33,10 @@ import java.util.TreeSet;
  * @author zkeith
  *
  */
+/**
+ * @author yun91
+ *
+ */
 public class Farm {
 	private String farmID;
 	private TrieTree milkData;
@@ -201,6 +205,19 @@ public class Farm {
 			castList.add(Integer.toString(i));
 		}
 		return castList;
+	}
+	
+	
+	/**
+	 * Overloaded method for adding using 
+	 * @param year
+	 * @param userMonthChoice January, February, etc
+	 * @param userDateChoice
+	 * @param weight
+	 */
+	public void addInput(int year, String Month, int day, int weight) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
