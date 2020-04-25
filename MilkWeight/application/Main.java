@@ -96,7 +96,7 @@ public class Main extends Application {
 	
 	// User Input stuff
 	private String userFarmChoice = "";
-	private String userDateChoice ="";
+	private String userDateChoice = "";
 	private String userMonthChoice = "";
 	private String userYearChoice = "";
 	
@@ -313,7 +313,8 @@ public class Main extends Application {
 	private void addNewFarmButtonAction() {
 		System.out.println("User wants to enter a new farm!");
 		VBox newFarmBox = new VBox();
-		TextField farmName = new TextField("Ex: Farm 999");
+		TextField farmName = new TextField();
+		farmName.setPromptText("Ex: Farm 999");
 		farmName.setOnMouseClicked(clicked->farmName.clear());
 		Button addFarm = new Button("Add");
 		newFarmBox.getChildren().addAll(new Label("Enter the name of the farm: "), farmName, addFarm);
@@ -325,7 +326,7 @@ public class Main extends Application {
 			for (Farm f : farms) {
 				if (f.getFarmID().equals(this.userFarmChoice)) {
 					Alert alert = new Alert(AlertType.ERROR);
-					System.out.println("user is trying to enter a duplicate farm, warnning message popped");
+					System.out.println("user is trying to enter a duplicate farm, warning message popped");
 					alert.setTitle("This farm already exists!");
 					alert.setHeaderText("Farm ID entered : " + this.userFarmChoice);
 					alert.setContentText("Farm ID you entered already exists in our system."+System.lineSeparator()+"Please use other options to add data.");
@@ -334,15 +335,18 @@ public class Main extends Application {
 				}
 			}
 			if (!dupe) {
-				Farm newFarm = new Farm(this.userFarmChoice);
-				farms.add(newFarm);
-				
-				Alert alert = new Alert(AlertType.INFORMATION);
-				alert.setTitle("New Farm Added");
+				Alert alert = new Alert(AlertType.CONFIRMATION);
+				alert.setTitle("New Farm To Be Added");
 				alert.setHeaderText(null);
-				alert.setContentText("Successful! New farm ID "+this.userFarmChoice+" added.");
-				alert.showAndWait();
-				System.out.println("A new farm named "+ this.userFarmChoice+" added");
+				alert.setContentText("The Farm \""+this.userFarmChoice+"\" is being added.");
+				final Optional<ButtonType> addResult = alert.showAndWait();
+				
+				if (addResult.isPresent() && addResult.get() == ButtonType.OK) {
+					System.out.println("A new farm named "+ this.userFarmChoice+" added");
+					Farm newFarm = new Farm(this.userFarmChoice);
+					farms.add(newFarm);
+
+				}
 			}			
 		});			
 	}
@@ -350,7 +354,7 @@ public class Main extends Application {
 
 	private void addNewMilkDataButtonAction() {
 		System.out.println("Add new milk data Button Pressed");
-		root.setCenter(new Label("No farm availble in the system."));
+		root.setCenter(new Label("No farm available in the system."));
 		ComboBox<String> farmIDs = new ComboBox<String>();
 		if (farms.size()==0) {
 			Alert alert = new Alert(AlertType.INFORMATION);
@@ -381,7 +385,8 @@ public class Main extends Application {
 		farmBar.getChildren().add(farmIDs);
 		HBox yearBar = new HBox();
 		yearBar.getChildren().add(new Label("Year : "));
-		TextField yearText = new TextField("Ex: 2019");
+		TextField yearText = new TextField();
+		yearText.setPromptText("Ex: 2019");
 		yearBar.getChildren().add(yearText);
 		yearText.setOnMouseClicked(e->yearText.clear());
 		HBox monthBar = new HBox();
@@ -398,7 +403,8 @@ public class Main extends Application {
 		});
 		HBox milkBar = new HBox();
 		milkBar.getChildren().add(new Label ("Amount of Milk Sold (lb) :"));
-		TextField milkText = new TextField("Ex: 293489");
+		TextField milkText = new TextField();
+		milkText.setPromptText("Ex: 293489");
 		milkBar.getChildren().add(milkText);
 		milkText.setOnMouseClicked(e->milkText.clear());
 		HBox dateBar = new HBox();
@@ -414,10 +420,10 @@ public class Main extends Application {
 			this.userDateChoice=dates.getValue();
 			System.out.println("User chose the date " + userDateChoice );
 		});
-		VBox mainPannel = new VBox();
+		VBox mainPanel = new VBox();
 		Button record = new Button("Record");
-		mainPannel.getChildren().addAll(farmBar,monthBar,dateBar,yearBar,milkBar,record);		
-		root.setCenter(mainPannel);
+		mainPanel.getChildren().addAll(farmBar,monthBar,dateBar,yearBar,milkBar,record);		
+		root.setCenter(mainPanel);
 
 		record.setOnAction(e -> {
 			int weight = 0;
@@ -452,7 +458,7 @@ public class Main extends Application {
 
 				Alert alert = new Alert(AlertType.CONFIRMATION);
 				alert.setTitle("The following data is being recorded.");
-				alert.setHeaderText("Adding Data for Farm ID"+ this.userFarmChoice +".");
+				alert.setHeaderText("Adding Data for Farm ID: "+ this.userFarmChoice +".");
 				alert.setContentText("Date: "+this.userMonthChoice+" " +this.userDateChoice+", "+year+"."+
 				System.lineSeparator()+"Weight: "+weight+" lb");
 				final Optional<ButtonType> result = alert.showAndWait();
@@ -464,8 +470,8 @@ public class Main extends Application {
 							break;
 						}
 					}
-				yearText.setText("Ex: 2019");
-				milkText.setText("Ex: 293489");
+				yearText.setPromptText("Ex: 2019");
+				milkText.setPromptText("Ex: 293489");
 			    }
 
 				
@@ -527,7 +533,7 @@ public class Main extends Application {
 			ObservableList<String> newFarms = FXCollections.observableArrayList();
 			ObservableList<String> newYearItems = FXCollections.observableArrayList();
 			TreeSet<String> allYears = new TreeSet<String>();
-			farms.forEach(e -> allYears.addAll(e.getYearList()));
+			farms.forEach(e -> allYears.addAll(e.getYearSet()));
 			farms.forEach(e -> newFarms.add(e.getFarmID()));
 			newYearItems.addAll(allYears);
 			newYearItems.add("ALL");

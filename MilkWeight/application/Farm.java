@@ -199,24 +199,56 @@ public class Farm {
 		return this.farmID;
 	}
 	
-	public Set<String> getYearList(){
-		TreeSet<String> castList = new TreeSet<String>();
+	public Set<String> getYearSet(){
+		TreeSet<String> castSet = new TreeSet<String>();
 		for(Integer i : milkData.getYearList()) {
-			castList.add(Integer.toString(i));
+			castSet.add(Integer.toString(i));
 		}
-		return castList;
+		return castSet;
 	}
 	
 	
 	/**
-	 * Overloaded method for adding using 
+	 * Overloaded method for adding using a string month
 	 * @param year
-	 * @param userMonthChoice January, February, etc
-	 * @param userDateChoice
+	 * @param userMonthChoice - a string E.g. January, February, etc
+	 * @param day
 	 * @param weight
 	 */
-	public void addInput(int year, String Month, int day, int weight) {
-		// TODO Auto-generated method stub
+	public void addInput(int year, String month, int day, int weight) {
+		try {
+			addInput(year, monthStringToInt(month), day, weight);
+		}
+		
+		// There won't be any exceptions when this is called in main
+		catch(Exception e) {}
+	}
+	
+	
+	
+	/**
+	 * Given a String representing a month, this returns the integer of the 
+	 * month.  Capitalization doesn't matter.  So january should return 1,
+	 * and MAY should return 5. This method throws a
+	 * @param month - a string meant to be 
+	 * @throws IllegalArgumentException if month input does not match a month
+	 * @return the integer
+	 */
+	private int monthStringToInt(String month) throws IllegalArgumentException{
+		if (month.equalsIgnoreCase("January")) {return 1;}
+		if (month.equalsIgnoreCase("February")) {return 2;}
+		if (month.equalsIgnoreCase("March")) {return 3;}
+		if (month.equalsIgnoreCase("April")) {return 4;}
+		if (month.equalsIgnoreCase("May")) {return 5;}
+		if (month.equalsIgnoreCase("June")) {return 6;}
+		if (month.equalsIgnoreCase("July")) {return 7;}
+		if (month.equalsIgnoreCase("August")) {return 8;}
+		if (month.equalsIgnoreCase("September")) {return 9;}
+		if (month.equalsIgnoreCase("October")) {return 10;}
+		if (month.equalsIgnoreCase("November")) {return 11;}
+		if (month.equalsIgnoreCase("December")) {return 12;}
+		
+		throw new IllegalArgumentException();
 		
 	}
 
