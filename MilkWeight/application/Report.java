@@ -159,8 +159,8 @@ public class Report {
 				total = total + (double) Main.farms.get(i).getTotalWeightAll();
 			}
 			percent = ((double) farmID.getTotalWeightAll())/(total)*100;
-			data.add(farmID.getFarmID() + " Report from All Availble Data");
-			data.add("Total Weight Sold from All Availble Data from All Farms: " + Double.toString(total)+" lb");
+			data.add(farmID.getFarmID() + " Report from All Available Data");
+			data.add("Total Weight Sold from All Available Data from All Farms: " + Double.toString(total)+" lb");
 			data.add("Percent for " + farmID.getFarmID() +" : " + String.format("%.2f", percent) + " %");
 			return data;			
 		}

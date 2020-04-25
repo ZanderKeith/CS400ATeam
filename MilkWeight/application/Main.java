@@ -21,6 +21,8 @@
  */
 package application;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -306,9 +308,88 @@ public class Main extends Application {
 	
 
 	private void exportAsCSVButtonAction() {
-		root.setCenter(notImplementedPanel);
+		System.out.println("User wants to export their work.");
+		
+		// Setting up the Export as CSV Page
+		VBox exportBox = new VBox();
+		TextField filePathField = new TextField();
+		TextField fileNameField = new TextField();
+		filePathField.setPromptText("Ex: /Users/Solly/Desktop");
+		fileNameField.setPromptText("Ex: AprilFarmOutput");
+		Button exportFileButton = new Button("Export File");
+		exportBox.getChildren().addAll(new Label("Enter the path where you would like the file saved: "),
+				filePathField, new Label("Enter the name to give the output file: "), fileNameField, exportFileButton);
+		root.setCenter(exportBox);
+		
+		exportFileButton.setOnAction(userClick -> {
+			boolean pathExists;
+			File filePath = new File(filePathField.getText());
+			pathExists = filePath.exists();
+			
+			if (pathExists) {
+				File fileName = new File(filePath, fileNameField.getText() + ".csv");
+				boolean nameAlreadyExists = fileName.exists();
+				boolean writeFile = true;
+				
+				if (nameAlreadyExists) {
+					writeFile = false;
+					Alert nameAlert = new Alert(AlertType.CONFIRMATION);
+					nameAlert.setTitle(null);
+					nameAlert.setContentText("A file with that name already exists." + System.lineSeparator() + "Pressing \"OK\" will overwrite the existing file.");
+					final Optional<ButtonType> nameResult = nameAlert.showAndWait();
+					if (nameResult.isPresent() && nameResult.get() == ButtonType.OK) {
+						writeFile = true;
+					}
+				}
+				
+				if (writeFile) {
+					try {
+						if (!nameAlreadyExists) {
+							fileName.createNewFile();
+						}
+						FileWriter output = new FileWriter(fileName);
+						output.write("date,farm_id,weight\n");
+						for (Farm farm : farms) {
+							for (Integer year : farm.getYearIntList()) {
+								for (int month = 1; month <= 12; month++) {
+									for (int day = 1; day <= 31; day++) {
+										int dayWeight = farm.getTotalWeightDay(year, month, day);
+										if (dayWeight != 0) {
+											String data = Integer.toString(year) + "-" + Integer.toString(month) + "-" + Integer.toString(day) + ",";
+											data += farm.getFarmID() + "," + Integer.toString(dayWeight) + "\n";
+											output.write(data);
+										}
+									}
+								}
+							}
+						}
+						output.close();
+						
+						Alert confirmExport = new Alert(AlertType.CONFIRMATION);
+						confirmExport.setTitle("Success!");
+						confirmExport.setContentText("The file was created successfully.");
+						confirmExport.showAndWait();
+					}
+					catch(Exception e) {
+						Alert fileMakingError = new Alert(AlertType.ERROR);
+						fileMakingError.setTitle("Error");
+						fileMakingError.setContentText("Sorry, there was an error writing the file.");
+						fileMakingError.showAndWait();
+					}
+				}
+			}
+			else {
+				Alert pathAlert = new Alert(AlertType.ERROR);
+				pathAlert.setTitle("Error");
+				pathAlert.setContentText("There was an error finding the correct path.");
+				pathAlert.showAndWait();
+			}
+		});
+		
+		
 		System.out.println("Export as CSV File Button Pressed");
 	}
+	
 
 	private void addNewFarmButtonAction() {
 		System.out.println("User wants to enter a new farm!");

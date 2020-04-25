@@ -207,6 +207,13 @@ public class Farm {
 		return castSet;
 	}
 	
+	public List<Integer> getYearIntList(){
+		return milkData.getYearList();
+	}
+	
+	public int getTotalWeightDay(int year, int month, int day) {
+		return milkData.get(year, month, day);
+	}
 	
 	/**
 	 * Overloaded method for adding using a string month
