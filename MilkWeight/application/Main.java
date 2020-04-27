@@ -87,8 +87,18 @@ public class Main extends Application {
 	private BorderPane reportPanel = new BorderPane();
 	private BorderPane notImplementedPanel = new BorderPane();
 	private BorderPane homePanel = new BorderPane();
+	
+	// old report stuff
 	private VBox chartGroup = new VBox();
 	private VBox inputs = new VBox();
+	
+	//TODO decide on whether to use new report or old report
+	// new Report stuff
+	private BorderPane tableGroup = new BorderPane();
+	private HBox submitGroup = new HBox();
+	private HBox farmIDGroup = new HBox();
+	private HBox yearGroup = new HBox();
+	private HBox monthGroup = new HBox();
 	
 	// Chart stuff
 	private CategoryAxis dateAxis = new CategoryAxis();
@@ -125,7 +135,7 @@ public class Main extends Application {
 		Label chartLabel = new Label("Farm no., Date + Report");
 		Label totalWeightLabel = new Label("Total Weight Sold: + weight + lb");
 		Label percentWeightLabel = new Label("Percent of total + something%");
-
+		
 		// Text Fields
 		TextField farmIDField = new TextField("");
 		TextField yearField = new TextField("");
@@ -199,6 +209,8 @@ public class Main extends Application {
 		Button dateRangeReportButton = new Button("Date Range Report");
 		dateRangeReportButton.setOnAction(e -> dateRangeReportButtonAction());
 
+		Button farmReportSubmitButton = new Button("View Farm Report");		
+		farmReportSubmitButton.setOnAction(e -> this.farmReportSubmitButtonAction());
 		
 		Button reportSubmitButton = new Button("View Report");		
 		reportSubmitButton.setOnAction(e -> this.reportSubmitButtonAction());
@@ -239,20 +251,25 @@ public class Main extends Application {
 		chartGroup.getChildren().setAll(chart, chartLabel, totalWeightLabel,
 				percentWeightLabel);
 
-		// Create ID/Year/Submit group
-		HBox farmIDGroup = new HBox();
+		// Create Various Submit Groups for all reports
+		
 		farmIDGroup.getChildren().addAll(farmIDLabel, farmComboBox);
 
-		HBox yearGroup = new HBox();
+		
 		yearGroup.getChildren().addAll(yearLabel, yearComboBox);
 
-		HBox monthGroup = new HBox();
+		
 		monthGroup.getChildren().addAll(monthLabel, monthComboBox);
-
+		
+		// Used for Monthly Report
 		HBox IDYearSubmitGroup = new HBox();
 		IDYearSubmitGroup.getChildren().addAll(farmIDGroup, yearGroup, monthGroup, reportSubmitButton);
 		IDYearSubmitGroup.setSpacing(15.0);
-
+		
+		
+		
+		
+		//TODO remove if unnecessary
 		reportPanel.setBottom(IDYearSubmitGroup);
 		reportPanel.setCenter(chartGroup);
 		reportPanel.setPadding(new Insets(15, 15, 15, 15));
@@ -571,6 +588,22 @@ public class Main extends Application {
 	private void farmReportButtonAction() {
 		System.out.println("Farm Report Button Pressed");
 		root.setCenter(reportPanel);
+		reportPanel.setBottom(farmReportSubmitGroup);
+		reportPanel.setCenter(chartGroup);
+		
+		chart.getData().clear();
+		
+	}
+
+	private void annualReportButtonAction() {
+		System.out.println("Annual Report Button Pressed");
+		root.setCenter(notImplementedPanel);
+	}
+
+	private void monthlyReportButtonAction() {
+		System.out.println("Monthly Report Button Pressed");
+		
+		root.setCenter(reportPanel);
 		
 		//GRAPHING
 		chart.getData().clear(); // Clear chart
@@ -592,23 +625,13 @@ public class Main extends Application {
 			chart.getData().add(seriesArray[i]);
 		}
 		//GRAPHING
-		
-	}
-
-	private void annualReportButtonAction() {
-		System.out.println("Annual Report Button Pressed");
-		root.setCenter(notImplementedPanel);
-	}
-
-	private void monthlyReportButtonAction() {
-		System.out.println("Monthly Report Button Pressed");
-		root.setCenter(notImplementedPanel);
 	}
 
 	private void dateRangeReportButtonAction() {
 		System.out.println("Date Range Report Button Pressed");
 		root.setCenter(notImplementedPanel);
 	}
+	
 	private void updateComboBoxes(ComboBox farmComboBox, ComboBox yearComboBox) {
 		if (farms.size()!=0) {				
 			ObservableList<String> newFarms = FXCollections.observableArrayList();
@@ -622,6 +645,39 @@ public class Main extends Application {
 			farmComboBox.setItems(newFarms);
 		}			
 	}
+	
+	private void farmReportSubmitButtonAction() {
+		System.out.println("User may have selected farmID, Year pressed submit button.");
+		Farm userFarm = null;
+		for (Farm f : farms) {
+			if (f.getFarmID().equals(userFarmChoice)) {
+				userFarm = f;
+			}
+		}
+		try {
+			if (userYearChoice.equals("ALL")) this.userYearChoice = "-1";
+			this.textReport = Report.farmReport(userFarm, 
+					Integer.parseInt(this.userYearChoice), this.userMonthChoice);
+			System.out.println("User Selected Report is produced");
+			
+			if (this.textReport==null) {
+				Alert alert = new Alert(AlertType.WARNING);
+				alert.setTitle("Invalid Time Range");
+				alert.setHeaderText("Year: All, " + "Month: " + this.userMonthChoice +" is not supported.");
+				alert.setContentText("We are sorry."+System.lineSeparator()+"We don't support reports for specific months across all years.");
+				alert.showAndWait();
+			}
+			else {							
+			chartGroup.getChildren().setAll(chart,new Label(this.textReport.get(0)),
+					new Label(this.textReport.get(1)), new Label(this.textReport.get(2)));
+			}
+			
+		} catch (Exception e) {
+
+		}
+		
+	}
+	
 	private void reportSubmitButtonAction() {
 		System.out.println("User may have selected farmID, Year, and Month pressed submit button.");
 		Farm userFarm = null;
