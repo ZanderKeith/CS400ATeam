@@ -161,12 +161,43 @@ public class Report {
 				total = total + (double) Main.farms.get(i).getTotalWeightMonth(year, month);
 			}
 			percent = ((double) farmID.getTotalWeightMonth(year, month)) / (total) * 100;
+			if (Double.isNaN(percent)) {
+				percent = 0;
+			}
 			data.add(monthString); // month
 			data.add(Integer.toString(farmID.getTotalWeightMonth(year, month))); // total weight for month
 			data.add(String.format("%.2f", percent)+ " %"); // percent for month
 			return data;
 
 		}
+	}
+	
+	/**
+	 * ANNUAL REPORT Requirement: Prompt user for a year Then, 
+	 * 
+	 * @param farmID farmID
+	 * @param year   year for data we're collecting
+	 * @return ArrayList with index 0 = FarmID, 1 = Total Weight, and 2 =
+	 *         Percentage.
+	 * @return null if farmID is not in the list of farms.
+	 * @throws Exception
+	 */
+	protected static ArrayList<String> annualReport(Farm farmID, int year) throws Exception {
+		ArrayList<String> data = new ArrayList<String>();
+		double total = 0.0;
+		double percent = 0.0;
+			
+		for (int i = 0; i < Main.farms.size(); i++) {
+			total = total + (double) Main.farms.get(i).getTotalWeightYear(year);
+		}
+		percent = ((double) farmID.getTotalWeightYear(year)) / (total) * 100;
+		if (Double.isNaN(percent)) {
+			percent = 0;
+		}
+		data.add(farmID.getFarmID()); // farm ID
+		data.add(Integer.toString(farmID.getTotalWeightYear(year))); // total weight for year
+		data.add(String.format("%.2f", percent)+ " %"); // percent for year
+		return data;
 	}
 	
 	/**
@@ -212,6 +243,9 @@ public class Report {
 				total = total + (double) Main.farms.get(i).getTotalWeightAll();
 			}
 			percent = ((double) farmID.getTotalWeightAll()) / (total) * 100;
+			if (Double.isNaN(percent)) {
+				percent = 0;
+			}
 			data.add(farmID.getFarmID() + " Report from All Available Data");
 			data.add("Total Weight Sold from All Available Data from All Farms: "
 					+ Double.toString(total) + " lb");
@@ -224,6 +258,9 @@ public class Report {
 			}
 
 			percent = ((double) farmID.getTotalWeightYear(year)) / (total) * 100;
+			if (Double.isNaN(percent)) {
+				percent = 0;
+			}
 			data.add(farmID.getFarmID() + " Report for " + Integer.toString(year));
 			data.add("Total Weight Sold for Year " + Integer.toString(year) + " from All Farms: "
 					+ Double.toString(total) + " lb");
@@ -236,6 +273,9 @@ public class Report {
 			}
 
 			percent = ((double) farmID.getTotalWeightMonth(year, month)) / (total) * 100;
+			if (Double.isNaN(percent)) {
+				percent = 0;
+			}
 			data.add(farmID.getFarmID() + " Report for " + Month.values()[month] + ", "
 					+ Integer.toString(year));
 			data.add("Total Weight Sold for " + monthString + ", " + Integer.toString(year)
@@ -246,7 +286,8 @@ public class Report {
 
 		}
 	}
-
+	
+	
 	/*
 	 * main method just to see if it works comment this out for the Main.java
 	 */

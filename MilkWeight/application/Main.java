@@ -25,6 +25,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.TreeSet;
@@ -43,6 +45,7 @@ import javafx.scene.Scene;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.Alert;
@@ -102,6 +105,8 @@ public class Main extends Application {
 	private TableView<ArrayList<StringProperty>> table;
 	private BorderPane tableGroup = new BorderPane();
 
+	private PieChart pieChart;
+
 	private HBox farmIDGroup = new HBox();
 	private HBox yearGroup = new HBox();
 	private HBox monthGroup = new HBox();
@@ -125,11 +130,11 @@ public class Main extends Application {
 	private ComboBox<String> farmComboBox = new ComboBox<String>();
 	private ComboBox<String> monthComboBox = new ComboBox<String>();
 	private ComboBox<String> yearComboBox = new ComboBox<String>();
-	
+
 	// Useful global
 	private ObservableList<String> monthItems = FXCollections.observableArrayList("January",
-			"February", "March", "April", "May", "June", "July", "August", "September",
-			"October", "November", "December", "ALL");
+			"February", "March", "April", "May", "June", "July", "August", "September", "October",
+			"November", "December", "ALL");
 
 	/**
 	 * Sets up all GUI elements.
@@ -153,7 +158,7 @@ public class Main extends Application {
 		TextField inputText = new TextField();
 
 		// Initialize Drop Downs
-		
+
 		monthComboBox.setItems(monthItems);
 		monthComboBox.setOnAction((event) -> {
 			this.userMonthChoice = monthComboBox.getValue();
@@ -197,6 +202,7 @@ public class Main extends Application {
 		addNewMilkDataButton.setOnAction(e -> {
 			addNewMilkDataButtonAction();
 			this.updateComboBoxes(farmComboBox, yearComboBox);
+			sortFarms();
 		});
 
 		Button editMilkDataButton = new Button("Edit milk data");
@@ -594,6 +600,7 @@ public class Main extends Application {
 	}
 
 	private void farmReportButtonAction() {
+		sortFarms();
 		System.out.println("Farm Report Button Pressed");
 
 		// Create new button to be used specifically for farm report
@@ -606,17 +613,28 @@ public class Main extends Application {
 
 		// Add farm report fields to table
 		TableColumn<ArrayList<StringProperty>, String> monthCol = new TableColumn<>("Month");
-		TableColumn<ArrayList<StringProperty>, String> totalWeightCol = new TableColumn<>("Total Weight");
-		TableColumn<ArrayList<StringProperty>, String> percentWeightCol = new TableColumn<>("Percent of All Farms");
+		TableColumn<ArrayList<StringProperty>, String> totalWeightCol = new TableColumn<>(
+				"Total Weight");
+		TableColumn<ArrayList<StringProperty>, String> percentWeightCol = new TableColumn<>(
+				"Percent of All Farms");
+		monthCol.setMinWidth(100);
+		totalWeightCol.setMinWidth(150);
+		percentWeightCol.setMinWidth(150);
 
 		table.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
 		table.getColumns().addAll(monthCol, totalWeightCol, percentWeightCol);
-		
+
 		monthCol.setCellValueFactory(e -> e.getValue().get(0));
 		totalWeightCol.setCellValueFactory(e -> e.getValue().get(1));
 		percentWeightCol.setCellValueFactory(e -> e.getValue().get(2));
 
+		// set up pie chart for report
+		pieChart = new PieChart();
+
+		pieChart.setTitle("Total Weight by Month");
+
 		tableGroup.setCenter(table);
+		tableGroup.setRight(pieChart);
 		farmReportPanel.setPadding(new Insets(15, 15, 15, 15));
 		farmReportPanel.setCenter(tableGroup);
 
@@ -630,7 +648,47 @@ public class Main extends Application {
 
 	private void annualReportButtonAction() {
 		System.out.println("Annual Report Button Pressed");
-		root.setCenter(notImplementedPanel);
+		sortFarms();
+		// Create new button to be used specifically for farm report
+		Button annualReportSubmitButton = new Button("View Annual Report");
+		annualReportSubmitButton.setOnAction(e -> this.annualReportSubmitButtonAction());
+
+		// Set up table for farm report
+		table = new TableView<ArrayList<StringProperty>>();
+		table.setEditable(false);
+
+		// Add farm report fields to table
+		TableColumn<ArrayList<StringProperty>, String> monthCol = new TableColumn<>("Farm ID");
+		TableColumn<ArrayList<StringProperty>, String> totalWeightCol = new TableColumn<>(
+				"Total Weight");
+		TableColumn<ArrayList<StringProperty>, String> percentWeightCol = new TableColumn<>(
+				"Percent of All Farms");
+		monthCol.setMinWidth(100);
+		totalWeightCol.setMinWidth(150);
+		percentWeightCol.setMinWidth(150);
+
+		table.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
+		table.getColumns().addAll(monthCol, totalWeightCol, percentWeightCol);
+
+		monthCol.setCellValueFactory(e -> e.getValue().get(0));
+		totalWeightCol.setCellValueFactory(e -> e.getValue().get(1));
+		percentWeightCol.setCellValueFactory(e -> e.getValue().get(2));
+
+		// set up pie chart for report
+		pieChart = new PieChart();
+
+		pieChart.setTitle("Total for Year");
+
+		tableGroup.setCenter(table);
+		tableGroup.setRight(pieChart);
+		farmReportPanel.setPadding(new Insets(15, 15, 15, 15));
+		farmReportPanel.setCenter(tableGroup);
+
+		// Add relevant buttons for farm report
+		submitGroup.getChildren().clear();
+		submitGroup.getChildren().addAll(yearGroup, annualReportSubmitButton);
+		farmReportPanel.setBottom(submitGroup);
+		root.setCenter(farmReportPanel);
 	}
 
 	private void monthlyReportButtonAction() {
@@ -678,11 +736,15 @@ public class Main extends Application {
 			yearComboBox.setItems(newYearItems);
 			farmComboBox.setItems(newFarms);
 		}
+		sortFarms();
 	}
 
 	private void farmReportSubmitButtonAction() {
 		System.out.println("User may have selected farmID, Year pressed submit button.");
-		ObservableList<ArrayList<StringProperty>> reportData = FXCollections.observableArrayList();
+		sortFarms();
+		ObservableList<ArrayList<StringProperty>> reportData = FXCollections
+				.observableArrayList();
+		ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
 		ArrayList<StringProperty> reportRow;
 		table.getItems().clear();
 		Farm userFarm = null;
@@ -715,6 +777,9 @@ public class Main extends Application {
 					reportRow.add(1, new SimpleStringProperty(this.textReport.get(1)));
 					reportRow.add(2, new SimpleStringProperty(this.textReport.get(2)));
 					reportData.add(reportRow);
+
+					pieChartData.add(new PieChart.Data(this.textReport.get(0),
+							Integer.parseInt(this.textReport.get(1))));
 				}
 
 			} catch (Exception e) {
@@ -722,10 +787,49 @@ public class Main extends Application {
 			}
 		}
 		table.setItems(reportData);
+		pieChart = new PieChart(pieChartData);
+		pieChart.setTitle("Total Weight by Month");
+		tableGroup.setRight(pieChart);
+
+	}
+
+	private void annualReportSubmitButtonAction() {
+		sortFarms();
+		System.out.println("User may have selected farmID, Year pressed submit button.");
+		ObservableList<ArrayList<StringProperty>> reportData = FXCollections
+				.observableArrayList();
+		ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
+		ArrayList<StringProperty> reportRow;
+		table.getItems().clear();
+		for (Farm f : this.farms) {
+			try {
+				this.textReport = Report.annualReport(f, Integer.parseInt(this.userYearChoice));
+				reportRow = new ArrayList<StringProperty>();
+				reportRow.add(0, new SimpleStringProperty(this.textReport.get(0)));
+				reportRow.add(1, new SimpleStringProperty(this.textReport.get(1)));
+				reportRow.add(2, new SimpleStringProperty(this.textReport.get(2)));
+				reportData.add(reportRow);
+
+				pieChartData.add(new PieChart.Data(this.textReport.get(0),
+						Integer.parseInt(this.textReport.get(1))));
+
+			} catch (Exception e) {
+				System.out.println("EXCEPTION IN ANNUAL REPORT SUBMIT BUTTON ACTION");
+			}
+		}
+
+		System.out.println("User Selected Report is produced");
+
+		table.setItems(reportData);
+		// little bit of a hack right now. you get the idea
+		pieChart = new PieChart(pieChartData);
+		pieChart.setTitle("Total for Year");
+		tableGroup.setRight(pieChart);
 
 	}
 
 	private void reportSubmitButtonAction() {
+		sortFarms();
 		System.out
 				.println("User may have selected farmID, Year, and Month pressed submit button.");
 		Farm userFarm = null;
@@ -783,6 +887,16 @@ public class Main extends Application {
 			inputs = new VBox(textBox, submit);
 			root.setCenter(inputs);
 		}
+	}
+
+	// Sorts farm list
+	private void sortFarms() {
+		this.farms.sort(new Comparator<Farm>() {
+			@Override
+			public int compare(Farm farm1, Farm farm2) {
+				return farm1.getFarmID().compareToIgnoreCase(farm2.getFarmID());
+			}
+		});
 	}
 
 	class InputSubmitHandler implements EventHandler<ActionEvent> {
