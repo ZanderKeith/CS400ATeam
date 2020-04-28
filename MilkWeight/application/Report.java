@@ -33,7 +33,7 @@ import java.util.ArrayList;
  *
  */
 public class Report {
-	//TODO: use Enume for month name print. 
+	// TODO: use Enume for month name print.
 
 	/**
 	 * Takes in source file's name and adds data to all farms in farmList
@@ -45,9 +45,10 @@ public class Report {
 	 * @param sourceFile
 	 * @param farmList
 	 * @return altered farms with new data added
-	 * @throws Exception 
+	 * @throws Exception
 	 */
-	public static ArrayList<Farm> parseFile(String sourceFile, ArrayList<Farm> farmList) throws Exception {
+	public static ArrayList<Farm> parseFile(String sourceFile, ArrayList<Farm> farmList)
+			throws Exception {
 		try {
 			FileReader fr = new FileReader(sourceFile);
 			BufferedReader buff = new BufferedReader(fr);
@@ -73,9 +74,8 @@ public class Report {
 				// no farm with matching ID created yet
 				if (!match) {
 					Farm newFarm = new Farm(CSVLine[1]);
-					newFarm.addInput(Integer.parseInt(dateLine[0]),
-							Integer.parseInt(dateLine[1]), Integer.parseInt(dateLine[2]),
-							Integer.parseInt(CSVLine[2]));
+					newFarm.addInput(Integer.parseInt(dateLine[0]), Integer.parseInt(dateLine[1]),
+							Integer.parseInt(dateLine[2]), Integer.parseInt(CSVLine[2]));
 					farmList.add(newFarm);
 				}
 
@@ -89,8 +89,7 @@ public class Report {
 	}
 
 	/**
-	 * Get all farm ID's from a specified source file. 
-	 * TODO actual exception
+	 * Get all farm ID's from a specified source file. TODO actual exception
 	 * handling
 	 * 
 	 * @param sourceFile
@@ -101,109 +100,165 @@ public class Report {
 
 		return null;
 	}
-	
+
 	enum Month {
-		ALL,
-		January,
-		February,
-		March,
-		April, 
-		May, 
-		June, 
-		July, 
-		August, 
-		September,
-		October,
-		November, 
-		December;
+		ALL, January, February, March, April, May, June, July, August, September, October,
+		November, December;
 
+	}
 
-	}	
-	
 	/**
-	 * FARM REPORT Requirement:
-	 * Prompt user for a farm id and year (or use all available data)
-	 * Then, display the total milk weight and percent of the total of 
-	 * all farm for each month. 
-	 * Sort, the list by month number 1-12, show total weight, 
-	 * then that farm's percent of the total milk received for each month.
+	 * FARM REPORT Requirement: Prompt user for a farm id and year (or use all
+	 * available data) Then, display the total milk weight and percent of the total
+	 * of all farm for each month. Sort, the list by month number 1-12, show total
+	 * weight, then that farm's percent of the total milk received for each month.
+	 * 
 	 * @param farmID farmID
-	 * @param year 12 means all
-	 * @param month 12 means all
-	 * @return ArrayList with index 0 = Farm ID, 1 = Total Weight, and 2 = Percentage.  
-	 * @return null if farmID is not in the list of farms. 
-	 * @return null if year == -1 and month !=-1 because that doesn't make sense... 
-	 * @throws Exception 
+	 * @param year   12 means all
+	 * @param month  12 means all
+	 * @return ArrayList with index 0 = Month, 1 = Total Weight, and 2 =
+	 *         Percentage.
+	 * @return null if farmID is not in the list of farms.
+	 * @return null if year == -1 and month !=-1 because that doesn't make sense...
+	 * @throws Exception
 	 */
-	protected static ArrayList<String> farmReport(Farm farmID,  int year, String monthString) throws Exception{
-		if (farmID==null) {
+	protected static ArrayList<String> farmReport(Farm farmID, int year, String monthString)
+			throws Exception {
+		if (farmID == null) {
 			System.out.print("doesn't look like there is any farm under this name...");
 			throw new Exception("farmID is null");
 		}
 		int month = -1;
 		for (Month s : Month.values()) {
-			if(s.toString().equals(monthString)) {month = s.ordinal();
+			if (s.toString().equals(monthString)) {
+				month = s.ordinal();
 			}
-			
+
 		}
 		if (monthString.equals("ALL")) {
 			month = -1;
 		}
-		if(year == -1 && month !=-1) return null;
-		if(!Main.farms.contains(farmID)) return null;
+		if (year == -1 && month != -1)
+			return null;
+		if (!Main.farms.contains(farmID))
+			return null;
+		double total = 0.0;
+		double percent = 0.0;
+		ArrayList<String> data = new ArrayList<String>();
+		if (year == -1) {
+			for (int i = 0; i < Main.farms.size(); i++) {
+				total = total + (double) Main.farms.get(i).getTotalWeightAll();
+			}
+			percent = ((double) farmID.getTotalWeightAll()) / (total) * 100;
+			data.add(farmID.getFarmID() + " Report from All Available Data");
+			data.add("Total Weight Sold from All Available Data from All Farms: "
+					+ Double.toString(total) + " lb");
+			data.add("Percent for " + farmID.getFarmID() + " : " + String.format("%.2f", percent)
+					+ " %");
+			return data;
+		} else {
+			for (int i = 0; i < Main.farms.size(); i++) {
+				total = total + (double) Main.farms.get(i).getTotalWeightMonth(year, month);
+			}
+			percent = ((double) farmID.getTotalWeightMonth(year, month)) / (total) * 100;
+			data.add(monthString); // month
+			data.add(Integer.toString(farmID.getTotalWeightMonth(year, month))); // total weight for month
+			data.add(String.format("%.2f", percent)+ " %"); // percent for month
+			return data;
+
+		}
+	}
+	
+	/**
+	 * EDITED I think this function is still useful but shouldn't just be relegated to farm report
+	 * These stats are probably good to print for all reports and the labels are there anyway
+	 * Just shouldn't be made for only farm report
+	 * 
+	 * 
+	 * @param farmID farmID
+	 * @param year   12 means all
+	 * @param month  12 means all
+	 * @return ArrayList with index 0 = Farm ID, 1 = Total Weight, and 2 =
+	 *         Percentage.
+	 * @return null if farmID is not in the list of farms.
+	 * @return null if year == -1 and month !=-1 because that doesn't make sense...
+	 * @throws Exception
+	 */
+	protected static ArrayList<String> generalReport(Farm farmID, int year, String monthString)
+			throws Exception {
+		if (farmID == null) {
+			System.out.print("doesn't look like there is any farm under this name...");
+			throw new Exception("farmID is null");
+		}
+		int month = -1;
+		for (Month s : Month.values()) {
+			if (s.toString().equals(monthString)) {
+				month = s.ordinal();
+			}
+
+		}
+		if (monthString.equals("ALL")) {
+			month = -1;
+		}
+		if (year == -1 && month != -1)
+			return null;
+		if (!Main.farms.contains(farmID))
+			return null;
 		double total = 0.0;
 		double percent = 0.0;
 		ArrayList<String> data = new ArrayList<String>();
 		if (year == -1 && month == -1) {
-			for (int i = 0 ; i < Main.farms.size() ; i ++ ) {
+			for (int i = 0; i < Main.farms.size(); i++) {
 				total = total + (double) Main.farms.get(i).getTotalWeightAll();
 			}
-			percent = ((double) farmID.getTotalWeightAll())/(total)*100;
+			percent = ((double) farmID.getTotalWeightAll()) / (total) * 100;
 			data.add(farmID.getFarmID() + " Report from All Available Data");
-			data.add("Total Weight Sold from All Available Data from All Farms: " + Double.toString(total)+" lb");
-			data.add("Percent for " + farmID.getFarmID() +" : " + String.format("%.2f", percent) + " %");
-			return data;			
-		}
-		else if (month == -1) {
-			for (int i = 0 ; i < Main.farms.size() ; i ++ ) {
+			data.add("Total Weight Sold from All Available Data from All Farms: "
+					+ Double.toString(total) + " lb");
+			data.add("Percent for " + farmID.getFarmID() + " : " + String.format("%.2f", percent)
+					+ " %");
+			return data;
+		} else if (month == -1) {
+			for (int i = 0; i < Main.farms.size(); i++) {
 				total = total + (double) Main.farms.get(i).getTotalWeightYear(year);
 			}
-			
-			percent = ((double) farmID.getTotalWeightYear(year))/(total)*100;
+
+			percent = ((double) farmID.getTotalWeightYear(year)) / (total) * 100;
 			data.add(farmID.getFarmID() + " Report for " + Integer.toString(year));
-			data.add("Total Weight Sold for Year " + Integer.toString(year) +" from All Farms: " + Double.toString(total)+" lb");
-			data.add("Percent for " + farmID.getFarmID() +" : " + String.format("%.2f", percent) + " %");
-			return data;			
-		}
-		else {
-			for (int i = 0 ; i < Main.farms.size() ; i ++ ) {
-				total = total + (double) Main.farms.get(i).getTotalWeightMonth(year, month);
-			}		
-			
-			
-			percent = ((double) farmID.getTotalWeightMonth(year,month))/(total)*100;
-			data.add(farmID.getFarmID() + " Report for " + Month.values()[month]+", "+Integer.toString(year));
-			data.add("Total Weight Sold for "+monthString+", "+ Integer.toString(year) + " from ALL Farms : " + Double.toString(total)+" lb");
-			data.add("Percent for " + farmID.getFarmID() +" : " + String.format("%.2f", percent) + " %");
+			data.add("Total Weight Sold for Year " + Integer.toString(year) + " from All Farms: "
+					+ Double.toString(total) + " lb");
+			data.add("Percent for " + farmID.getFarmID() + " : " + String.format("%.2f", percent)
+					+ " %");
 			return data;
-			
+		} else {
+			for (int i = 0; i < Main.farms.size(); i++) {
+				total = total + (double) Main.farms.get(i).getTotalWeightMonth(year, month);
+			}
+
+			percent = ((double) farmID.getTotalWeightMonth(year, month)) / (total) * 100;
+			data.add(farmID.getFarmID() + " Report for " + Month.values()[month] + ", "
+					+ Integer.toString(year));
+			data.add("Total Weight Sold for " + monthString + ", " + Integer.toString(year)
+					+ " from ALL Farms : " + Double.toString(total) + " lb");
+			data.add("Percent for " + farmID.getFarmID() + " : " + String.format("%.2f", percent)
+					+ " %");
+			return data;
+
 		}
 	}
+
 	/*
-	 * main method just to see if it works
-	 * comment this out for the Main.java
+	 * main method just to see if it works comment this out for the Main.java
 	 */
 	public static void main(String[] args) throws Exception {
 		ArrayList<Farm> farms = new ArrayList<Farm>();
 		Report.parseFile("./csv/small/2019-1.csv", farms);
 		Report.parseFile("./csv/small/2019-2.csv", farms);
-		Main.farms=farms;
-		System.out.println(Report.farmReport(farms.get(1),  -1, "ALL"));
-		System.out.println(Report.farmReport(farms.get(2),2019,"January"));
-		System.out.println(Report.farmReport(farms.get(2),2019,"ALL"));
-		
+		Main.farms = farms;
+		System.out.println(Report.farmReport(farms.get(1), -1, "ALL"));
+		System.out.println(Report.farmReport(farms.get(2), 2019, "January"));
+		System.out.println(Report.farmReport(farms.get(2), 2019, "ALL"));
+
 	}
-	
-	
 
 }

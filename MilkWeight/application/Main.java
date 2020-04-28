@@ -30,6 +30,8 @@ import java.util.Optional;
 import java.util.TreeSet;
 
 import javafx.application.Application;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
@@ -50,6 +52,8 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -85,41 +89,48 @@ public class Main extends Application {
 
 	private BorderPane root = new BorderPane();
 	private BorderPane reportPanel = new BorderPane();
+	private BorderPane farmReportPanel = new BorderPane();
 	private BorderPane notImplementedPanel = new BorderPane();
 	private BorderPane homePanel = new BorderPane();
-	
+
 	// old report stuff
 	private VBox chartGroup = new VBox();
 	private VBox inputs = new VBox();
-	
-	//TODO decide on whether to use new report or old report
+
+	// TODO decide on whether to use new report or old report
 	// new Report stuff
+	private TableView<ArrayList<StringProperty>> table;
 	private BorderPane tableGroup = new BorderPane();
-	private HBox submitGroup = new HBox();
+
 	private HBox farmIDGroup = new HBox();
 	private HBox yearGroup = new HBox();
 	private HBox monthGroup = new HBox();
-	
+	private HBox submitGroup = new HBox();
+
 	// Chart stuff
 	private CategoryAxis dateAxis = new CategoryAxis();
 	private NumberAxis percentAxis = new NumberAxis();
-	private BarChart<String,Number> chart = new BarChart<String,Number>(dateAxis, percentAxis);
-	
-	
+	private BarChart<String, Number> chart = new BarChart<String, Number>(dateAxis, percentAxis);
+
 	// User Input stuff
 	private String userFarmChoice = "";
 	private String userDateChoice = "";
 	private String userMonthChoice = "";
 	private String userYearChoice = "";
-	
+
 	// Test Report to the user
 	private ArrayList<String> textReport = null;
-	
-	//Repeatedly updated combo boxes
+
+	// Repeatedly updated combo boxes
 	private ComboBox<String> farmComboBox = new ComboBox<String>();
 	private ComboBox<String> monthComboBox = new ComboBox<String>();
 	private ComboBox<String> yearComboBox = new ComboBox<String>();
 	
+	// Useful global
+	private ObservableList<String> monthItems = FXCollections.observableArrayList("January",
+			"February", "March", "April", "May", "June", "July", "August", "September",
+			"October", "November", "December", "ALL");
+
 	/**
 	 * Sets up all GUI elements.
 	 */
@@ -132,37 +143,35 @@ public class Main extends Application {
 		Label yearLabel = new Label("Year: ");
 		Label farmIDLabel = new Label("Farm ID: ");
 		Label farmReportLabel = new Label("Farm Report");
-		Label chartLabel = new Label("Farm no., Date + Report");
-		Label totalWeightLabel = new Label("Total Weight Sold: + weight + lb");
-		Label percentWeightLabel = new Label("Percent of total + something%");
-		
+		Label chartLabel = new Label("<Report Name> of No Data");
+		Label totalWeightLabel = new Label("Total Weight Sold: No Data");
+		Label percentWeightLabel = new Label("Percent of total: No Data");
+
 		// Text Fields
 		TextField farmIDField = new TextField("");
 		TextField yearField = new TextField("");
 		TextField inputText = new TextField();
 
 		// Initialize Drop Downs
-		ObservableList<String> monthItems = FXCollections.observableArrayList("January",
-				"February", "March", "April", "May", "June", "July", "August", "September",
-				"October", "November", "December", "ALL");
+		
 		monthComboBox.setItems(monthItems);
 		monthComboBox.setOnAction((event) -> {
 			this.userMonthChoice = monthComboBox.getValue();
-			System.out.println("User picked the month : "+ userMonthChoice);
+			System.out.println("User picked the month : " + userMonthChoice);
 		});
+
 		ObservableList<String> yearItems = FXCollections.observableArrayList("No Data Yet");
 		yearComboBox.setItems(yearItems);
-		
 		yearComboBox.setOnAction((event) -> {
 			this.userYearChoice = yearComboBox.getValue();
-			System.out.println("User picked the year : "+ userYearChoice);
+			System.out.println("User picked the year : " + userYearChoice);
 		});
 
 		ObservableList<String> farmItems = FXCollections.observableArrayList("No Data Yet");
 		farmComboBox.setItems(farmItems);
 		farmComboBox.setOnAction((event) -> {
 			this.userFarmChoice = farmComboBox.getValue();
-			System.out.println("User picked farm : "+ userFarmChoice);
+			System.out.println("User picked farm : " + userFarmChoice);
 		});
 
 		// Buttons
@@ -171,12 +180,10 @@ public class Main extends Application {
 
 		// used in the event a user wants to input a file or farm
 		Button inputSubmit = new Button("Submit");
-
-		
 		inputSubmit.setOnAction((event) -> this.importFileButtonAction(inputText));
-		
+
 		Button importFileButton = new Button("Import File");
-		importFileButton.setOnAction(new InputHandler(importFileButton, 
+		importFileButton.setOnAction(new InputHandler(importFileButton,
 				"Enter file name. Example : C:\\Users\\<User>\\eclipse-workspace\\CS400ATeam\\MilkWeight\\csv\\small\\2019-1.csv",
 				inputSubmit, inputText));
 
@@ -186,18 +193,19 @@ public class Main extends Application {
 		Button addNewFarmButton = new Button("Add new farm");
 		addNewFarmButton.setOnAction(e -> this.addNewFarmButtonAction());
 
-
 		Button addNewMilkDataButton = new Button("Add new milk data");
-		addNewMilkDataButton.setOnAction(e -> {addNewMilkDataButtonAction();
-		this.updateComboBoxes(farmComboBox, yearComboBox);
+		addNewMilkDataButton.setOnAction(e -> {
+			addNewMilkDataButtonAction();
+			this.updateComboBoxes(farmComboBox, yearComboBox);
 		});
 
 		Button editMilkDataButton = new Button("Edit milk data");
 		editMilkDataButton.setOnAction(e -> editMilkDataButtonAction());
 
 		Button farmReportButton = new Button("Farm Report");
-		farmReportButton.setOnAction(e -> {farmReportButtonAction();
-		this.updateComboBoxes(farmComboBox, yearComboBox);
+		farmReportButton.setOnAction(e -> {
+			farmReportButtonAction();
+			this.updateComboBoxes(farmComboBox, yearComboBox);
 		});
 
 		Button annualReportButton = new Button("Annual Report");
@@ -209,10 +217,7 @@ public class Main extends Application {
 		Button dateRangeReportButton = new Button("Date Range Report");
 		dateRangeReportButton.setOnAction(e -> dateRangeReportButtonAction());
 
-		Button farmReportSubmitButton = new Button("View Farm Report");		
-		farmReportSubmitButton.setOnAction(e -> this.farmReportSubmitButtonAction());
-		
-		Button reportSubmitButton = new Button("View Report");		
+		Button reportSubmitButton = new Button("View Report");
 		reportSubmitButton.setOnAction(e -> this.reportSubmitButtonAction());
 
 		// Create left panel of buttons (dependencies first)
@@ -248,28 +253,28 @@ public class Main extends Application {
 
 		chartGroup.setPadding(new Insets(15, 15, 15, 15));
 		chartGroup.setStyle("-fx-border-color: black");
-		chartGroup.getChildren().setAll(chart, chartLabel, totalWeightLabel,
-				percentWeightLabel);
+		chartGroup.getChildren().setAll(chart, chartLabel, totalWeightLabel, percentWeightLabel);
 
 		// Create Various Submit Groups for all reports
-		
+
 		farmIDGroup.getChildren().addAll(farmIDLabel, farmComboBox);
 
-		
 		yearGroup.getChildren().addAll(yearLabel, yearComboBox);
 
-		
 		monthGroup.getChildren().addAll(monthLabel, monthComboBox);
-		
+
+		// Used for Farm Report
+
+		submitGroup.setSpacing(15.0);
+
 		// Used for Monthly Report
 		HBox IDYearSubmitGroup = new HBox();
-		IDYearSubmitGroup.getChildren().addAll(farmIDGroup, yearGroup, monthGroup, reportSubmitButton);
+		IDYearSubmitGroup.getChildren().addAll(farmIDGroup, yearGroup, monthGroup,
+				reportSubmitButton);
 		IDYearSubmitGroup.setSpacing(15.0);
-		
-		
-		
-		
-		//TODO remove if unnecessary
+
+		// TODO reorganize and set these to globals
+
 		reportPanel.setBottom(IDYearSubmitGroup);
 		reportPanel.setCenter(chartGroup);
 		reportPanel.setPadding(new Insets(15, 15, 15, 15));
@@ -294,7 +299,6 @@ public class Main extends Application {
 		primaryStage.show();
 	}
 
-	
 	private void homeButtonAction() {
 		root.setCenter(homePanel);
 		System.out.println("Home Button Pressed");
@@ -303,7 +307,8 @@ public class Main extends Application {
 	private void importFileButtonAction(TextField inputText) {
 		System.out.println("User entered: \"" + inputText.getText() + "\"");
 		// This is super cringe rn sorry team, just here to make it work and no further
-		// Shouldn't take long to move though, just this one line is what's needed to get the input
+		// Shouldn't take long to move though, just this one line is what's needed to
+		// get the input
 		try {
 			Main.farms = Report.parseFile(inputText.getText(), farms);
 			Alert alert = new Alert(AlertType.INFORMATION);
@@ -311,22 +316,21 @@ public class Main extends Application {
 			alert.setHeaderText(null);
 			alert.setContentText("Successful! Your file has been recorded.");
 			alert.showAndWait();
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			Alert alert = new Alert(AlertType.WARNING);
 			alert.setTitle("File Error");
 			alert.setHeaderText(null);
-			alert.setContentText("We are sorry. We were unable to read the file. Please check your file path and try again.");
+			alert.setContentText(
+					"We are sorry. We were unable to read the file. Please check your file path and try again.");
 			alert.showAndWait();
-		}			
+		}
 		inputText.clear();
 		this.updateComboBoxes(farmComboBox, yearComboBox);
 	}
-	
 
 	private void exportAsCSVButtonAction() {
 		System.out.println("User wants to export their work.");
-		
+
 		// Setting up the Export as CSV Page
 		VBox exportBox = new VBox();
 		TextField filePathField = new TextField();
@@ -334,31 +338,35 @@ public class Main extends Application {
 		filePathField.setPromptText("Ex: /Users/Solly/Desktop");
 		fileNameField.setPromptText("Ex: AprilFarmOutput");
 		Button exportFileButton = new Button("Export File");
-		exportBox.getChildren().addAll(new Label("Enter the path where you would like the file saved: "),
-				filePathField, new Label("Enter the name to give the output file: "), fileNameField, exportFileButton);
+		exportBox.getChildren().addAll(
+				new Label("Enter the path where you would like the file saved: "), filePathField,
+				new Label("Enter the name to give the output file: "), fileNameField,
+				exportFileButton);
 		root.setCenter(exportBox);
-		
+
 		exportFileButton.setOnAction(userClick -> {
 			boolean pathExists;
 			File filePath = new File(filePathField.getText());
 			pathExists = filePath.exists();
-			
+
 			if (pathExists) {
 				File fileName = new File(filePath, fileNameField.getText() + ".csv");
 				boolean nameAlreadyExists = fileName.exists();
 				boolean writeFile = true;
-				
+
 				if (nameAlreadyExists) {
 					writeFile = false;
 					Alert nameAlert = new Alert(AlertType.CONFIRMATION);
 					nameAlert.setTitle(null);
-					nameAlert.setContentText("A file with that name already exists." + System.lineSeparator() + "Pressing \"OK\" will overwrite the existing file.");
+					nameAlert.setContentText(
+							"A file with that name already exists." + System.lineSeparator()
+									+ "Pressing \"OK\" will overwrite the existing file.");
 					final Optional<ButtonType> nameResult = nameAlert.showAndWait();
 					if (nameResult.isPresent() && nameResult.get() == ButtonType.OK) {
 						writeFile = true;
 					}
 				}
-				
+
 				if (writeFile) {
 					try {
 						if (!nameAlreadyExists) {
@@ -372,8 +380,11 @@ public class Main extends Application {
 									for (int day = 1; day <= 31; day++) {
 										int dayWeight = farm.getTotalWeightDay(year, month, day);
 										if (dayWeight != 0) {
-											String data = Integer.toString(year) + "-" + Integer.toString(month) + "-" + Integer.toString(day) + ",";
-											data += farm.getFarmID() + "," + Integer.toString(dayWeight) + "\n";
+											String data = Integer.toString(year) + "-"
+													+ Integer.toString(month) + "-"
+													+ Integer.toString(day) + ",";
+											data += farm.getFarmID() + ","
+													+ Integer.toString(dayWeight) + "\n";
 											output.write(data);
 										}
 									}
@@ -381,41 +392,39 @@ public class Main extends Application {
 							}
 						}
 						output.close();
-						
+
 						Alert confirmExport = new Alert(AlertType.CONFIRMATION);
 						confirmExport.setTitle("Success!");
 						confirmExport.setContentText("The file was created successfully.");
 						confirmExport.showAndWait();
-					}
-					catch(Exception e) {
+					} catch (Exception e) {
 						Alert fileMakingError = new Alert(AlertType.ERROR);
 						fileMakingError.setTitle("Error");
-						fileMakingError.setContentText("Sorry, there was an error writing the file.");
+						fileMakingError
+								.setContentText("Sorry, there was an error writing the file.");
 						fileMakingError.showAndWait();
 					}
 				}
-			}
-			else {
+			} else {
 				Alert pathAlert = new Alert(AlertType.ERROR);
 				pathAlert.setTitle("Error");
 				pathAlert.setContentText("There was an error finding the correct path.");
 				pathAlert.showAndWait();
 			}
 		});
-		
-		
+
 		System.out.println("Export as CSV File Button Pressed");
 	}
-	
 
 	private void addNewFarmButtonAction() {
 		System.out.println("User wants to enter a new farm!");
 		VBox newFarmBox = new VBox();
 		TextField farmName = new TextField();
 		farmName.setPromptText("Ex: Farm 999");
-		farmName.setOnMouseClicked(clicked->farmName.clear());
+		farmName.setOnMouseClicked(clicked -> farmName.clear());
 		Button addFarm = new Button("Add");
-		newFarmBox.getChildren().addAll(new Label("Enter the name of the farm: "), farmName, addFarm);
+		newFarmBox.getChildren().addAll(new Label("Enter the name of the farm: "), farmName,
+				addFarm);
 		root.setCenter(newFarmBox);
 		addFarm.setOnAction(userClickedAdd -> {
 			boolean dupe = false;
@@ -424,10 +433,12 @@ public class Main extends Application {
 			for (Farm f : farms) {
 				if (f.getFarmID().equals(this.userFarmChoice)) {
 					Alert alert = new Alert(AlertType.ERROR);
-					System.out.println("user is trying to enter a duplicate farm, warning message popped");
+					System.out.println(
+							"user is trying to enter a duplicate farm, warning message popped");
 					alert.setTitle("This farm already exists!");
 					alert.setHeaderText("Farm ID entered : " + this.userFarmChoice);
-					alert.setContentText("Farm ID you entered already exists in our system."+System.lineSeparator()+"Please use other options to add data.");
+					alert.setContentText("Farm ID you entered already exists in our system."
+							+ System.lineSeparator() + "Please use other options to add data.");
 					alert.showAndWait();
 					dupe = true;
 				}
@@ -436,146 +447,143 @@ public class Main extends Application {
 				Alert alert = new Alert(AlertType.CONFIRMATION);
 				alert.setTitle("New Farm To Be Added");
 				alert.setHeaderText(null);
-				alert.setContentText("The Farm \""+this.userFarmChoice+"\" is being added.");
+				alert.setContentText("The Farm \"" + this.userFarmChoice + "\" is being added.");
 				final Optional<ButtonType> addResult = alert.showAndWait();
-				
+
 				if (addResult.isPresent() && addResult.get() == ButtonType.OK) {
-					System.out.println("A new farm named "+ this.userFarmChoice+" added");
+					System.out.println("A new farm named " + this.userFarmChoice + " added");
 					Farm newFarm = new Farm(this.userFarmChoice);
 					farms.add(newFarm);
 
 				}
-			}			
-		});			
+			}
+		});
 	}
-	
 
 	private void addNewMilkDataButtonAction() {
 		System.out.println("Add new milk data Button Pressed");
 		root.setCenter(new Label("No farm available in the system."));
 		ComboBox<String> farmIDs = new ComboBox<String>();
-		if (farms.size()==0) {
+		if (farms.size() == 0) {
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle("There is no farm in our system.");
 			alert.setHeaderText(null);
 			alert.setContentText("Please add a new farm first.");
 			alert.showAndWait().ifPresent(response -> {
-			     if (response == ButtonType.OK) {
-			         this.addNewFarmButtonAction();
-			         return;
-			     }
-			 });
-			
-		}
-		else {				
+				if (response == ButtonType.OK) {
+					this.addNewFarmButtonAction();
+					return;
+				}
+			});
+
+		} else {
 			ObservableList<String> newFarms = FXCollections.observableArrayList();
 			farms.forEach(e -> newFarms.add(e.getFarmID()));
 			farmIDs.setItems(newFarms);
-			
-		farmIDs.setOnAction(e-> {
-			this.userFarmChoice = farmIDs.getValue();
-		    System.out.println("User wants to enter data for Farm ID " +  userFarmChoice);
-			
-		});
-		
-		HBox farmBar = new HBox();
-		farmBar.getChildren().add(new Label("Farm ID : "));
-		farmBar.getChildren().add(farmIDs);
-		HBox yearBar = new HBox();
-		yearBar.getChildren().add(new Label("Year : "));
-		TextField yearText = new TextField();
-		yearText.setPromptText("Ex: 2019");
-		yearBar.getChildren().add(yearText);
-		yearText.setOnMouseClicked(e->yearText.clear());
-		HBox monthBar = new HBox();
-		monthBar.getChildren().add(new Label("Month : "));
-		ComboBox<String> months = new ComboBox<String>();
-		ObservableList<String> text = FXCollections.observableArrayList("January",
-						"February", "March", "April", "May", "June", "July", "August", "September",
-						"October", "November", "December");
-		months.setItems(text);
-		monthBar.getChildren().add(months);
-		months.setOnAction(e-> {
-			this.userMonthChoice = months.getValue();
-			System.out.println("User selected month of " + this.userMonthChoice);		
-		});
-		HBox milkBar = new HBox();
-		milkBar.getChildren().add(new Label ("Amount of Milk Sold (lb) :"));
-		TextField milkText = new TextField();
-		milkText.setPromptText("Ex: 293489");
-		milkBar.getChildren().add(milkText);
-		milkText.setOnMouseClicked(e->milkText.clear());
-		HBox dateBar = new HBox();
-		ComboBox<String> dates = new ComboBox<String>();
-		ObservableList<String> numbers = FXCollections.observableArrayList();
-		for (int i = 1; i < 32; i ++ ) {
-			numbers.add(Integer.toString(i));
-		}
-		dates.setItems(numbers);
-		dateBar.getChildren().addAll(new Label("Day: "),dates);
-		
-		dates.setOnAction(e-> {
-			this.userDateChoice=dates.getValue();
-			System.out.println("User chose the date " + userDateChoice );
-		});
-		VBox mainPanel = new VBox();
-		Button record = new Button("Record");
-		mainPanel.getChildren().addAll(farmBar,monthBar,dateBar,yearBar,milkBar,record);		
-		root.setCenter(mainPanel);
 
-		record.setOnAction(e -> {
-			int weight = 0;
-			int year = 0;
+			farmIDs.setOnAction(e -> {
+				this.userFarmChoice = farmIDs.getValue();
+				System.out.println("User wants to enter data for Farm ID " + userFarmChoice);
 
-			boolean ready = true;
-			System.out.println("User wants to record a new data");
-			try {
+			});
 
-				year = Integer.parseInt(yearText.getText());
+			HBox farmBar = new HBox();
+			farmBar.getChildren().add(new Label("Farm ID : "));
+			farmBar.getChildren().add(farmIDs);
+			HBox yearBar = new HBox();
+			yearBar.getChildren().add(new Label("Year : "));
+			TextField yearText = new TextField();
+			yearText.setPromptText("Ex: 2019");
+			yearBar.getChildren().add(yearText);
+			yearText.setOnMouseClicked(e -> yearText.clear());
+			HBox monthBar = new HBox();
+			monthBar.getChildren().add(new Label("Month : "));
+			ComboBox<String> months = new ComboBox<String>();
+			ObservableList<String> text = FXCollections.observableArrayList("January", "February",
+					"March", "April", "May", "June", "July", "August", "September", "October",
+					"November", "December");
+			months.setItems(text);
+			monthBar.getChildren().add(months);
+			months.setOnAction(e -> {
+				this.userMonthChoice = months.getValue();
+				System.out.println("User selected month of " + this.userMonthChoice);
+			});
+			HBox milkBar = new HBox();
+			milkBar.getChildren().add(new Label("Amount of Milk Sold (lb) :"));
+			TextField milkText = new TextField();
+			milkText.setPromptText("Ex: 293489");
+			milkBar.getChildren().add(milkText);
+			milkText.setOnMouseClicked(e -> milkText.clear());
+			HBox dateBar = new HBox();
+			ComboBox<String> dates = new ComboBox<String>();
+			ObservableList<String> numbers = FXCollections.observableArrayList();
+			for (int i = 1; i < 32; i++) {
+				numbers.add(Integer.toString(i));
 			}
-			catch (Exception exp) {
-				ready = false;
-				Alert alert = new Alert(AlertType.ERROR);
-				alert.setTitle("Please check your year input.");
-				alert.setHeaderText("You Entered: " + yearText.getText());
-				alert.setContentText("Year can only be an integer value!");
-				alert.showAndWait();
-			}
-			try {
-				weight = Integer.parseInt(milkText.getText());
-			}
-			catch (Exception exp) {
-				ready = false;
-				Alert alert = new Alert(AlertType.ERROR);
-				alert.setTitle("Please check your milk weight input.");
-				alert.setHeaderText("You Entered: " + milkText.getText());
-				alert.setContentText("Weight can only be an integer value!");
-				alert.showAndWait();
-			}
-			if(ready) {
+			dates.setItems(numbers);
+			dateBar.getChildren().addAll(new Label("Day: "), dates);
 
-				Alert alert = new Alert(AlertType.CONFIRMATION);
-				alert.setTitle("The following data is being recorded.");
-				alert.setHeaderText("Adding Data for Farm ID: "+ this.userFarmChoice +".");
-				alert.setContentText("Date: "+this.userMonthChoice+" " +this.userDateChoice+", "+year+"."+
-				System.lineSeparator()+"Weight: "+weight+" lb");
-				final Optional<ButtonType> result = alert.showAndWait();
-				 if (result.isPresent() && result.get() == ButtonType.OK) {
-					for(Farm f: this.farms) {
-						if (f.getFarmID().equals(this.userFarmChoice)) {
-							System.out.println("New data added");
-							f.addInput(year, this.userMonthChoice, Integer.parseInt(userDateChoice), weight);
-							break;
+			dates.setOnAction(e -> {
+				this.userDateChoice = dates.getValue();
+				System.out.println("User chose the date " + userDateChoice);
+			});
+			VBox mainPanel = new VBox();
+			Button record = new Button("Record");
+			mainPanel.getChildren().addAll(farmBar, monthBar, dateBar, yearBar, milkBar, record);
+			root.setCenter(mainPanel);
+
+			record.setOnAction(e -> {
+				int weight = 0;
+				int year = 0;
+
+				boolean ready = true;
+				System.out.println("User wants to record a new data");
+				try {
+
+					year = Integer.parseInt(yearText.getText());
+				} catch (Exception exp) {
+					ready = false;
+					Alert alert = new Alert(AlertType.ERROR);
+					alert.setTitle("Please check your year input.");
+					alert.setHeaderText("You Entered: " + yearText.getText());
+					alert.setContentText("Year can only be an integer value!");
+					alert.showAndWait();
+				}
+				try {
+					weight = Integer.parseInt(milkText.getText());
+				} catch (Exception exp) {
+					ready = false;
+					Alert alert = new Alert(AlertType.ERROR);
+					alert.setTitle("Please check your milk weight input.");
+					alert.setHeaderText("You Entered: " + milkText.getText());
+					alert.setContentText("Weight can only be an integer value!");
+					alert.showAndWait();
+				}
+				if (ready) {
+
+					Alert alert = new Alert(AlertType.CONFIRMATION);
+					alert.setTitle("The following data is being recorded.");
+					alert.setHeaderText("Adding Data for Farm ID: " + this.userFarmChoice + ".");
+					alert.setContentText("Date: " + this.userMonthChoice + " "
+							+ this.userDateChoice + ", " + year + "." + System.lineSeparator()
+							+ "Weight: " + weight + " lb");
+					final Optional<ButtonType> result = alert.showAndWait();
+					if (result.isPresent() && result.get() == ButtonType.OK) {
+						for (Farm f : this.farms) {
+							if (f.getFarmID().equals(this.userFarmChoice)) {
+								System.out.println("New data added");
+								f.addInput(year, this.userMonthChoice,
+										Integer.parseInt(userDateChoice), weight);
+								break;
+							}
 						}
+						yearText.setPromptText("Ex: 2019");
+						milkText.setPromptText("Ex: 293489");
 					}
-				yearText.setPromptText("Ex: 2019");
-				milkText.setPromptText("Ex: 293489");
-			    }
 
-				
-			}
-			
-		});
+				}
+
+			});
 		}
 
 	}
@@ -587,12 +595,37 @@ public class Main extends Application {
 
 	private void farmReportButtonAction() {
 		System.out.println("Farm Report Button Pressed");
-		root.setCenter(reportPanel);
-		reportPanel.setBottom(farmReportSubmitGroup);
-		reportPanel.setCenter(chartGroup);
+
+		// Create new button to be used specifically for farm report
+		Button farmReportSubmitButton = new Button("View Farm Report");
+		farmReportSubmitButton.setOnAction(e -> this.farmReportSubmitButtonAction());
+
+		// Set up table for farm report
+		table = new TableView<ArrayList<StringProperty>>();
+		table.setEditable(false);
+
+		// Add farm report fields to table
+		TableColumn<ArrayList<StringProperty>, String> monthCol = new TableColumn<>("Month");
+		TableColumn<ArrayList<StringProperty>, String> totalWeightCol = new TableColumn<>("Total Weight");
+		TableColumn<ArrayList<StringProperty>, String> percentWeightCol = new TableColumn<>("Percent of All Farms");
+
+		table.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
+		table.getColumns().addAll(monthCol, totalWeightCol, percentWeightCol);
 		
-		chart.getData().clear();
-		
+		monthCol.setCellValueFactory(e -> e.getValue().get(0));
+		totalWeightCol.setCellValueFactory(e -> e.getValue().get(1));
+		percentWeightCol.setCellValueFactory(e -> e.getValue().get(2));
+
+		tableGroup.setCenter(table);
+		farmReportPanel.setPadding(new Insets(15, 15, 15, 15));
+		farmReportPanel.setCenter(tableGroup);
+
+		// Add relevant buttons for farm report
+		submitGroup.getChildren().clear();
+		submitGroup.getChildren().addAll(farmIDGroup, yearGroup, farmReportSubmitButton);
+		farmReportPanel.setBottom(submitGroup);
+		root.setCenter(farmReportPanel);
+
 	}
 
 	private void annualReportButtonAction() {
@@ -602,10 +635,10 @@ public class Main extends Application {
 
 	private void monthlyReportButtonAction() {
 		System.out.println("Monthly Report Button Pressed");
-		
+
 		root.setCenter(reportPanel);
-		
-		//GRAPHING
+
+		// GRAPHING
 		chart.getData().clear(); // Clear chart
 		Series[] seriesArray = new Series[farms.size()]; // make array for series
 		int index = 0;
@@ -615,25 +648,26 @@ public class Main extends Application {
 			seriesArray[index].setName(farm.getFarmID());
 			// Add all months data to series
 			for (int i = 1; i < 13; i++) {
-				//TODO dynamically set year
-				seriesArray[index].getData().add(new XYChart.Data(Integer.toString(i), farm.getTotalWeightMonth(2019, i)));
+				// TODO dynamically set year
+				seriesArray[index].getData().add(
+						new XYChart.Data(Integer.toString(i), farm.getTotalWeightMonth(2019, i)));
 			}
 			index++;
 		}
-		
+
 		for (int i = 0; i < farms.size(); i++) {
 			chart.getData().add(seriesArray[i]);
 		}
-		//GRAPHING
+		// GRAPHING
 	}
 
 	private void dateRangeReportButtonAction() {
 		System.out.println("Date Range Report Button Pressed");
 		root.setCenter(notImplementedPanel);
 	}
-	
+
 	private void updateComboBoxes(ComboBox farmComboBox, ComboBox yearComboBox) {
-		if (farms.size()!=0) {				
+		if (farms.size() != 0) {
 			ObservableList<String> newFarms = FXCollections.observableArrayList();
 			ObservableList<String> newYearItems = FXCollections.observableArrayList();
 			TreeSet<String> allYears = new TreeSet<String>();
@@ -643,43 +677,57 @@ public class Main extends Application {
 			newYearItems.add("ALL");
 			yearComboBox.setItems(newYearItems);
 			farmComboBox.setItems(newFarms);
-		}			
+		}
 	}
-	
+
 	private void farmReportSubmitButtonAction() {
 		System.out.println("User may have selected farmID, Year pressed submit button.");
+		ObservableList<ArrayList<StringProperty>> reportData = FXCollections.observableArrayList();
+		ArrayList<StringProperty> reportRow;
+		table.getItems().clear();
 		Farm userFarm = null;
 		for (Farm f : farms) {
 			if (f.getFarmID().equals(userFarmChoice)) {
 				userFarm = f;
 			}
 		}
-		try {
-			if (userYearChoice.equals("ALL")) this.userYearChoice = "-1";
-			this.textReport = Report.farmReport(userFarm, 
-					Integer.parseInt(this.userYearChoice), this.userMonthChoice);
-			System.out.println("User Selected Report is produced");
-			
-			if (this.textReport==null) {
-				Alert alert = new Alert(AlertType.WARNING);
-				alert.setTitle("Invalid Time Range");
-				alert.setHeaderText("Year: All, " + "Month: " + this.userMonthChoice +" is not supported.");
-				alert.setContentText("We are sorry."+System.lineSeparator()+"We don't support reports for specific months across all years.");
-				alert.showAndWait();
-			}
-			else {							
-			chartGroup.getChildren().setAll(chart,new Label(this.textReport.get(0)),
-					new Label(this.textReport.get(1)), new Label(this.textReport.get(2)));
-			}
-			
-		} catch (Exception e) {
+		// Iterate through all months
+		for (int month = 0; month < 12; month++) {
+			try {
+				if (userYearChoice.equals("ALL")) {
+					this.userYearChoice = "-1";
+				}
+				this.textReport = Report.farmReport(userFarm,
+						Integer.parseInt(this.userYearChoice), monthItems.get(month));
+				System.out.println("User Selected Report is produced");
 
+				if (this.textReport == null) {
+					Alert alert = new Alert(AlertType.WARNING);
+					alert.setTitle("Invalid Time Range");
+					alert.setHeaderText("Year: All, " + "Month: " + this.userMonthChoice
+							+ " is not supported.");
+					alert.setContentText("We are sorry." + System.lineSeparator()
+							+ "We don't support reports for specific months across all years.");
+					alert.showAndWait();
+				} else {
+					reportRow = new ArrayList<StringProperty>();
+					reportRow.add(0, new SimpleStringProperty(this.textReport.get(0)));
+					reportRow.add(1, new SimpleStringProperty(this.textReport.get(1)));
+					reportRow.add(2, new SimpleStringProperty(this.textReport.get(2)));
+					reportData.add(reportRow);
+				}
+
+			} catch (Exception e) {
+
+			}
 		}
-		
+		table.setItems(reportData);
+
 	}
-	
+
 	private void reportSubmitButtonAction() {
-		System.out.println("User may have selected farmID, Year, and Month pressed submit button.");
+		System.out
+				.println("User may have selected farmID, Year, and Month pressed submit button.");
 		Farm userFarm = null;
 		for (Farm f : farms) {
 			if (f.getFarmID().equals(userFarmChoice)) {
@@ -687,29 +735,30 @@ public class Main extends Application {
 			}
 		}
 		try {
-			if (userYearChoice.equals("ALL")) this.userYearChoice = "-1";
-			this.textReport = Report.farmReport(userFarm, 
-					Integer.parseInt(this.userYearChoice), this.userMonthChoice);
+			if (userYearChoice.equals("ALL"))
+				this.userYearChoice = "-1";
+			this.textReport = Report.farmReport(userFarm, Integer.parseInt(this.userYearChoice),
+					this.userMonthChoice);
 			System.out.println("User Selected Report is produced");
-			
-			if (this.textReport==null) {
+
+			if (this.textReport == null) {
 				Alert alert = new Alert(AlertType.WARNING);
 				alert.setTitle("Invalid Time Range");
-				alert.setHeaderText("Year: All, " + "Month: " + this.userMonthChoice +" is not supported.");
-				alert.setContentText("We are sorry."+System.lineSeparator()+"We don't support reports for specific months across all years.");
+				alert.setHeaderText(
+						"Year: All, " + "Month: " + this.userMonthChoice + " is not supported.");
+				alert.setContentText("We are sorry." + System.lineSeparator()
+						+ "We don't support reports for specific months across all years.");
 				alert.showAndWait();
+			} else {
+				chartGroup.getChildren().setAll(chart, new Label(this.textReport.get(0)),
+						new Label(this.textReport.get(1)), new Label(this.textReport.get(2)));
 			}
-			else {							
-			chartGroup.getChildren().setAll(chart,new Label(this.textReport.get(0)),
-					new Label(this.textReport.get(1)), new Label(this.textReport.get(2)));
-			}
-			
+
 		} catch (Exception e) {
 
 		}
-		
-	}
 
+	}
 
 	/**
 	 * EventHandler to create text field when a user want to input text data.
@@ -748,7 +797,8 @@ public class Main extends Application {
 		public void handle(ActionEvent arg0) {
 			System.out.println("User entered: \"" + textBox.getText() + "\"");
 			// This is super cringe rn sorry team, just here to make it work and no further
-			// Shouldn't take long to move though, just this one line is what's needed to get the input
+			// Shouldn't take long to move though, just this one line is what's needed to
+			// get the input
 			try {
 				Main.farms = Report.parseFile(textBox.getText(), farms);
 			} catch (Exception e) {
@@ -757,11 +807,10 @@ public class Main extends Application {
 			}
 			System.out.println(farms.size());
 			textBox.clear();
-			
+
 		}
 	}
 
-	
 	/**
 	 * TODO method header needed?
 	 * 
