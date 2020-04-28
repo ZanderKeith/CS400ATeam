@@ -922,6 +922,13 @@ public class Main extends Application {
 		}
 
 		System.out.println("User Selected Report is produced");
+		
+		// If we haven't already done so, add a export button
+		if (submitGroup.getChildren().size() == 2) {
+			Button annualReportExportButton = new Button("Export Report Results");
+			annualReportExportButton.setOnAction(e -> this.annualReportExportFile());
+			submitGroup.getChildren().add(annualReportExportButton);
+		}
 
 		table.setItems(reportData);
 		// little bit of a hack right now. you get the idea
@@ -930,7 +937,84 @@ public class Main extends Application {
 		tableGroup.setRight(pieChart);
 
 	}
-	
+	private void annualReportExportFile() {
+		// Setting up the annual report export page
+		VBox exportBox = new VBox();
+		TextField filePathField = new TextField();
+		TextField fileNameField = new TextField();
+		filePathField.setPromptText("Ex: /Users/Solly/Desktop");
+		fileNameField.setPromptText("Ex: 2019_Output");
+		Button exportFileButton = new Button("Export File");
+		exportBox.getChildren().addAll(
+				new Label("Enter the path where you would like the file saved: "), filePathField,
+				new Label("Enter the name to give the output file: "), fileNameField,
+				exportFileButton);
+		root.setCenter(exportBox);
+				
+		exportFileButton.setOnAction(userClick ->{
+			File filePath = new File(filePathField.getText());
+			boolean pathExists = filePath.exists();
+				
+			if (pathExists) {
+				File fileName = new File(filePath, fileNameField.getText() + ".txt");
+				boolean nameAlreadyExists = fileName.exists();
+				boolean writeFile = true;
+						
+				if (nameAlreadyExists) {
+					writeFile = false;
+					Alert nameAlert = new Alert(AlertType.CONFIRMATION);
+					nameAlert.setTitle(null);
+					nameAlert.setContentText("A file with that name already exists." + System.lineSeparator()
+						+ "Pressing \"OK\" will overwrite the existing file.");
+					final Optional<ButtonType> nameResult = nameAlert.showAndWait();
+					if (nameResult.isPresent() && nameResult.get() == ButtonType.OK) {
+						writeFile = true;
+					}
+				}
+						
+				if (writeFile) {
+					try {
+						if (!nameAlreadyExists) {
+							fileName.createNewFile();
+						}
+						FileWriter output = new FileWriter(fileName);
+						String titleString = "Farm Report for " + userYearChoice;
+						output.write(titleString + "\n");
+								
+						output.write("Farm ID, Total Weight, Percent of All Farms\n");
+						for (Farm f : this.farms) {
+							String farmString = "";
+							this.textReport = Report.annualReport(f, Integer.parseInt(this.userYearChoice));
+							farmString += textReport.get(0) + ", ";
+							farmString += textReport.get(1) + ", ";
+							farmString += textReport.get(2) + "\n";
+							output.write(farmString);
+						}
+						output.close();
+
+						Alert confirmExport = new Alert(AlertType.CONFIRMATION);
+						confirmExport.setTitle("Success!");
+						confirmExport.setContentText("The file was created successfully.");
+						confirmExport.showAndWait();
+						submitGroup.getChildren().remove(2);
+						this.annualReportButtonAction();
+					}
+					catch (Exception e) {
+						Alert fileMakingError = new Alert(AlertType.ERROR);
+						fileMakingError.setTitle("Error");
+						fileMakingError.setContentText("Sorry, there was an error writing the file.");
+						fileMakingError.showAndWait();
+					}
+				}
+			}
+			else {
+				Alert pathAlert = new Alert(AlertType.ERROR);
+				pathAlert.setTitle("Error");
+				pathAlert.setContentText("There was an error finding the correct path.");
+				pathAlert.showAndWait();
+			}
+		});
+	}
 
 	private void reportSubmitButtonAction() {
 		sortFarms();
