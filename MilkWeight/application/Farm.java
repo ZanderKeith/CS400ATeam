@@ -236,12 +236,12 @@ public class Farm {
 	/**
 	 * Given a String representing a month, this returns the integer of the 
 	 * month.  Capitalization doesn't matter.  So january should return 1,
-	 * and MAY should return 5. This method throws a
-	 * @param month - a string meant to be 
+	 * and MAY should return 5. 
+	 * @param month - a string meant to be the name of the month
 	 * @throws IllegalArgumentException if month input does not match a month
 	 * @return the integer
 	 */
-	private int monthStringToInt(String month) throws IllegalArgumentException{
+	public static int monthStringToInt(String month) throws IllegalArgumentException{
 		if (month.equalsIgnoreCase("January")) {return 1;}
 		if (month.equalsIgnoreCase("February")) {return 2;}
 		if (month.equalsIgnoreCase("March")) {return 3;}

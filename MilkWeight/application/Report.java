@@ -201,6 +201,35 @@ public class Report {
 	}
 	
 	/**
+	 * ANNUAL REPORT Requirement: Prompt user for a year and a month Then, 
+	 * 
+	 * @param farmID farmID
+	 * @param year   year for data we're collecting
+	 * @param month  the name of the month (as a string) for the data we're collecting
+	 * @return ArrayList with index 0 = FarmID, 1 = Total Weight, and 2 =
+	 *         Percentage.
+	 * @return null if farmID is not in the list of farms.
+	 * @throws Exception
+	 */
+	protected static ArrayList<String> monthlyReport(Farm farmID, int year, String month) throws Exception {
+		ArrayList<String> data = new ArrayList<String>();
+		double total = 0.0;
+		double percent = 0.0;
+			
+		for (int i = 0; i < Main.farms.size(); i++) {
+			total = total + (double) Main.farms.get(i).getTotalWeightMonth(year, Farm.monthStringToInt(month));
+		}
+		percent = ((double) farmID.getTotalWeightMonth(year, Farm.monthStringToInt(month))) / (total) * 100;
+		if (Double.isNaN(percent)) {
+			percent = 0;
+		}
+		data.add(farmID.getFarmID()); // farm ID
+		data.add(Integer.toString(farmID.getTotalWeightMonth(year, Farm.monthStringToInt(month)))); // total weight for month
+		data.add(String.format("%.2f", percent)+ " %"); // percent for month
+		return data;
+	}
+	
+	/**
 	 * EDITED I think this function is still useful but shouldn't just be relegated to farm report
 	 * These stats are probably good to print for all reports and the labels are there anyway
 	 * Just shouldn't be made for only farm report

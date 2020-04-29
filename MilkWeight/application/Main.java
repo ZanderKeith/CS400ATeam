@@ -692,31 +692,75 @@ public class Main extends Application {
 	}
 
 	private void monthlyReportButtonAction() {
+		// I commented out all of the old stuff, if we don't need it anymore,
+		// we should just delete it.
+//		System.out.println("Monthly Report Button Pressed");
+//
+//		root.setCenter(reportPanel);
+//
+//		// GRAPHING
+//		chart.getData().clear(); // Clear chart
+//		Series[] seriesArray = new Series[farms.size()]; // make array for series
+//		int index = 0;
+//		for (Farm farm : farms) {
+//			seriesArray[index] = new XYChart.Series(); // Create new series
+//			// Set newly added series' name to that of farm
+//			seriesArray[index].setName(farm.getFarmID());
+//			// Add all months data to series
+//			for (int i = 1; i < 13; i++) {
+//				// TODO dynamically set year
+//				seriesArray[index].getData().add(
+//						new XYChart.Data(Integer.toString(i), farm.getTotalWeightMonth(2019, i)));
+//			}
+//			index++;
+//		}
+//
+//		for (int i = 0; i < farms.size(); i++) {
+//			chart.getData().add(seriesArray[i]);
+//		}
+		// GRAPHING
 		System.out.println("Monthly Report Button Pressed");
+		sortFarms();
+		// Create new button to be used specifically for farm report
+		Button monthlyReportSubmitButton = new Button("View Monthly Report");
+		monthlyReportSubmitButton.setOnAction(e -> this.monthlyReportSubmitButtonAction());
 
-		root.setCenter(reportPanel);
+		// Set up table for farm report
+		table = new TableView<ArrayList<StringProperty>>();
+		table.setEditable(false);
 
-		// GRAPHING
-		chart.getData().clear(); // Clear chart
-		Series[] seriesArray = new Series[farms.size()]; // make array for series
-		int index = 0;
-		for (Farm farm : farms) {
-			seriesArray[index] = new XYChart.Series(); // Create new series
-			// Set newly added series' name to that of farm
-			seriesArray[index].setName(farm.getFarmID());
-			// Add all months data to series
-			for (int i = 1; i < 13; i++) {
-				// TODO dynamically set year
-				seriesArray[index].getData().add(
-						new XYChart.Data(Integer.toString(i), farm.getTotalWeightMonth(2019, i)));
-			}
-			index++;
-		}
+		// Add farm report fields to table
+		TableColumn<ArrayList<StringProperty>, String> monthCol = new TableColumn<>("Farm ID");
+		TableColumn<ArrayList<StringProperty>, String> totalWeightCol = new TableColumn<>(
+				"Total Weight");
+		TableColumn<ArrayList<StringProperty>, String> percentWeightCol = new TableColumn<>(
+				"Percent of All Farms");
+		monthCol.setMinWidth(100);
+		totalWeightCol.setMinWidth(150);
+		percentWeightCol.setMinWidth(150);
 
-		for (int i = 0; i < farms.size(); i++) {
-			chart.getData().add(seriesArray[i]);
-		}
-		// GRAPHING
+		table.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
+		table.getColumns().addAll(monthCol, totalWeightCol, percentWeightCol);
+
+		monthCol.setCellValueFactory(e -> e.getValue().get(0));
+		totalWeightCol.setCellValueFactory(e -> e.getValue().get(1));
+		percentWeightCol.setCellValueFactory(e -> e.getValue().get(2));
+
+		// set up pie chart for report
+		pieChart = new PieChart();
+
+		pieChart.setTitle("Total for Month");
+
+		tableGroup.setCenter(table);
+		tableGroup.setRight(pieChart);
+		farmReportPanel.setPadding(new Insets(15, 15, 15, 15));
+		farmReportPanel.setCenter(tableGroup);
+
+		// Add relevant buttons for farm report
+		submitGroup.getChildren().clear();
+		submitGroup.getChildren().addAll(yearGroup,monthGroup, monthlyReportSubmitButton);
+		farmReportPanel.setBottom(submitGroup);
+		root.setCenter(farmReportPanel);
 	}
 
 	private void dateRangeReportButtonAction() {
@@ -937,6 +981,47 @@ public class Main extends Application {
 		tableGroup.setRight(pieChart);
 
 	}
+	private void monthlyReportSubmitButtonAction() {
+		sortFarms();
+		System.out.println("User may have selected farmID, Year pressed submit button.");
+		ObservableList<ArrayList<StringProperty>> reportData = FXCollections
+				.observableArrayList();
+		ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
+		ArrayList<StringProperty> reportRow;
+		table.getItems().clear();
+		for (Farm f : this.farms) {
+			try {
+				this.textReport = Report.monthlyReport(f, Integer.parseInt(this.userYearChoice), this.userMonthChoice);
+				reportRow = new ArrayList<StringProperty>();
+				reportRow.add(0, new SimpleStringProperty(this.textReport.get(0)));
+				reportRow.add(1, new SimpleStringProperty(this.textReport.get(1)));
+				reportRow.add(2, new SimpleStringProperty(this.textReport.get(2)));
+				reportData.add(reportRow);
+
+				pieChartData.add(new PieChart.Data(this.textReport.get(0),
+						Integer.parseInt(this.textReport.get(1))));
+
+			} catch (Exception e) {
+				System.out.println("EXCEPTION IN MONTHLY REPORT SUBMIT BUTTON ACTION");
+			}
+		}
+
+		System.out.println("User Selected Report is produced");
+		
+		// If we haven't already done so, add a export button
+		if (submitGroup.getChildren().size() == 3) {
+			Button monthlyReportExportButton = new Button("Export Report Results");
+			monthlyReportExportButton.setOnAction(e -> this.monthlyReportExportFile());
+			submitGroup.getChildren().add(monthlyReportExportButton);
+		}
+
+		table.setItems(reportData);
+		// little bit of a hack right now. you get the idea
+		pieChart = new PieChart(pieChartData);
+		pieChart.setTitle("Total for Month");
+		tableGroup.setRight(pieChart);
+
+	}
 	private void annualReportExportFile() {
 		// Setting up the annual report export page
 		VBox exportBox = new VBox();
@@ -1014,6 +1099,85 @@ public class Main extends Application {
 				pathAlert.showAndWait();
 			}
 		});
+	}
+	
+	private void monthlyReportExportFile() {
+		// Setting up the monthly report export page
+		VBox exportBox = new VBox();
+		TextField filePathField = new TextField();
+		TextField fileNameField = new TextField();
+		filePathField.setPromptText("Ex: /Users/Solly/Desktop");
+		fileNameField.setPromptText("Ex: April2019_Output");
+		Button exportFileButton = new Button("Export File");
+		exportBox.getChildren().addAll(
+				new Label("Enter the path where you would like the file saved: "), filePathField,
+				new Label("Enter the name to give the output file: "), fileNameField,
+				exportFileButton);
+		root.setCenter(exportBox);
+				
+		exportFileButton.setOnAction(userClick ->{
+			File filePath = new File(filePathField.getText());
+			boolean pathExists = filePath.exists();
+				
+			if (pathExists) {
+				File fileName = new File(filePath, fileNameField.getText() + ".txt");
+				boolean nameAlreadyExists = fileName.exists();
+				boolean writeFile = true;
+						
+				if (nameAlreadyExists) {
+					writeFile = false;
+					Alert nameAlert = new Alert(AlertType.CONFIRMATION);
+					nameAlert.setTitle(null);
+					nameAlert.setContentText("A file with that name already exists." + System.lineSeparator()
+						+ "Pressing \"OK\" will overwrite the existing file.");
+					final Optional<ButtonType> nameResult = nameAlert.showAndWait();
+					if (nameResult.isPresent() && nameResult.get() == ButtonType.OK) {
+						writeFile = true;
+					}
+				}
+						
+				if (writeFile) {
+					try {
+						if (!nameAlreadyExists) {
+							fileName.createNewFile();
+						}
+						FileWriter output = new FileWriter(fileName);
+						String titleString = "Farm Report for " +userMonthChoice + " " + userYearChoice;
+						output.write(titleString + "\n");
+								
+						output.write("Farm ID, Total Weight, Percent of All Farms\n");
+						for (Farm f : this.farms) {
+							String farmString = "";
+							this.textReport = Report.monthlyReport(f, Integer.parseInt(this.userYearChoice), this.userMonthChoice);
+							farmString += textReport.get(0) + ", ";
+							farmString += textReport.get(1) + ", ";
+							farmString += textReport.get(2) + "\n";
+							output.write(farmString);
+						}
+						output.close();
+
+						Alert confirmExport = new Alert(AlertType.CONFIRMATION);
+						confirmExport.setTitle("Success!");
+						confirmExport.setContentText("The file was created successfully.");
+						confirmExport.showAndWait();
+						submitGroup.getChildren().remove(2);
+						this.annualReportButtonAction();
+					}
+					catch (Exception e) {
+						Alert fileMakingError = new Alert(AlertType.ERROR);
+						fileMakingError.setTitle("Error");
+						fileMakingError.setContentText("Sorry, there was an error writing the file.");
+						fileMakingError.showAndWait();
+					}
+				}
+			}
+			else {
+				Alert pathAlert = new Alert(AlertType.ERROR);
+				pathAlert.setTitle("Error");
+				pathAlert.setContentText("There was an error finding the correct path.");
+				pathAlert.showAndWait();
+			}
+		});		
 	}
 
 	private void reportSubmitButtonAction() {
