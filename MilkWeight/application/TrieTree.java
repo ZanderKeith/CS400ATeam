@@ -35,11 +35,9 @@ import java.util.List;
 public class TrieTree {
 	// Private class containing all of the data we will need for the whole year.
 	private class TrieTreeYearNode {
-		int year;
 		TrieTreeMonthNode[] months;
 
 		private TrieTreeYearNode(int year) {
-			this.year = year;
 			this.months = new TrieTreeMonthNode[12];
 		}
 	}
@@ -60,11 +58,9 @@ public class TrieTree {
 	}
 
 	private class TrieTreeDayNode {
-		int day;
 		int weight;
 
-		private TrieTreeDayNode(int day) {
-			this.day = day;
+		private TrieTreeDayNode() {
 			this.weight = 0;
 		}
 	}
@@ -110,9 +106,9 @@ public class TrieTree {
 
 		// Next, we check if we have already added data for that day
 		if (this.treeYearMap.get(year).months[month - 1].days[day - 1] == null) {
-			this.treeYearMap.get(year).months[month - 1].days[day - 1] = new TrieTreeDayNode(day);
-			this.treeYearMap.get(year).months[month - 1].days[day - 1].weight = weight;
+			this.treeYearMap.get(year).months[month - 1].days[day - 1] = new TrieTreeDayNode();
 		}
+		this.treeYearMap.get(year).months[month - 1].days[day - 1].weight = weight;
 	}
 
 	/**

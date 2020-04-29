@@ -83,7 +83,10 @@ public class Report {
 				}
 
 			}
+
+			buff.close();
 		} catch (FileNotFoundException e) {
+
 			System.out.println("UNEXPECTED EXCEPTION PARSING FILE");
 			throw new FileNotFoundException();
 		}

@@ -25,8 +25,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -37,25 +35,20 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableSet;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
-import javafx.scene.chart.XYChart;
-import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -167,14 +160,11 @@ public class Main extends Application {
 		Label monthLabel = new Label("Month: ");
 		Label yearLabel = new Label("Year: ");
 		Label farmIDLabel = new Label("Farm ID: ");
-		Label farmReportLabel = new Label("Farm Report");
 		Label chartLabel = new Label("<Report Name> of No Data");
 		Label totalWeightLabel = new Label("Total Weight Sold: No Data");
 		Label percentWeightLabel = new Label("Percent of total: No Data");
 
-		// Text Fields
-		TextField farmIDField = new TextField("");
-		TextField yearField = new TextField("");
+		// Text Field
 		TextField inputText = new TextField();
 
 		// Initialize Drop Downs
@@ -218,15 +208,12 @@ public class Main extends Application {
 		Button addNewFarmButton = new Button("Add new farm");
 		addNewFarmButton.setOnAction(e -> this.addNewFarmButtonAction());
 
-		Button addNewMilkDataButton = new Button("Add new milk data");
+		Button addNewMilkDataButton = new Button("Add/edit milk data");
 		addNewMilkDataButton.setOnAction(e -> {
 			addNewMilkDataButtonAction();
 			this.updateComboBoxes(farmComboBox, yearComboBox);
 			sortFarms();
 		});
-
-		Button editMilkDataButton = new Button("Edit milk data");
-		editMilkDataButton.setOnAction(e -> editMilkDataButtonAction());
 
 		Button farmReportButton = new Button("Farm Report");
 		farmReportButton.setOnAction(e -> {
@@ -249,7 +236,7 @@ public class Main extends Application {
 		// Create left panel of buttons (dependencies first)
 		VBox fileOptionGroup = new VBox();
 		fileOptionGroup.getChildren().addAll(fileLabel, importFileButton, exportAsCSVButton,
-				addNewFarmButton, addNewMilkDataButton, editMilkDataButton);
+				addNewFarmButton, addNewMilkDataButton);
 
 		VBox reportOptionGroup = new VBox(reportLabel, farmReportButton, annualReportButton,
 				monthlyReportButton, dateRangeReportButton);
@@ -339,11 +326,19 @@ public class Main extends Application {
 		primaryStage.show();
 	}
 
+	/**
+	 * This method resets the center panel to the home screen when the home button is pressed
+	 */
 	private void homeButtonAction() {
 		root.setCenter(homePanel);
 		System.out.println("Home Button Pressed");
 	}
 
+	/**
+	 * Handles finding and parsing an input file
+	 * 
+	 * @param inputText text field for the file
+	 */
 	private void importFileButtonAction(TextField inputText) {
 		System.out.println("User entered: \"" + inputText.getText() + "\"");
 		// This is super cringe rn sorry team, just here to make it work and no further
@@ -392,6 +387,9 @@ public class Main extends Application {
 		this.updateComboBoxes(farmComboBox, yearComboBox);
 	}
 
+	/**
+	 * Handles exporting data as a csv page when button is pressed
+	 */
 	private void exportAsCSVButtonAction() {
 		System.out.println("User wants to export their work.");
 
@@ -480,20 +478,25 @@ public class Main extends Application {
 		System.out.println("Export as CSV File Button Pressed");
 	}
 
+	/**
+	 * Handles adding new farm for which data can be added
+	 */
 	private void addNewFarmButtonAction() {
 		System.out.println("User wants to enter a new farm!");
 		VBox newFarmBox = new VBox();
 		TextField farmName = new TextField();
 		farmName.setPromptText("Ex: Farm 999");
-		farmName.setOnMouseClicked(clicked -> farmName.clear());
 		Button addFarm = new Button("Add");
 		newFarmBox.getChildren().addAll(new Label("Enter the name of the farm: "), farmName,
 				addFarm);
 		root.setCenter(newFarmBox);
+		
 		addFarm.setOnAction(userClickedAdd -> {
 			boolean dupe = false;
 			this.userFarmChoice = farmName.getText();
+		    farmName.clear();
 			System.out.println("The user wants to add a new farm named " + this.userFarmChoice);
+			
 			for (Farm f : farms) {
 				if (f.getFarmID().equals(this.userFarmChoice)) {
 					Alert alert = new Alert(AlertType.ERROR);
@@ -507,6 +510,7 @@ public class Main extends Application {
 					dupe = true;
 				}
 			}
+			
 			if (!dupe) {
 				Alert alert = new Alert(AlertType.CONFIRMATION);
 				alert.setTitle("New Farm To Be Added");
@@ -518,16 +522,19 @@ public class Main extends Application {
 					System.out.println("A new farm named " + this.userFarmChoice + " added");
 					Farm newFarm = new Farm(this.userFarmChoice);
 					farms.add(newFarm);
-
 				}
 			}
 		});
 	}
 
+	/**
+	 * Handles adding new farm data for a specific farm and day when button is pressed
+	 */
 	private void addNewMilkDataButtonAction() {
 		System.out.println("Add new milk data Button Pressed");
 		root.setCenter(new Label("No farm available in the system."));
 		ComboBox<String> farmIDs = new ComboBox<String>();
+		
 		if (farms.size() == 0) {
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle("There is no farm in our system.");
@@ -544,22 +551,22 @@ public class Main extends Application {
 			ObservableList<String> newFarms = FXCollections.observableArrayList();
 			farms.forEach(e -> newFarms.add(e.getFarmID()));
 			farmIDs.setItems(newFarms);
-
 			farmIDs.setOnAction(e -> {
 				this.userFarmChoice = farmIDs.getValue();
 				System.out.println("User wants to enter data for Farm ID " + userFarmChoice);
-
 			});
 
 			HBox farmBar = new HBox();
 			farmBar.getChildren().add(new Label("Farm ID : "));
 			farmBar.getChildren().add(farmIDs);
+			
 			HBox yearBar = new HBox();
 			yearBar.getChildren().add(new Label("Year : "));
 			TextField yearText = new TextField();
 			yearText.setPromptText("Ex: 2019");
 			yearBar.getChildren().add(yearText);
 			yearText.setOnMouseClicked(e -> yearText.clear());
+			
 			HBox monthBar = new HBox();
 			monthBar.getChildren().add(new Label("Month : "));
 			ComboBox<String> months = new ComboBox<String>();
@@ -572,12 +579,14 @@ public class Main extends Application {
 				this.userMonthChoice = months.getValue();
 				System.out.println("User selected month of " + this.userMonthChoice);
 			});
+			
 			HBox milkBar = new HBox();
 			milkBar.getChildren().add(new Label("Amount of Milk Sold (lb) :"));
 			TextField milkText = new TextField();
 			milkText.setPromptText("Ex: 293489");
 			milkBar.getChildren().add(milkText);
 			milkText.setOnMouseClicked(e -> milkText.clear());
+			
 			HBox dateBar = new HBox();
 			ComboBox<String> dates = new ComboBox<String>();
 			ObservableList<String> numbers = FXCollections.observableArrayList();
@@ -591,6 +600,7 @@ public class Main extends Application {
 				this.userDateChoice = dates.getValue();
 				System.out.println("User chose the date " + userDateChoice);
 			});
+			
 			VBox mainPanel = new VBox();
 			Button record = new Button("Record");
 			mainPanel.getChildren().addAll(farmBar, monthBar, dateBar, yearBar, milkBar, record);
@@ -599,11 +609,11 @@ public class Main extends Application {
 			record.setOnAction(e -> {
 				int weight = 0;
 				int year = 0;
-
 				boolean ready = true;
+				
 				System.out.println("User wants to record a new data");
+				
 				try {
-
 					year = Integer.parseInt(yearText.getText());
 				} catch (Exception exp) {
 					ready = false;
@@ -613,6 +623,7 @@ public class Main extends Application {
 					alert.setContentText("Year can only be an integer value!");
 					alert.showAndWait();
 				}
+				
 				try {
 					weight = Integer.parseInt(milkText.getText());
 				} catch (Exception exp) {
@@ -623,8 +634,8 @@ public class Main extends Application {
 					alert.setContentText("Weight can only be an integer value!");
 					alert.showAndWait();
 				}
+				
 				if (ready) {
-
 					Alert alert = new Alert(AlertType.CONFIRMATION);
 					alert.setTitle("The following data is being recorded.");
 					alert.setHeaderText("Adding Data for Farm ID: " + this.userFarmChoice + ".");
@@ -632,8 +643,9 @@ public class Main extends Application {
 							+ this.userDateChoice + ", " + year + "." + System.lineSeparator()
 							+ "Weight: " + weight + " lb");
 					final Optional<ButtonType> result = alert.showAndWait();
+					
 					if (result.isPresent() && result.get() == ButtonType.OK) {
-						for (Farm f : this.farms) {
+						for (Farm f : farms) {
 							if (f.getFarmID().equals(this.userFarmChoice)) {
 								System.out.println("New data added");
 								f.addInput(year, this.userMonthChoice,
@@ -644,19 +656,14 @@ public class Main extends Application {
 						yearText.setPromptText("Ex: 2019");
 						milkText.setPromptText("Ex: 293489");
 					}
-
 				}
-
 			});
 		}
-
 	}
 
-	private void editMilkDataButtonAction() {
-		root.setCenter(notImplementedPanel);
-		System.out.println("Edit milk data Button Pressed");
-	}
-
+	/**
+	 * Handler for created the visual report for a specified farm
+	 */
 	private void farmReportButtonAction() {
 		sortFarms();
 		System.out.println("Farm Report Button Pressed");
@@ -704,6 +711,9 @@ public class Main extends Application {
 
 	}
 
+	/**
+	 * Creates an report for a specified year upon pressing the annual report button
+	 */
 	private void annualReportButtonAction() {
 		System.out.println("Annual Report Button Pressed");
 		sortFarms();
@@ -749,34 +759,10 @@ public class Main extends Application {
 		root.setCenter(farmReportPanel);
 	}
 
+	/**
+	 * Creates an report for a specified month upon pressing the monthly report button
+	 */
 	private void monthlyReportButtonAction() {
-		// I commented out all of the old stuff, if we don't need it anymore,
-		// we should just delete it.
-//		System.out.println("Monthly Report Button Pressed");
-//
-//		root.setCenter(reportPanel);
-//
-//		// GRAPHING
-//		chart.getData().clear(); // Clear chart
-//		Series[] seriesArray = new Series[farms.size()]; // make array for series
-//		int index = 0;
-//		for (Farm farm : farms) {
-//			seriesArray[index] = new XYChart.Series(); // Create new series
-//			// Set newly added series' name to that of farm
-//			seriesArray[index].setName(farm.getFarmID());
-//			// Add all months data to series
-//			for (int i = 1; i < 13; i++) {
-//				// TODO dynamically set year
-//				seriesArray[index].getData().add(
-//						new XYChart.Data(Integer.toString(i), farm.getTotalWeightMonth(2019, i)));
-//			}
-//			index++;
-//		}
-//
-//		for (int i = 0; i < farms.size(); i++) {
-//			chart.getData().add(seriesArray[i]);
-//		}
-		// GRAPHING
 		System.out.println("Monthly Report Button Pressed");
 		sortFarms();
 		// Create new button to be used specifically for farm report
@@ -821,6 +807,9 @@ public class Main extends Application {
 		root.setCenter(farmReportPanel);
 	}
 
+	/**
+	 * Creates a visual data representation for a range of dates
+	 */
 	private void dateRangeReportButtonAction() {
 		System.out.println("Range Report Button Pressed");
 		sortFarms();
@@ -935,7 +924,13 @@ public class Main extends Application {
 		root.setCenter(farmReportPanel);
 	}
 
-	private void updateComboBoxes(ComboBox farmComboBox, ComboBox yearComboBox) {
+	/**
+	 * Updates farm and year combo boxes
+	 * 
+	 * @param farmComboBox 
+	 * @param yearComboBox
+	 */
+	private void updateComboBoxes(ComboBox<String> farmComboBox, ComboBox<String> yearComboBox) {
 		if (farms.size() != 0) {
 			ObservableList<String> newFarms = FXCollections.observableArrayList();
 			ObservableList<String> newYearItems = FXCollections.observableArrayList();
@@ -950,6 +945,9 @@ public class Main extends Application {
 		sortFarms();
 	}
 
+	/**
+	 * Handler for pushing submit after entering a farm
+	 */
 	private void farmReportSubmitButtonAction() {
 		System.out.println("User may have selected farmID, Year pressed submit button.");
 		sortFarms();
@@ -1010,8 +1008,10 @@ public class Main extends Application {
 		tableGroup.setRight(pieChart);
 	}
 	
+	/**
+	 * Creates a file for export with the farm data
+	 */
 	private void farmReportExportFile() {
-
 		// Setting up the farm report export page
 		VBox exportBox = new VBox();
 		TextField filePathField = new TextField();
@@ -1054,21 +1054,23 @@ public class Main extends Application {
 								userFarm = f;
 							}
 						}
+						
 						if (!nameAlreadyExists) {
 							fileName.createNewFile();
 						}
+						
 						FileWriter output = new FileWriter(fileName);
 						String titleString = "Farm Report for " + userFarmChoice;
 						if (userYearChoice.equals("ALL")) {
 							 titleString += " using all available data.";
 							 this.userYearChoice = "-1";
-						}
-						else {
+						} else {
 							titleString += " for the year " + userYearChoice;
 						}
-						output.write(titleString + "\n");
 						
+						output.write(titleString + "\n");
 						output.write("Month, Total Weight, Percent of All Farms\n");
+						
 						for (int month = 0; month < 12; month++) {
 							this.textReport = Report.farmReport(userFarm,
 									Integer.parseInt(this.userYearChoice), monthItems.get(month));
@@ -1087,26 +1089,25 @@ public class Main extends Application {
 						confirmExport.showAndWait();
 						submitGroup.getChildren().remove(3);
 						this.farmReportButtonAction();
-					}
-					catch (Exception e) {
+					} catch (Exception e) {
 						Alert fileMakingError = new Alert(AlertType.ERROR);
 						fileMakingError.setTitle("Error");
 						fileMakingError.setContentText("Sorry, there was an error writing the file.");
 						fileMakingError.showAndWait();
 					}
 				}
-			}
-			else {
+			} else {
 				Alert pathAlert = new Alert(AlertType.ERROR);
 				pathAlert.setTitle("Error");
 				pathAlert.setContentText("There was an error finding the correct path.");
 				pathAlert.showAndWait();
 			}
-			
 		});
-
 	}
 
+	/**
+	 * Handles the submit button for requesting a report for yearly data
+	 */
 	private void annualReportSubmitButtonAction() {
 		sortFarms();
 		System.out.println("User may have selected farmID, Year pressed submit button.");
@@ -1115,7 +1116,7 @@ public class Main extends Application {
 		ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
 		ArrayList<StringProperty> reportRow;
 		table.getItems().clear();
-		for (Farm f : this.farms) {
+		for (Farm f : farms) {
 			try {
 				this.textReport = Report.annualReport(f, Integer.parseInt(this.userYearChoice));
 				reportRow = new ArrayList<StringProperty>();
@@ -1148,6 +1149,10 @@ public class Main extends Application {
 		tableGroup.setRight(pieChart);
 
 	}
+	
+	/**
+	 * Handles the submit button for requesting a report for monthly data
+	 */
 	private void monthlyReportSubmitButtonAction() {
 		sortFarms();
 		System.out.println("User may have selected farmID, Year pressed submit button.");
@@ -1156,7 +1161,7 @@ public class Main extends Application {
 		ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
 		ArrayList<StringProperty> reportRow;
 		table.getItems().clear();
-		for (Farm f : this.farms) {
+		for (Farm f : farms) {
 			try {
 				this.textReport = Report.monthlyReport(f, Integer.parseInt(this.userYearChoice), this.userMonthChoice);
 				reportRow = new ArrayList<StringProperty>();
@@ -1189,6 +1194,10 @@ public class Main extends Application {
 		tableGroup.setRight(pieChart);
 
 	}
+	
+	/**
+	 * Handles the submit button for requesting a report for a range of dates
+	 */
 	private void rangeReportSubmitButtonAction() {
 		sortFarms();
 		System.out.println("User may have selected farmID, range pressed submit button.");
@@ -1197,7 +1206,7 @@ public class Main extends Application {
 		ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
 		ArrayList<StringProperty> reportRow;
 		table.getItems().clear();
-		for (Farm f : this.farms) {
+		for (Farm f : farms) {
 			try {
 				this.textReport = Report.rangeReport(f, Integer.parseInt(this.startYearChoice), this.startMonthChoice,Integer.parseInt(this.startDateChoice),Integer.parseInt(this.endYearChoice), this.endMonthChoice,Integer.parseInt(this.endDateChoice));
 				reportRow = new ArrayList<StringProperty>();
@@ -1230,6 +1239,10 @@ public class Main extends Application {
 		tableGroup.setRight(pieChart);
 
 	}
+	
+	/**
+	 * Creates an export file for the annual report
+	 */
  	private void annualReportExportFile() {
 		// Setting up the annual report export page
 		VBox exportBox = new VBox();
@@ -1275,7 +1288,7 @@ public class Main extends Application {
 						output.write(titleString + "\n");
 								
 						output.write("Farm ID, Total Weight, Percent of All Farms\n");
-						for (Farm f : this.farms) {
+						for (Farm f : farms) {
 							String farmString = "";
 							this.textReport = Report.annualReport(f, Integer.parseInt(this.userYearChoice));
 							farmString += textReport.get(0) + ", ";
@@ -1309,6 +1322,9 @@ public class Main extends Application {
 		});
 	}
 	
+ 	/**
+ 	 * Creates an export file with a monthly report
+ 	 */
 	private void monthlyReportExportFile() {
 		// Setting up the monthly report export page
 		VBox exportBox = new VBox();
@@ -1354,7 +1370,7 @@ public class Main extends Application {
 						output.write(titleString + "\n");
 								
 						output.write("Farm ID, Total Weight, Percent of All Farms\n");
-						for (Farm f : this.farms) {
+						for (Farm f : farms) {
 							String farmString = "";
 							this.textReport = Report.monthlyReport(f, Integer.parseInt(this.userYearChoice), this.userMonthChoice);
 							farmString += textReport.get(0) + ", ";
@@ -1387,6 +1403,10 @@ public class Main extends Application {
 			}
 		});		
 	}
+	
+	/**
+	 * Creates an export file of data from a range of dates
+	 */
 	private void rangeReportExportFile() {
 		// Setting up the monthly report export page
 		VBox exportBox = new VBox();
@@ -1433,7 +1453,7 @@ public class Main extends Application {
 						output.write(titleString + "\n");
 								
 						output.write("Farm ID, Total Weight, Percent of All Farms\n");
-						for (Farm f : this.farms) {
+						for (Farm f : farms) {
 							String farmString = "";
 							this.textReport = Report.rangeReport(f, Integer.parseInt(this.startYearChoice), this.startMonthChoice,Integer.parseInt(this.startDateChoice),Integer.parseInt(this.endYearChoice), this.endMonthChoice,Integer.parseInt(this.endDateChoice));
 							farmString += textReport.get(0) + ", ";
@@ -1531,7 +1551,7 @@ public class Main extends Application {
 
 	// Sorts farm list
 	private void sortFarms() {
-		this.farms.sort(new Comparator<Farm>() {
+		farms.sort(new Comparator<Farm>() {
 			@Override
 			public int compare(Farm farm1, Farm farm2) {
 				return farm1.getFarmID().compareToIgnoreCase(farm2.getFarmID());
@@ -1566,12 +1586,11 @@ public class Main extends Application {
 	}
 
 	/**
-	 * TODO method header needed?
+	 * Main method which launches GUI
 	 * 
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		launch(args);
 	}
 
