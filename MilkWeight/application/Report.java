@@ -80,6 +80,7 @@ public class Report {
 				}
 
 			}
+			buff.close();
 		} catch (Exception e) {
 			System.out.println("UNEXPECTED EXCEPTION PARSING FILE");
 			e.printStackTrace();
