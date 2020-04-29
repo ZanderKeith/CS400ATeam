@@ -229,6 +229,26 @@ public class Report {
 		return data;
 	}
 	
+	// Generates a report for a given range of dates.  I'm going to assume that the user 
+	// enters a valid date range
+	protected static ArrayList<String> rangeReport(Farm farmID, int startYear, String startMonth, int startDay, int endYear, String endMonth, int endDay) throws Exception {
+		ArrayList<String> data = new ArrayList<String>();
+		double total = 0.0;
+		double percent = 0.0;
+			
+		for (int i = 0; i < Main.farms.size(); i++) {
+			total = total + (double) Main.farms.get(i).getTotalWeightRange(startYear, Farm.monthStringToInt(startMonth), startDay, endYear, Farm.monthStringToInt(endMonth), endDay);
+		}
+		percent = ((double) farmID.getTotalWeightRange(startYear, Farm.monthStringToInt(startMonth), startDay, endYear, Farm.monthStringToInt(endMonth), endDay)) / (total) * 100;
+		if (Double.isNaN(percent)) {
+			percent = 0;
+		}
+		data.add(farmID.getFarmID()); // farm ID
+		data.add(Integer.toString(farmID.getTotalWeightRange(startYear, Farm.monthStringToInt(startMonth), startDay, endYear, Farm.monthStringToInt(endMonth), endDay))); // total weight for range
+		data.add(String.format("%.2f", percent)+ " %"); // percent for range
+		return data;
+	}
+	
 	/**
 	 * EDITED I think this function is still useful but shouldn't just be relegated to farm report
 	 * These stats are probably good to print for all reports and the labels are there anyway

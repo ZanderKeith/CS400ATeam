@@ -112,6 +112,7 @@ public class Main extends Application {
 	private HBox monthGroup = new HBox();
 	private HBox submitGroup = new HBox();
 
+
 	// Chart stuff
 	private CategoryAxis dateAxis = new CategoryAxis();
 	private NumberAxis percentAxis = new NumberAxis();
@@ -122,6 +123,18 @@ public class Main extends Application {
 	private String userDateChoice = "";
 	private String userMonthChoice = "";
 	private String userYearChoice = "";
+	
+	// Setup for the Range Report
+	HBox startInfo = new HBox();
+	HBox endInfo = new HBox();
+	VBox bottomInfo = new VBox();
+	
+	private String startDateChoice = "";
+	private String startMonthChoice = "";
+	private String startYearChoice = "";
+	private String endDateChoice = "";
+	private String endMonthChoice = "";
+	private String endYearChoice = "";
 
 	// Test Report to the user
 	private ArrayList<String> textReport = null;
@@ -764,8 +777,117 @@ public class Main extends Application {
 	}
 
 	private void dateRangeReportButtonAction() {
-		System.out.println("Date Range Report Button Pressed");
-		root.setCenter(notImplementedPanel);
+		System.out.println("Range Report Button Pressed");
+		sortFarms();
+		// Create new button to be used specifically for farm report
+		Button rangeReportSubmitButton = new Button("View Range Report");
+		rangeReportSubmitButton.setOnAction(e -> this.rangeReportSubmitButtonAction());
+
+		// Set up table for farm report
+		table = new TableView<ArrayList<StringProperty>>();
+		table.setEditable(false);
+
+		// Add farm report fields to table
+		TableColumn<ArrayList<StringProperty>, String> monthCol = new TableColumn<>("Farm ID");
+		TableColumn<ArrayList<StringProperty>, String> totalWeightCol = new TableColumn<>(
+				"Total Weight");
+		TableColumn<ArrayList<StringProperty>, String> percentWeightCol = new TableColumn<>(
+				"Percent of All Farms");
+		monthCol.setMinWidth(100);
+		totalWeightCol.setMinWidth(150);
+		percentWeightCol.setMinWidth(150);
+
+		table.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
+		table.getColumns().addAll(monthCol, totalWeightCol, percentWeightCol);
+
+		monthCol.setCellValueFactory(e -> e.getValue().get(0));
+		totalWeightCol.setCellValueFactory(e -> e.getValue().get(1));
+		percentWeightCol.setCellValueFactory(e -> e.getValue().get(2));
+
+		// set up pie chart for report
+		pieChart = new PieChart();
+
+		pieChart.setTitle("Total for Range");
+
+		tableGroup.setCenter(table);
+		tableGroup.setRight(pieChart);
+		farmReportPanel.setPadding(new Insets(15, 15, 15, 15));
+		farmReportPanel.setCenter(tableGroup);
+		
+		startInfo.getChildren().clear();
+		endInfo.getChildren().clear();
+		bottomInfo.getChildren().clear();
+		startInfo.getChildren().add(new Label("Start Year: "));
+		endInfo.getChildren().add(new Label("End Year: "));
+		
+		ComboBox<String> startYear= new ComboBox<String>();
+		ComboBox<String> endYear = new ComboBox<String>();
+		startYear.setItems(yearComboBox.getItems());
+		startYear.getItems().remove("ALL");
+		endYear.setItems(yearComboBox.getItems());
+		endYear.getItems().remove("ALL");
+		
+		startYear.setOnAction(e -> {
+			this.startYearChoice = startYear.getValue();
+			System.out.println("User chose the start year " + startYearChoice);
+		});
+		endYear.setOnAction(e -> {
+			this.endYearChoice = endYear.getValue();
+			System.out.println("User chose the end year " + endYearChoice);
+		});
+		
+		startInfo.getChildren().add(startYear);
+		endInfo.getChildren().add(endYear);
+		
+		startInfo.getChildren().add(new Label("Start Month: "));
+		endInfo.getChildren().add(new Label("End Month: "));
+		
+		ComboBox<String> startMonth= new ComboBox<String>();
+		ComboBox<String> endMonth = new ComboBox<String>();
+		startMonth.setItems(monthComboBox.getItems());
+		startMonth.getItems().remove("ALL");
+		endMonth.setItems(monthComboBox.getItems());
+		endMonth.getItems().remove("ALL");
+		
+		startMonth.setOnAction(e -> {
+			this.startMonthChoice = startMonth.getValue();
+			System.out.println("User chose the start month " + startMonthChoice);
+		});
+		endMonth.setOnAction(e -> {
+			this.endMonthChoice = endMonth.getValue();
+			System.out.println("User chose the end Month " + endMonthChoice);
+		});
+		startInfo.getChildren().add(startMonth);
+		endInfo.getChildren().add(endMonth);
+		
+		startInfo.getChildren().add(new Label("Start Date: "));
+		endInfo.getChildren().add(new Label("End Date: "));
+		
+		ComboBox<String> startDate = new ComboBox<String>();
+		ComboBox<String> endDate = new ComboBox<String>();
+		ObservableList<String> numbers = FXCollections.observableArrayList();
+		for (int i = 1; i < 32; i++) {
+			numbers.add(Integer.toString(i));
+		}
+		startDate.setItems(numbers);
+		endDate.setItems(numbers);
+
+		startDate.setOnAction(e -> {
+			this.startDateChoice = startDate.getValue();
+			System.out.println("User chose the starting date " + startDateChoice);
+		});
+		endDate.setOnAction(e -> {
+			this.endDateChoice = endDate.getValue();
+			System.out.println("User chose the end date " + endDateChoice);
+		});
+		startInfo.getChildren().add(startDate);
+		endInfo.getChildren().add(endDate);
+		
+		endInfo.getChildren().add(rangeReportSubmitButton);
+		// Add relevant buttons for farm report
+		bottomInfo.getChildren().addAll(startInfo, endInfo);
+		farmReportPanel.setBottom(bottomInfo);
+		root.setCenter(farmReportPanel);
 	}
 
 	private void updateComboBoxes(ComboBox farmComboBox, ComboBox yearComboBox) {
@@ -1022,7 +1144,48 @@ public class Main extends Application {
 		tableGroup.setRight(pieChart);
 
 	}
-	private void annualReportExportFile() {
+	private void rangeReportSubmitButtonAction() {
+		sortFarms();
+		System.out.println("User may have selected farmID, range pressed submit button.");
+		ObservableList<ArrayList<StringProperty>> reportData = FXCollections
+				.observableArrayList();
+		ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
+		ArrayList<StringProperty> reportRow;
+		table.getItems().clear();
+		for (Farm f : this.farms) {
+			try {
+				this.textReport = Report.rangeReport(f, Integer.parseInt(this.startYearChoice), this.startMonthChoice,Integer.parseInt(this.startDateChoice),Integer.parseInt(this.endYearChoice), this.endMonthChoice,Integer.parseInt(this.endDateChoice));
+				reportRow = new ArrayList<StringProperty>();
+				reportRow.add(0, new SimpleStringProperty(this.textReport.get(0)));
+				reportRow.add(1, new SimpleStringProperty(this.textReport.get(1)));
+				reportRow.add(2, new SimpleStringProperty(this.textReport.get(2)));
+				reportData.add(reportRow);
+
+				pieChartData.add(new PieChart.Data(this.textReport.get(0),
+						Integer.parseInt(this.textReport.get(1))));
+
+			} catch (Exception e) {
+				System.out.println("EXCEPTION IN RANGE REPORT SUBMIT BUTTON ACTION");
+			}
+		}
+
+		System.out.println("User Selected Report is produced");
+		
+		// If we haven't already done so, add a export button
+		if (endInfo != null && endInfo.getChildren()!= null && endInfo.getChildren().size() == 7) {
+			Button rangeReportExportButton = new Button("Export Report Results");
+			rangeReportExportButton.setOnAction(e -> this.rangeReportExportFile());
+			endInfo.getChildren().add(rangeReportExportButton);
+		}
+
+		table.setItems(reportData);
+		// little bit of a hack right now. you get the idea
+		pieChart = new PieChart(pieChartData);
+		pieChart.setTitle("Total for Range");
+		tableGroup.setRight(pieChart);
+
+	}
+ 	private void annualReportExportFile() {
 		// Setting up the annual report export page
 		VBox exportBox = new VBox();
 		TextField filePathField = new TextField();
@@ -1160,11 +1323,91 @@ public class Main extends Application {
 						confirmExport.setTitle("Success!");
 						confirmExport.setContentText("The file was created successfully.");
 						confirmExport.showAndWait();
-						submitGroup.getChildren().remove(2);
-						this.annualReportButtonAction();
+						submitGroup.getChildren().remove(3);
+						this.monthlyReportButtonAction();
 					}
 					catch (Exception e) {
 						Alert fileMakingError = new Alert(AlertType.ERROR);
+						fileMakingError.setTitle("Error");
+						fileMakingError.setContentText("Sorry, there was an error writing the file.");
+						fileMakingError.showAndWait();
+					}
+				}
+			}
+			else {
+				Alert pathAlert = new Alert(AlertType.ERROR);
+				pathAlert.setTitle("Error");
+				pathAlert.setContentText("There was an error finding the correct path.");
+				pathAlert.showAndWait();
+			}
+		});		
+	}
+	private void rangeReportExportFile() {
+		// Setting up the monthly report export page
+		VBox exportBox = new VBox();
+		TextField filePathField = new TextField();
+		TextField fileNameField = new TextField();
+		filePathField.setPromptText("Ex: /Users/Solly/Desktop");
+		fileNameField.setPromptText("Ex: January-March2019_Output");
+		Button exportFileButton = new Button("Export File");
+		exportBox.getChildren().addAll(
+				new Label("Enter the path where you would like the file saved: "), filePathField,
+				new Label("Enter the name to give the output file: "), fileNameField,
+				exportFileButton);
+		root.setCenter(exportBox);
+				
+		exportFileButton.setOnAction(userClick ->{
+			File filePath = new File(filePathField.getText());
+			boolean pathExists = filePath.exists();
+				
+			if (pathExists) {
+				File fileName = new File(filePath, fileNameField.getText() + ".txt");
+				boolean nameAlreadyExists = fileName.exists();
+				boolean writeFile = true;
+						
+				if (nameAlreadyExists) {
+					writeFile = false;
+					Alert nameAlert = new Alert(AlertType.CONFIRMATION);
+					nameAlert.setTitle(null);
+					nameAlert.setContentText("A file with that name already exists." + System.lineSeparator()
+						+ "Pressing \"OK\" will overwrite the existing file.");
+					final Optional<ButtonType> nameResult = nameAlert.showAndWait();
+					if (nameResult.isPresent() && nameResult.get() == ButtonType.OK) {
+						writeFile = true;
+					}
+				}
+						
+				if (writeFile) {
+					try {
+						if (!nameAlreadyExists) {
+							fileName.createNewFile();
+						}
+						FileWriter output = new FileWriter(fileName);
+						String titleString = "Farm Report starting at " + this.startMonthChoice + " " + this.startDateChoice + " " + this.startYearChoice;
+						titleString += " and ending at " + this.endMonthChoice + " " + this.endDateChoice  + " " + this.endYearChoice;
+						output.write(titleString + "\n");
+								
+						output.write("Farm ID, Total Weight, Percent of All Farms\n");
+						for (Farm f : this.farms) {
+							String farmString = "";
+							this.textReport = Report.rangeReport(f, Integer.parseInt(this.startYearChoice), this.startMonthChoice,Integer.parseInt(this.startDateChoice),Integer.parseInt(this.endYearChoice), this.endMonthChoice,Integer.parseInt(this.endDateChoice));
+							farmString += textReport.get(0) + ", ";
+							farmString += textReport.get(1) + ", ";
+							farmString += textReport.get(2) + "\n";
+							output.write(farmString);
+						}
+						output.close();
+
+						Alert confirmExport = new Alert(AlertType.CONFIRMATION);
+						confirmExport.setTitle("Success!");
+						confirmExport.setContentText("The file was created successfully.");
+						confirmExport.showAndWait();
+						endInfo.getChildren().remove(7);
+						this.dateRangeReportButtonAction();
+					}
+					catch (Exception e) {
+						Alert fileMakingError = new Alert(AlertType.ERROR);
+						e.printStackTrace();
 						fileMakingError.setTitle("Error");
 						fileMakingError.setContentText("Sorry, there was an error writing the file.");
 						fileMakingError.showAndWait();
