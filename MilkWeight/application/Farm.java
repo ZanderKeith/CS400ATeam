@@ -26,11 +26,19 @@
  */
 package application;
 
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
 /**
  * Farm - Stores milk data related to specific farm and can retrieve it from
  * various time windows
  * 
  * @author zkeith
+ *
+ */
+/**
+ * @author yun91
  *
  */
 public class Farm {
@@ -193,6 +201,66 @@ public class Farm {
 	// Getter but no setter because we don't want to change farm's ID
 	public String getFarmID() {
 		return this.farmID;
+	}
+	
+	public Set<String> getYearSet(){
+		TreeSet<String> castSet = new TreeSet<String>();
+		for(Integer i : milkData.getYearList()) {
+			castSet.add(Integer.toString(i));
+		}
+		return castSet;
+	}
+	
+	public List<Integer> getYearIntList(){
+		return milkData.getYearList();
+	}
+	
+	public int getTotalWeightDay(int year, int month, int day) {
+		return milkData.get(year, month, day);
+	}
+	
+	/**
+	 * Overloaded method for adding using a string month
+	 * @param year
+	 * @param userMonthChoice - a string E.g. January, February, etc
+	 * @param day
+	 * @param weight
+	 */
+	public void addInput(int year, String month, int day, int weight) {
+		try {
+			addInput(year, monthStringToInt(month), day, weight);
+		}
+		
+		// There won't be any exceptions when this is called in main
+		catch(Exception e) {}
+	}
+	
+	
+	
+	/**
+	 * Given a String representing a month, this returns the integer of the 
+	 * month.  Capitalization doesn't matter.  So january should return 1,
+	 * and MAY should return 5. 
+	 * @param month - a string meant to be the name of the month
+	 * @throws IllegalArgumentException if month input does not match a month
+	 * @return the integer
+	 */
+	public static int monthStringToInt(String month) throws IllegalArgumentException{
+		if (month.equalsIgnoreCase("January")) {return 1;}
+		if (month.equalsIgnoreCase("February")) {return 2;}
+		if (month.equalsIgnoreCase("March")) {return 3;}
+		if (month.equalsIgnoreCase("April")) {return 4;}
+		if (month.equalsIgnoreCase("May")) {return 5;}
+		if (month.equalsIgnoreCase("June")) {return 6;}
+		if (month.equalsIgnoreCase("July")) {return 7;}
+		if (month.equalsIgnoreCase("August")) {return 8;}
+		if (month.equalsIgnoreCase("September")) {return 9;}
+		if (month.equalsIgnoreCase("October")) {return 10;}
+		if (month.equalsIgnoreCase("November")) {return 11;}
+		if (month.equalsIgnoreCase("December")) {return 12;}
+		
+		throw new IllegalArgumentException();
+		
 	}
 
 }
