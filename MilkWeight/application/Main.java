@@ -216,12 +216,12 @@ public class Main extends Application {
 
 		// used in the event a user wants to input a file or farm
 		Button inputSubmit = new Button("Submit");
-		inputSubmit.setOnAction((event) -> this.importFileButtonAction(inputText));
+		//inputSubmit.setOnAction((event) -> this.importFileButtonAction(inputText));
 
-		Button importFileButton = new Button("Import File");
-		importFileButton.setOnAction(new InputHandler(importFileButton,
-				"Enter file name. Example : C:\\Users\\<User>\\eclipse-workspace\\CS400ATeam\\MilkWeight\\csv\\small\\2019-1.csv",
-				inputSubmit, inputText));
+		//Button importFileButton = new Button("Import File");
+		//importFileButton.setOnAction(new InputHandler(importFileButton,
+				//"Enter file name. Example : C:\\Users\\<User>\\eclipse-workspace\\CS400ATeam\\MilkWeight\\csv\\small\\2019-1.csv",
+				//inputSubmit, inputText));
 
 
 		Button exportAsCSVButton = new Button("Export as CSV");
