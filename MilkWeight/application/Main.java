@@ -22,6 +22,7 @@
 package application;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -335,12 +336,36 @@ public class Main extends Application {
 			alert.setHeaderText(null);
 			alert.setContentText("Successful! Your file has been recorded.");
 			alert.showAndWait();
-		} catch (Exception e) {
+		} catch (FileNotFoundException e) {
 			Alert alert = new Alert(AlertType.WARNING);
-			alert.setTitle("File Error");
+			alert.setTitle("File Path Error");
 			alert.setHeaderText(null);
 			alert.setContentText(
 					"We are sorry. We were unable to read the file. Please check your file path and try again.");
+			alert.showAndWait();
+		}
+		catch (NumberFormatException e) {
+			Alert alert = new Alert(AlertType.WARNING);
+			alert.setTitle("Invalid Input");
+			alert.setHeaderText("There was a problem processing your file" +System.lineSeparator() +"due to the following line in your file:" + e.getMessage());
+			alert.setContentText(
+					"We are sorry. We were unable to process your file." +System.lineSeparator()+"Please consider removing the line that contains" +e.getMessage());
+			alert.showAndWait();
+		}
+		catch (ArrayIndexOutOfBoundsException e) {
+			Alert alert = new Alert(AlertType.WARNING);
+			alert.setTitle("Missing Data");
+			alert.setHeaderText("There might be missing data in your file.");
+			alert.setContentText(
+					"We are sorry. We were unable to process your file." +System.lineSeparator()+"Please make sure your file does not contain missing data.");
+			alert.showAndWait();
+		}
+		catch (Exception e) {
+			Alert alert = new Alert(AlertType.WARNING);
+			alert.setTitle("Unexpected Error");
+			alert.setHeaderText(null);
+			alert.setContentText(
+					"We are sorry. We were unable to read the file. Please try again.");
 			alert.showAndWait();
 		}
 		inputText.clear();
