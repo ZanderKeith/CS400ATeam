@@ -1,0 +1,5 @@
+Farm Report for 2019
+Farm ID, Total Weight, Percent of All Farms
+Farm 0, 399265, 35.62 %
+Farm 1, 515239, 45.96 %
+Farm 2, 206534, 18.42 %
