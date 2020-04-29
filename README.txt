@@ -1,7 +1,7 @@
 README
 
 Course: cs400
-Semester: Fall 2019
+Semester: Spring 2020
 Project name: Milk Weight
 Team Members:
 1. Zander Keith,   LEC001, zkeith@wisc.edu
@@ -16,6 +16,3 @@ Members 1, 2, 3, & 5 were on the same xteam.
 
 Other notes or comments to the grader:
 
-
-
- 
