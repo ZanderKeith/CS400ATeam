@@ -22,6 +22,7 @@
 package application;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -56,6 +57,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 /**
@@ -149,7 +152,11 @@ public class Main extends Application {
 	public void start(Stage primaryStage) throws Exception {
 		// Labels
 		Label fileLabel = new Label("File");
+		fileLabel.setFont(new Font("Arial", 18));
+		fileLabel.setTextFill(Color.web("#ffffff"));
 		Label reportLabel = new Label("Report");
+		reportLabel.setFont(new Font("Arial", 18));
+		reportLabel.setTextFill(Color.web("#ffffff"));
 		Label monthLabel = new Label("Month: ");
 		Label yearLabel = new Label("Year: ");
 		Label farmIDLabel = new Label("Farm ID: ");
@@ -236,7 +243,7 @@ public class Main extends Application {
 
 		ImageView cowImage = new ImageView();
 		cowImage.setImage(new Image("cow.jpg"));
-		cowImage.setFitHeight(WINDOW_HEIGHT / 8);
+		cowImage.setFitHeight(WINDOW_HEIGHT / 6);
 		cowImage.setPreserveRatio(true);
 
 		VBox leftOptionPanel = new VBox();
@@ -244,7 +251,7 @@ public class Main extends Application {
 										// elsewhere
 		leftOptionPanel.setPadding(new Insets(15, 15, 15, 15)); // TODO verify insets are allowed
 																// (javafx.geometry)
-		leftOptionPanel.setStyle("-fx-background-color: #00FF00;");
+		leftOptionPanel.setStyle("-fx-background-color: #1d4c2c;");
 		leftOptionPanel.getChildren().addAll(homeButton, fileOptionGroup, reportOptionGroup,
 				cowImage);
 
@@ -286,8 +293,22 @@ public class Main extends Application {
 		reportPanel.setPadding(new Insets(15, 15, 15, 15));
 
 		// Home panel with instructions
-		homePanel.setTop(new Label(
-				"Welcome! \n How to use: \n Go to import CSV file and input path to file you want to read, then click submit \n Then go to Farm Report to see data. There you can select a farm ID and year to see data."));
+
+		ImageView homeTop = new ImageView(new Image("hometop.png"));
+		homeTop.setFitHeight(200);
+		homeTop.setPreserveRatio(true);
+		homePanel.setTop(homeTop);
+		ImageView homeLeft = new ImageView(new Image("homeleft.png"));
+		homeLeft.setFitHeight(420);
+		homeLeft.setPreserveRatio(true);
+		ImageView homeRight = new ImageView(new Image("homeright.png"));
+		homeRight.setFitHeight(420);
+		homeRight.setPreserveRatio(true);
+		homePanel.setTop(homeTop);
+		homePanel.setLeft(homeLeft);
+		homePanel.setRight(homeRight);
+		//		homePanel.setTop(new Label(
+//				"Welcome! \n How to use: \n Go to import CSV file and input path to file you want to read, then click submit \n Then go to Farm Report to see data. There you can select a farm ID and year to see data."));
 		homePanel.setMinWidth(800);
 
 		// Not implemented panel
@@ -330,12 +351,36 @@ public class Main extends Application {
 			alert.setHeaderText(null);
 			alert.setContentText("Successful! Your file has been recorded.");
 			alert.showAndWait();
-		} catch (Exception e) {
+		} catch (FileNotFoundException e) {
 			Alert alert = new Alert(AlertType.WARNING);
-			alert.setTitle("File Error");
+			alert.setTitle("File Path Error");
 			alert.setHeaderText(null);
 			alert.setContentText(
 					"We are sorry. We were unable to read the file. Please check your file path and try again.");
+			alert.showAndWait();
+		}
+		catch (NumberFormatException e) {
+			Alert alert = new Alert(AlertType.WARNING);
+			alert.setTitle("Invalid Input");
+			alert.setHeaderText("There was a problem processing your file" +System.lineSeparator() +"due to the following line in your file:" + e.getMessage());
+			alert.setContentText(
+					"We are sorry. We were unable to process your file." +System.lineSeparator()+"Please consider removing the line that contains" +e.getMessage());
+			alert.showAndWait();
+		}
+		catch (ArrayIndexOutOfBoundsException e) {
+			Alert alert = new Alert(AlertType.WARNING);
+			alert.setTitle("Missing Data");
+			alert.setHeaderText("There might be missing data in your file.");
+			alert.setContentText(
+					"We are sorry. We were unable to process your file." +System.lineSeparator()+"Please make sure your file does not contain missing data.");
+			alert.showAndWait();
+		}
+		catch (Exception e) {
+			Alert alert = new Alert(AlertType.WARNING);
+			alert.setTitle("Unexpected Error");
+			alert.setHeaderText(null);
+			alert.setContentText(
+					"We are sorry. We were unable to read the file. Please try again.");
 			alert.showAndWait();
 		}
 		inputText.clear();

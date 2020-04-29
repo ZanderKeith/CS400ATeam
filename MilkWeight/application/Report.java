@@ -22,7 +22,10 @@
 package application;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 
 /**
@@ -80,11 +83,29 @@ public class Report {
 				}
 
 			}
+
 			buff.close();
-		} catch (Exception e) {
+		} catch (FileNotFoundException e) {
+
 			System.out.println("UNEXPECTED EXCEPTION PARSING FILE");
+			throw new FileNotFoundException();
+		}
+		catch (NumberFormatException e) {
+			StringWriter errors = new StringWriter();
+			e.printStackTrace(new PrintWriter(errors));
+			String line1 = errors.toString().split(System.lineSeparator())[0];
+			line1=line1.split(":")[2];
+		//	System.out.println(errors.toString());
+			throw new NumberFormatException(line1);
+		}
+		catch (ArrayIndexOutOfBoundsException e) {
+			throw e;
+		}
+		catch (Exception e) {
+			System.out.println("Other Exception");
 			e.printStackTrace();
 			throw new Exception();
+			
 		}
 		return farmList;
 	}
@@ -342,6 +363,7 @@ public class Report {
 	 * main method just to see if it works comment this out for the Main.java
 	 */
 	public static void main(String[] args) throws Exception {
+		/*
 		ArrayList<Farm> farms = new ArrayList<Farm>();
 		Report.parseFile("./csv/small/2019-1.csv", farms);
 		Report.parseFile("./csv/small/2019-2.csv", farms);
@@ -349,6 +371,7 @@ public class Report {
 		System.out.println(Report.farmReport(farms.get(1), -1, "ALL"));
 		System.out.println(Report.farmReport(farms.get(2), 2019, "January"));
 		System.out.println(Report.farmReport(farms.get(2), 2019, "ALL"));
+		*/
 
 	}
 
