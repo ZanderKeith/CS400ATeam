@@ -22,7 +22,6 @@
 package application;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.util.ArrayList;
@@ -307,17 +306,15 @@ public class Main extends Application {
 		reportPanel.setPadding(new Insets(15, 15, 15, 15));
 
 		// Home panel with instructions
-		FileInputStream homeTopImageFile = new FileInputStream("hometop.png");
-		ImageView homeTop = new ImageView(new Image(homeTopImageFile));
+
+		ImageView homeTop = new ImageView(new Image("hometop.png"));
 		homeTop.setFitHeight(200);
 		homeTop.setPreserveRatio(true);
 		homePanel.setTop(homeTop);
-		FileInputStream homeLeftImageFile = new FileInputStream("homeleft.png");
-		ImageView homeLeft = new ImageView(new Image(homeLeftImageFile));
+		ImageView homeLeft = new ImageView(new Image("homeleft.png"));
 		homeLeft.setFitHeight(420);
 		homeLeft.setPreserveRatio(true);
-		FileInputStream homeRightImageFile = new FileInputStream("homeright.png");
-		ImageView homeRight = new ImageView(new Image(homeRightImageFile));
+		ImageView homeRight = new ImageView(new Image("homeright.png"));
 		homeRight.setFitHeight(420);
 		homeRight.setPreserveRatio(true);
 		homePanel.setTop(homeTop);
