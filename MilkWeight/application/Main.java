@@ -57,8 +57,13 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
+
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+
 import javafx.stage.Stage;
 
 /**
@@ -193,6 +198,22 @@ public class Main extends Application {
 		Button homeButton = new Button("Home");
 		homeButton.setOnAction(e -> homeButtonAction());
 
+
+		// --- File import UI functionality ---
+		FileChooser chooser = new FileChooser();
+		chooser.setTitle("Choose a CSV file");
+		chooser.getExtensionFilters().add(new ExtensionFilter("Milk Data", "*.csv"));
+		
+		Button importFileButton = new Button("Import File");
+		importFileButton.setOnAction(e -> {	
+			File chosen = chooser.showOpenDialog(root.getScene().getWindow());
+			// The chosen file will be null if the window is closed prematurely.
+			if (chosen != null) {
+				this.importFileButtonAction(chosen.getAbsolutePath());
+			}
+		});
+		// --- End file import UI functionality ---
+
 		// used in the event a user wants to input a file or farm
 		Button inputSubmit = new Button("Submit");
 		inputSubmit.setOnAction((event) -> this.importFileButtonAction(inputText));
@@ -201,6 +222,7 @@ public class Main extends Application {
 		importFileButton.setOnAction(new InputHandler(importFileButton,
 				"Enter file name. Example : C:\\Users\\<User>\\eclipse-workspace\\CS400ATeam\\MilkWeight\\csv\\small\\2019-1.csv",
 				inputSubmit, inputText));
+
 
 		Button exportAsCSVButton = new Button("Export as CSV");
 		exportAsCSVButton.setOnAction(e -> exportAsCSVButtonAction());
@@ -294,6 +316,7 @@ public class Main extends Application {
 
 		// Home panel with instructions
 
+
 		ImageView homeTop = new ImageView(new Image("hometop.png"));
 		homeTop.setFitHeight(200);
 		homeTop.setPreserveRatio(true);
@@ -309,6 +332,7 @@ public class Main extends Application {
 		homePanel.setRight(homeRight);
 		//		homePanel.setTop(new Label(
 //				"Welcome! \n How to use: \n Go to import CSV file and input path to file you want to read, then click submit \n Then go to Farm Report to see data. There you can select a farm ID and year to see data."));
+
 		homePanel.setMinWidth(800);
 
 		// Not implemented panel
@@ -334,18 +358,15 @@ public class Main extends Application {
 		System.out.println("Home Button Pressed");
 	}
 
-	/**
-	 * Handles finding and parsing an input file
-	 * 
-	 * @param inputText text field for the file
-	 */
-	private void importFileButtonAction(TextField inputText) {
-		System.out.println("User entered: \"" + inputText.getText() + "\"");
+
+	private void importFileButtonAction(String inputText) {
+		System.out.println("User entered: \"" + inputText + "\"");
+
 		// This is super cringe rn sorry team, just here to make it work and no further
 		// Shouldn't take long to move though, just this one line is what's needed to
 		// get the input
 		try {
-			Main.farms = Report.parseFile(inputText.getText(), farms);
+			Main.farms = Report.parseFile(inputText, farms);
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle("File Read");
 			alert.setHeaderText(null);
@@ -382,8 +403,7 @@ public class Main extends Application {
 			alert.setContentText(
 					"We are sorry. We were unable to read the file. Please try again.");
 			alert.showAndWait();
-		}
-		inputText.clear();
+		}			
 		this.updateComboBoxes(farmComboBox, yearComboBox);
 	}
 
