@@ -22,6 +22,7 @@
 package application;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.util.ArrayList;
@@ -64,6 +65,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 /**
@@ -157,7 +160,11 @@ public class Main extends Application {
 	public void start(Stage primaryStage) throws Exception {
 		// Labels
 		Label fileLabel = new Label("File");
+		fileLabel.setFont(new Font("Arial", 18));
+		fileLabel.setTextFill(Color.web("#ffffff"));
 		Label reportLabel = new Label("Report");
+		reportLabel.setFont(new Font("Arial", 18));
+		reportLabel.setTextFill(Color.web("#ffffff"));
 		Label monthLabel = new Label("Month: ");
 		Label yearLabel = new Label("Year: ");
 		Label farmIDLabel = new Label("Farm ID: ");
@@ -250,7 +257,7 @@ public class Main extends Application {
 
 		ImageView cowImage = new ImageView();
 		cowImage.setImage(new Image("cow.jpg"));
-		cowImage.setFitHeight(WINDOW_HEIGHT / 8);
+		cowImage.setFitHeight(WINDOW_HEIGHT / 6);
 		cowImage.setPreserveRatio(true);
 
 		VBox leftOptionPanel = new VBox();
@@ -258,7 +265,7 @@ public class Main extends Application {
 										// elsewhere
 		leftOptionPanel.setPadding(new Insets(15, 15, 15, 15)); // TODO verify insets are allowed
 																// (javafx.geometry)
-		leftOptionPanel.setStyle("-fx-background-color: #00FF00;");
+		leftOptionPanel.setStyle("-fx-background-color: #1d4c2c;");
 		leftOptionPanel.getChildren().addAll(homeButton, fileOptionGroup, reportOptionGroup,
 				cowImage);
 
@@ -300,8 +307,24 @@ public class Main extends Application {
 		reportPanel.setPadding(new Insets(15, 15, 15, 15));
 
 		// Home panel with instructions
-		homePanel.setTop(new Label(
-				"Welcome! \n How to use: \n Go to import CSV file and input path to file you want to read, then click submit \n Then go to Farm Report to see data. There you can select a farm ID and year to see data."));
+		FileInputStream homeTopImageFile = new FileInputStream("hometop.png");
+		ImageView homeTop = new ImageView(new Image(homeTopImageFile));
+		homeTop.setFitHeight(200);
+		homeTop.setPreserveRatio(true);
+		homePanel.setTop(homeTop);
+		FileInputStream homeLeftImageFile = new FileInputStream("homeleft.png");
+		ImageView homeLeft = new ImageView(new Image(homeLeftImageFile));
+		homeLeft.setFitHeight(420);
+		homeLeft.setPreserveRatio(true);
+		FileInputStream homeRightImageFile = new FileInputStream("homeright.png");
+		ImageView homeRight = new ImageView(new Image(homeRightImageFile));
+		homeRight.setFitHeight(420);
+		homeRight.setPreserveRatio(true);
+		homePanel.setTop(homeTop);
+		homePanel.setLeft(homeLeft);
+		homePanel.setRight(homeRight);
+		//		homePanel.setTop(new Label(
+//				"Welcome! \n How to use: \n Go to import CSV file and input path to file you want to read, then click submit \n Then go to Farm Report to see data. There you can select a farm ID and year to see data."));
 		homePanel.setMinWidth(800);
 
 		// Not implemented panel
