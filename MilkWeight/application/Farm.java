@@ -42,8 +42,8 @@ import java.util.TreeSet;
  *
  */
 public class Farm {
-	private String farmID;
-	private TrieTree milkData;
+	private String farmID; // identification for a specific farm
+	private TrieTree milkData; // reference to a tree of milk data for this farm
 
 	/**
 	 * No-Arg constructor should never be called, only happens when no farmID is
@@ -57,7 +57,7 @@ public class Farm {
 	/**
 	 * Create a Farm with given ID and new tree for data
 	 * 
-	 * @param farmID
+	 * @param farmID for this farm
 	 */
 	public Farm(String farmID) {
 		this.farmID = farmID;
@@ -82,9 +82,9 @@ public class Farm {
 	}
 
 	/**
-	 * TODO
+	 * Returns the total weight for a specific farm from all time
 	 * 
-	 * @return total milk weight from all available data
+	 * @return totalWeight of milk for this farm
 	 */
 	public int getTotalWeightAll() {
 		int totalWeight = 0;
@@ -98,7 +98,7 @@ public class Farm {
 	 * Iterates through all days in a year and calculates the total milk weight
 	 * 
 	 * @param year
-	 * @return total milk weight of the year
+	 * @return totalWeight for a specific year
 	 */
 	public int getTotalWeightYear(int year) {
 		int totalWeight = 0; // running total
@@ -115,7 +115,7 @@ public class Farm {
 	 * 
 	 * @param year
 	 * @param month
-	 * @return total milk weight for the month
+	 * @return totalWeight for the month for this farm
 	 */
 	public int getTotalWeightMonth(int year, int month) {
 		int totalWeight = 0; // running total
@@ -129,12 +129,8 @@ public class Farm {
 	}
 
 	/**
-	 * 
-	 * Returns the total milk from the time starting at year1/month1/day1 until
-	 * year2/month2/day2, including both entered days.
-	 * 
-	 * If an invalid range is entered, this method throws an illegal argument
-	 * exception.
+	 * Returns the total milk from the time starting at month1/day1/year1 until
+	 * month2/day2/year2, including both entered days.
 	 * 
 	 * @param year1
 	 * @param month1
@@ -142,7 +138,7 @@ public class Farm {
 	 * @param year2
 	 * @param month2
 	 * @param day2
-	 * @throws illegal argument exception if an invalid range is entered
+	 * @throws IllegalArgumentException if an invalid range is entered
 	 * @return total milk weight between specified dates
 	 */
 	public int getTotalWeightRange(int year1, int month1, int day1, int year2, int month2,
@@ -205,11 +201,18 @@ public class Farm {
 		return totalWeight;
 	}
 
-	// Getter but no setter because we don't want to change farm's ID
+	/**
+	 * Getter for this farm's ID. ID should not change so no setter exists
+	 * @return farmID for this farm
+	 */
 	public String getFarmID() {
 		return this.farmID;
 	}
 
+	/**
+	 * Gets a set of the years of data for this farm
+	 * @return castSet a set of years for this farm
+	 */
 	public Set<String> getYearSet() {
 		TreeSet<String> castSet = new TreeSet<String>();
 		for (Integer i : milkData.getYearList()) {
@@ -218,10 +221,22 @@ public class Farm {
 		return castSet;
 	}
 
+	/**
+	 * Gets an ordered list of the years of data for this farm
+	 * @return this farm's tree's yearList
+	 */
 	public List<Integer> getYearIntList() {
 		return milkData.getYearList();
 	}
 
+	/**
+	 * Gets the data for a specified day
+	 * 
+	 * @param year
+	 * @param month
+	 * @param day
+	 * @return the milkweight for a specified day within this farm's data
+	 */
 	public int getTotalWeightDay(int year, int month, int day) {
 		return milkData.get(year, month, day);
 	}
@@ -238,22 +253,19 @@ public class Farm {
 	public void addInput(int year, String month, int day, int weight) throws Exception {
 		try {
 			addInput(year, monthStringToInt(month), day, weight);
-		}
-
-		// There won't be any exceptions when this is called in main
-		catch (Exception e) {
+		} catch (Exception e) { // There won't be any exceptions when this is called in main
 			throw e;
 		}
 	}
 
 	/**
 	 * Given a String representing a month, this returns the integer of the month.
-	 * Capitalization doesn't matter. So january should return 1, and MAY should
+	 * Capitalization doesn't matter. So "january" should return 1, and "MAY" should
 	 * return 5.
 	 * 
 	 * @param month - a string meant to be the name of the month
 	 * @throws IllegalArgumentException if month input does not match a month
-	 * @return the integer
+	 * @return the corresponding integer for the specified month
 	 */
 	public static int monthStringToInt(String month) throws IllegalArgumentException {
 		if (month.equalsIgnoreCase("January")) {
@@ -293,8 +305,6 @@ public class Farm {
 			return 12;
 		}
 
-		throw new IllegalArgumentException();
-
+		throw new IllegalArgumentException(); // month parameter did not match any month
 	}
-
 }
