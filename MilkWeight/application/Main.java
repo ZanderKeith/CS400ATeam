@@ -26,6 +26,7 @@
  */
 package application;
 
+// Java Import Statements
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -35,6 +36,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.TreeSet;
 
+// JavaFx Import Statements
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -64,19 +66,16 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
-
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-
 import javafx.stage.Stage;
 
 /**
  * Main - Launches program window, runs GUI, and holds Farm object data
  * 
- * @author zkeith
+ * @author Zander, Daniel, Matthew, Solly, Hyejin
  *
  */
 public class Main extends Application {
@@ -84,15 +83,12 @@ public class Main extends Application {
 	// NOTE: this.getParameters().getRaw() will get these also
 	private List<String> args;
 
-	//
-	// FARM
-	//
+
+	// The field farms hold list of farms that user inputs to the program
 
 	static ArrayList<Farm> farms = new ArrayList<Farm>();
 
-	//
-	// GUI STUFF
-	//
+	// Fields related to GUI
 
 	private static final int WINDOW_WIDTH = 1000;
 	private static final int WINDOW_HEIGHT = 640;
@@ -104,29 +100,24 @@ public class Main extends Application {
 	private BorderPane notImplementedPanel = new BorderPane();
 	private BorderPane homePanel = new BorderPane();
 
-	// old report stuff
+	// Charts and graphs to display to the user
 	private VBox chartGroup = new VBox();
 	private VBox inputs = new VBox();
-
-	// TODO decide on whether to use new report or old report
-	// new Report stuff
 	private TableView<ArrayList<StringProperty>> table;
 	private BorderPane tableGroup = new BorderPane();
-
 	private PieChart pieChart;
+	private CategoryAxis dateAxis = new CategoryAxis();
+	private NumberAxis percentAxis = new NumberAxis();
+	private BarChart<String, Number> chart = new BarChart<String, Number>(dateAxis, percentAxis);
 
+
+	// List of Farms, Year, Months for the user to choose from
 	private HBox farmIDGroup = new HBox();
 	private HBox yearGroup = new HBox();
 	private HBox monthGroup = new HBox();
 	private HBox submitGroup = new HBox();
 
-
-	// Chart stuff
-	private CategoryAxis dateAxis = new CategoryAxis();
-	private NumberAxis percentAxis = new NumberAxis();
-	private BarChart<String, Number> chart = new BarChart<String, Number>(dateAxis, percentAxis);
-
-	// User Input stuff
+	// Stores User's Choice
 	private String userFarmChoice = "";
 	private String userDateChoice = "";
 	private String userMonthChoice = "";
@@ -137,6 +128,7 @@ public class Main extends Application {
 	HBox endInfo = new HBox();
 	VBox bottomInfo = new VBox();
 	
+	// Stores user's choice for data range report
 	private String startDateChoice = "";
 	private String startMonthChoice = "";
 	private String startYearChoice = "";
@@ -144,7 +136,7 @@ public class Main extends Application {
 	private String endMonthChoice = "";
 	private String endYearChoice = "";
 
-	// Test Report to the user
+	// Text Report to the user. I gets used to generate charts/graphs
 	private ArrayList<String> textReport = null;
 
 	// Repeatedly updated combo boxes
@@ -159,13 +151,15 @@ public class Main extends Application {
 
 	/**
 	 * Sets up all GUI elements.
+	 * @param primaryStage main stage for GUI
+	 * @throws Exception
 	 */
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		// Labels
+		// Labels with style
 		Label fileLabel = new Label("File");
 		fileLabel.setFont(new Font("Arial", 18));
-		fileLabel.setTextFill(Color.web("#ffffff"));
+		fileLabel.setTextFill(Color.web("#ffffff")); // white color
 		Label reportLabel = new Label("Report");
 		reportLabel.setFont(new Font("Arial", 18));
 		reportLabel.setTextFill(Color.web("#ffffff"));
@@ -180,11 +174,10 @@ public class Main extends Application {
 		TextField inputText = new TextField();
 
 		// Initialize Drop Downs
-
 		monthComboBox.setItems(monthItems);
 		monthComboBox.setOnAction((event) -> {
 			this.userMonthChoice = monthComboBox.getValue();
-			System.out.println("User picked the month : " + userMonthChoice);
+			//System.out.println("User picked the month : " + userMonthChoice);
 		});
 
 		ObservableList<String> yearItems = FXCollections.observableArrayList("No Data Yet");
@@ -373,7 +366,7 @@ public class Main extends Application {
 
 
 	private void importFileButtonAction(String inputText) {
-		System.out.println("User entered: \"" + inputText + "\"");
+		// System.out.println("User entered: \"" + inputText + "\"");
 
 		// This is super cringe rn sorry team, just here to make it work and no further
 		// Shouldn't take long to move though, just this one line is what's needed to
@@ -415,12 +408,6 @@ public class Main extends Application {
 			alert.showAndWait();
 		}
 		catch (Exception e) {
-			Alert alert = new Alert(AlertType.WARNING);
-			alert.setTitle("Unexpected Error");
-			alert.setHeaderText(null);
-			alert.setContentText(
-					"We are sorry. We were unable to process the file. Please try again.");
-			alert.showAndWait();
 		}			
 		this.updateComboBoxes(farmComboBox, yearComboBox);
 	}
