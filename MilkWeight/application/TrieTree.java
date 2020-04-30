@@ -39,34 +39,57 @@ import java.util.List;
  * @author sparenti
  */
 public class TrieTree {
-	// Private class containing all of the data we will need for the whole year.
-	private class TrieTreeYearNode {
-		TrieTreeMonthNode[] months;
 
-		private TrieTreeYearNode(int year) {
+	/**
+	 * 
+	 * TrieTreeYearNode - inner class that forms top level structure of Trie.
+	 * Contains all data needed for a particular year. Expects year identifier to be
+	 * handled where nodes are stored
+	 *
+	 */
+	private class TrieTreeYearNode {
+		TrieTreeMonthNode[] months; // All months in given year
+
+		/**
+		 * Create a new TrieTreeYearNode
+		 */
+		private TrieTreeYearNode() {
+			// Initialize months array
 			this.months = new TrieTreeMonthNode[12];
 		}
 	}
 
 	/**
 	 *
-	 * TrieTreeMonthNode -This class holds an array corresponding to the days of the
-	 * month
+	 * TrieTreeMonthNode - Inner class forming midlevel structure of TrieTree. This
+	 * class holds an array corresponding to the days of the month
 	 *
 	 */
 	private class TrieTreeMonthNode {
-		TrieTreeDayNode[] days;
+		TrieTreeDayNode[] days; // All days in given month
 
+		/**
+		 * Create new TrieTreeMonthNode
+		 * 
+		 * @param daysInMonth
+		 */
 		private TrieTreeMonthNode(int daysInMonth) {
+			// Initialize months array of correct length
 			this.days = new TrieTreeDayNode[daysInMonth];
 		}
 
 	}
 
+	/**
+	 * 
+	 * TrieTreeDayNode - Inner class forming leafs of TrieTree. Holds a weight for a
+	 * given day
+	 */
 	private class TrieTreeDayNode {
-		int weight;
+		int weight; // weight for given day
 
 		private TrieTreeDayNode() {
+			// begin with weight being 0
 			this.weight = 0;
 		}
 	}
@@ -74,7 +97,11 @@ public class TrieTree {
 	// HashMap of YearNodes to store our trietree data
 	private HashMap<Integer, TrieTreeYearNode> treeYearMap;
 
+	/**
+	 * Create a new TrieTree
+	 */
 	public TrieTree() {
+		// Initialize hash map for storing all year nodes
 		this.treeYearMap = new HashMap<Integer, TrieTreeYearNode>();
 	}
 
@@ -82,45 +109,52 @@ public class TrieTree {
 	 * This method adds a leaf with value weight under the correct date. If the leaf
 	 * already exists, this method updates the weight. This method uses normal human
 	 * conventions for the day and month, no need to worry about array indexing. So
-	 * month = 1 and day = 1 means the date January 1st
+	 * month = 1 and day = 1 means the date January 1st. Expects date to be valid
+	 * ex: no February 31st.
 	 * 
+
 	 * @param year
 	 * @param month
 	 * @param day
 	 * @param weight
 	 * @throws Exception 
+
 	 */
 	public void insert(int year, int month, int day, int weight) throws Exception {
 		// First, check if this year is already in the array
 		if (!this.treeYearMap.containsKey(year)) {
-			this.treeYearMap.put(year, new TrieTreeYearNode(year));
+			this.treeYearMap.put(year, new TrieTreeYearNode());
 		}
 
 		// Next, check if we have already added data for that month
 		if (this.treeYearMap.get(year).months[month - 1] == null) {
-			int lengthOfMonth;
-			if (month == 2 && isLeapYear(year)) {
+			int lengthOfMonth; // number of days in month
+			if (month == 2 && isLeapYear(year)) { // if leap year, february has 29
 				lengthOfMonth = 29;
-			} else if (month == 2 && !isLeapYear(year)) {
+			} else if (month == 2 && !isLeapYear(year)) { // if no leap year, february has 28
 				lengthOfMonth = 28;
+				// 30 days hath September, April, June, and November
 			} else if (month == 4 || month == 6 || month == 9 || month == 11) {
 				lengthOfMonth = 30;
+				// All the rest have 31
 			} else {
 				lengthOfMonth = 31;
 			}
+			// no data added for month, create new monthNode
 			this.treeYearMap.get(year).months[month - 1] = new TrieTreeMonthNode(lengthOfMonth);
 		}
 
 		// Next, we check if we have already added data for that day
 		if (this.treeYearMap.get(year).months[month - 1].days[day - 1] == null) {
+			// No data for day yet, create it
 			this.treeYearMap.get(year).months[month - 1].days[day - 1] = new TrieTreeDayNode();
 		}
+
 		else {
 			this.treeYearMap.get(year).months[month - 1].days[day - 1].weight = weight;
 			throw new Exception("Data Overwritten.");
 		}
 		
-		this.treeYearMap.get(year).months[month - 1].days[day - 1].weight = weight;
 	}
 
 	/**
@@ -130,26 +164,48 @@ public class TrieTree {
 	 * @return true if the year is a leap year, false otherwise
 	 */
 	private boolean isLeapYear(int yearInt) {
+		// Gregorian calendar has leap years on multiples of 4, not multiples of 100,
+		// but yes on multiples of 400.
+
 		if (yearInt % 4 != 0) {
+			// not a multiple of 4, return false
 			return false;
 		} else if (yearInt % 100 != 0) {
+			// multiple of 4 but not a multiple of 100, return true
 			return true;
 		} else if (yearInt % 400 != 0) {
+			// multiple of 100 but not multiple of 400, return false
 			return false;
 		} else {
+			// multiple of 400, return true
 			return true;
 		}
 	}
 
-	// Gets weight for specified date. Returns 0 if no data for this date exists
+	/**
+	 * Gets weight for specified date. Returns 0 if no data for this date exists.
+	 * 
+	 * @param year date's year
+	 * @param month date's month
+	 * @param day date's day
+	 * @return milk weight for given date
+	 */
 	public int get(int year, int month, int day) {
+		// If node doesn't exist return 0
 		if (!contains(year, month, day)) {
 			return 0;
 		}
 		return this.treeYearMap.get(year).months[month - 1].days[day - 1].weight;
 	}
 
-	// True if data for date exists, false otherwise
+	/**
+	 * Determines if data for date exists
+	 * 
+	 * @param year date's year
+	 * @param month date's month
+	 * @param day date's day
+	 * @return true if data for date exists, false otherwise
+	 */
 	public boolean contains(int year, int month, int day) {
 		// First, check if we have data for that year
 		if (!this.treeYearMap.containsKey(year)) {
@@ -175,8 +231,13 @@ public class TrieTree {
 
 	}
 
-	// Removes node for date. Returns true if successfully removed,
-	// false otherwise
+	/**
+	 * Removes node for date
+	 * @param year date's year
+	 * @param month date's month
+	 * @param day date's day
+	 * @return true if successfully removed, false otherwise
+	 */
 	public boolean remove(int year, int month, int day) {
 		if (!contains(year, month, day)) {
 			return false;
@@ -208,14 +269,17 @@ public class TrieTree {
 		this.treeYearMap.remove(year);
 		return true;
 	}
-	
+
 	/**
-	 * This method returns a sorted list of integers containing all of 
-	 * the years in which this trietree has data for
-	 * @return
+	 * Makes list of years in TrieTree
+	 * 
+	 * @return sorted list of integers containing all of the years in
+	 * which this TrieTree has data for
 	 */
 	public List<Integer> getYearList() {
+		// list for years
 		List<Integer> yearList = new ArrayList<Integer>();
+		// If top hashMap has a key for year, that year exists
 		for (Integer year : treeYearMap.keySet()) {
 			yearList.add(year);
 		}
