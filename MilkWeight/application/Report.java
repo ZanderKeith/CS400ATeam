@@ -115,6 +115,19 @@ public class Report {
 		return farmList;
 	}
 
+	/**
+	 * Get all farm ID's from a specified source file. TODO actual exception
+	 * handling
+	 * 
+	 * @param sourceFile
+	 * @return
+	 */
+	private ArrayList<String> getFarmsInSource(String sourceFile) {
+		ArrayList<String> farmIDs = new ArrayList<String>();
+
+		return null;
+	}
+
 	enum Month {
 		ALL, January, February, March, April, May, June, July, August, September, October,
 		November, December;
