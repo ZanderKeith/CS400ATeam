@@ -28,4 +28,4 @@ Known Bugs:
 Planned:
     1. Implementing "All" funcitonality on Annual and Monthly Report 
     2. Enable user to cancel overwriting the existing data. Currently the data for the same date gets overwritten.
-    3. Enable user to delete specific data. Currently the user can only remove a farm completely.
+    3. Enable user to delete specific data. Currently the user can only remove a farm completely. The user could overwrite the weight to be zero, which will practically remove the data, but it would be nice if this funcitonality is more obvious to the user. 
