@@ -255,7 +255,11 @@ public class Main extends Application {
 
 		ImageView cowImage = new ImageView();
 		cowImage.setImage(new Image("file:cow.jpg")); // file: prefix completes a valid relative
-														// URI
+                										// URI
+		if(System.getProperty("os.name").toLowerCase().contains("mac")) {
+			cowImage.setImage(new Image("cow.jpg")); 
+			
+		}
 		cowImage.setFitHeight(WINDOW_HEIGHT / 8);
 		cowImage.setPreserveRatio(true);
 
@@ -302,16 +306,25 @@ public class Main extends Application {
 		reportPanel.setCenter(chartGroup);
 		reportPanel.setPadding(new Insets(15, 15, 15, 15));
 
-		// Home panel with instructions
 
+		// Home panel with instructions
 		ImageView homeTop = new ImageView(new Image("file:hometop.png"));
+		if(System.getProperty("os.name").toLowerCase().contains("mac")) {
+			homeTop = new ImageView(new Image("hometop.png"));
+		}
 		homeTop.setFitHeight(200);
 		homeTop.setPreserveRatio(true);
 		homePanel.setTop(homeTop);
 		ImageView homeLeft = new ImageView(new Image("file:homeleft.png"));
+		if(System.getProperty("os.name").toLowerCase().contains("mac")) {
+			homeLeft = new ImageView(new Image("homeleft.png"));
+		}
 		homeLeft.setFitHeight(420);
 		homeLeft.setPreserveRatio(true);
 		ImageView homeRight = new ImageView(new Image("file:homeright.png"));
+		if(System.getProperty("os.name").toLowerCase().contains("mac")) {
+			homeRight = new ImageView(new Image("homeright.png"));
+		}
 		homeRight.setFitHeight(420);
 		homeRight.setPreserveRatio(true);
 		homePanel.setTop(homeTop);
