@@ -197,13 +197,18 @@ public class Report {
 		// If farm doesn't exist return null
 		if (!Main.farms.contains(farmID))
 			return null;
-
+		
+		// Check if going for all years and all months
 		ArrayList<String> data = new ArrayList<String>();
 		if (year == -1) {
+			// iterate through all farms
 			for (int i = 0; i < Main.farms.size(); i++) {
+				// increment total by milk weight in farm
 				total = total + (double) Main.farms.get(i).getTotalWeightAll();
 			}
+			// calculate statistics
 			percent = ((double) farmID.getTotalWeightAll()) / (total) * 100;
+			// add statistics to data
 			data.add(farmID.getFarmID() + " Report from All Available Data");
 			data.add("Total Weight Sold from All Available Data from All Farms: "
 					+ Double.toString(total) + " lb");
@@ -211,6 +216,7 @@ public class Report {
 					+ " %");
 			return data;
 		} else {
+			// not going for all years or all months, just take data from specific year and month
 			for (int i = 0; i < Main.farms.size(); i++) {
 				total = total + (double) Main.farms.get(i).getTotalWeightMonth(year, month);
 			}
