@@ -110,7 +110,7 @@ public class Report {
 			throw new ArrayIndexOutOfBoundsException(Integer.toString(counter));
 		} catch (Exception e) {
 			// Something unusual happened, just throw regular exception
-			//System.out.println("Unexpected Other Exception");
+			// System.out.println("Unexpected Other Exception");
 			throw new Exception();
 
 		}
@@ -156,7 +156,7 @@ public class Report {
 			}
 
 		}
-		// if user selected ALL then 
+		// if user selected ALL then
 		if (monthString.equals("ALL")) {
 			month = -1;
 		}

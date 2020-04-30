@@ -88,7 +88,7 @@ public class TrieTree {
 	 * @param month
 	 * @param day
 	 * @param weight
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public void insert(int year, int month, int day, int weight) throws Exception {
 		// First, check if this year is already in the array
@@ -114,12 +114,11 @@ public class TrieTree {
 		// Next, we check if we have already added data for that day
 		if (this.treeYearMap.get(year).months[month - 1].days[day - 1] == null) {
 			this.treeYearMap.get(year).months[month - 1].days[day - 1] = new TrieTreeDayNode();
-		}
-		else {
+		} else {
 			this.treeYearMap.get(year).months[month - 1].days[day - 1].weight = weight;
 			throw new Exception("Data Overwritten.");
 		}
-		
+
 		this.treeYearMap.get(year).months[month - 1].days[day - 1].weight = weight;
 	}
 
@@ -208,10 +207,11 @@ public class TrieTree {
 		this.treeYearMap.remove(year);
 		return true;
 	}
-	
+
 	/**
-	 * This method returns a sorted list of integers containing all of 
-	 * the years in which this trietree has data for
+	 * This method returns a sorted list of integers containing all of the years in
+	 * which this trietree has data for
+	 * 
 	 * @return
 	 */
 	public List<Integer> getYearList() {

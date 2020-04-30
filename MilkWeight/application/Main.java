@@ -27,7 +27,7 @@
 package application;
 
 // Java Import Statements
-import java.io.File;	
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.util.ArrayList;
@@ -83,7 +83,6 @@ public class Main extends Application {
 	// NOTE: this.getParameters().getRaw() will get these also
 	private List<String> args;
 
-
 	// The field farms hold list of farms that user inputs to the program
 
 	static ArrayList<Farm> farms = new ArrayList<Farm>();
@@ -110,7 +109,6 @@ public class Main extends Application {
 	private NumberAxis percentAxis = new NumberAxis();
 	private BarChart<String, Number> chart = new BarChart<String, Number>(dateAxis, percentAxis);
 
-
 	// List of Farms, Year, Months for the user to choose from
 	private HBox farmIDGroup = new HBox();
 	private HBox yearGroup = new HBox();
@@ -122,12 +120,12 @@ public class Main extends Application {
 	private String userDateChoice = "";
 	private String userMonthChoice = "";
 	private String userYearChoice = "";
-	
+
 	// Setup for the Range Report
 	HBox startInfo = new HBox();
 	HBox endInfo = new HBox();
 	VBox bottomInfo = new VBox();
-	
+
 	// Stores user's choice for data range report
 	private String startDateChoice = "";
 	private String startMonthChoice = "";
@@ -151,6 +149,7 @@ public class Main extends Application {
 
 	/**
 	 * Sets up all GUI elements.
+	 * 
 	 * @param primaryStage main stage for GUI
 	 * @throws Exception
 	 */
@@ -177,7 +176,7 @@ public class Main extends Application {
 		monthComboBox.setItems(monthItems);
 		monthComboBox.setOnAction((event) -> {
 			this.userMonthChoice = monthComboBox.getValue();
-			//System.out.println("User picked the month : " + userMonthChoice);
+			// System.out.println("User picked the month : " + userMonthChoice);
 		});
 
 		ObservableList<String> yearItems = FXCollections.observableArrayList("No Data Yet");
@@ -198,14 +197,13 @@ public class Main extends Application {
 		Button homeButton = new Button("Home");
 		homeButton.setOnAction(e -> homeButtonAction());
 
-
 		// --- File import UI functionality ---
 		FileChooser chooser = new FileChooser();
 		chooser.setTitle("Choose a CSV file");
 		chooser.getExtensionFilters().add(new ExtensionFilter("Milk Data", "*.csv"));
-		
+
 		Button importFileButton = new Button("Import File");
-		importFileButton.setOnAction(e -> {	
+		importFileButton.setOnAction(e -> {
 			File chosen = chooser.showOpenDialog(root.getScene().getWindow());
 			// The chosen file will be null if the window is closed prematurely.
 			if (chosen != null) {
@@ -216,7 +214,6 @@ public class Main extends Application {
 
 		// used in the event a user wants to input a file or farm
 		Button inputSubmit = new Button("Submit");
-
 
 		Button exportAsCSVButton = new Button("Export as CSV");
 		exportAsCSVButton.setOnAction(e -> exportAsCSVButtonAction());
@@ -230,7 +227,7 @@ public class Main extends Application {
 			this.updateComboBoxes(farmComboBox, yearComboBox);
 			sortFarms();
 		});
-		
+
 		Button removeFarmButton = new Button("Remove Farm");
 		removeFarmButton.setOnAction(e -> {
 			removeFarmButtonAction();
@@ -264,7 +261,8 @@ public class Main extends Application {
 				monthlyReportButton, dateRangeReportButton);
 
 		ImageView cowImage = new ImageView();
-		cowImage.setImage(new Image("file:cow.jpg")); // file: prefix completes a valid relative URI
+		cowImage.setImage(new Image("file:cow.jpg")); // file: prefix completes a valid relative
+														// URI
 		cowImage.setFitHeight(WINDOW_HEIGHT / 8);
 		cowImage.setPreserveRatio(true);
 
@@ -282,7 +280,8 @@ public class Main extends Application {
 		// Create Chart group
 		// this image is just a placeholder for the actual chart.
 		ImageView placeholdImage = new ImageView();
-		placeholdImage.setImage(new Image("basically.png")); // file: prefix completes a valid relative URI
+		placeholdImage.setImage(new Image("basically.png")); // file: prefix completes a valid
+																// relative URI
 		placeholdImage.setFitHeight(WINDOW_HEIGHT / 2);
 		placeholdImage.setPreserveRatio(true);
 
@@ -316,7 +315,6 @@ public class Main extends Application {
 
 		// Home panel with instructions
 
-
 		ImageView homeTop = new ImageView(new Image("hometop.png"));
 		homeTop.setFitHeight(200);
 		homeTop.setPreserveRatio(true);
@@ -330,7 +328,7 @@ public class Main extends Application {
 		homePanel.setTop(homeTop);
 		homePanel.setLeft(homeLeft);
 		homePanel.setRight(homeRight);
-		//		homePanel.setTop(new Label(
+		// homePanel.setTop(new Label(
 //				"Welcome! \n How to use: \n Go to import CSV file and input path to file you want to read, then click submit \n Then go to Farm Report to see data. There you can select a farm ID and year to see data."));
 
 		homePanel.setMinWidth(800);
@@ -351,13 +349,13 @@ public class Main extends Application {
 	}
 
 	/**
-	 * This method resets the center panel to the home screen when the home button is pressed
+	 * This method resets the center panel to the home screen when the home button
+	 * is pressed
 	 */
 	private void homeButtonAction() {
 		root.setCenter(homePanel);
 		System.out.println("Home Button Pressed");
 	}
-
 
 	private void importFileButtonAction(String inputText) {
 		// System.out.println("User entered: \"" + inputText + "\"");
@@ -379,38 +377,38 @@ public class Main extends Application {
 			alert.setContentText(
 					"We are sorry. We were unable to read the file. Please check your file path and try again.");
 			alert.showAndWait();
-		}
-		catch (NumberFormatException e) {
+		} catch (NumberFormatException e) {
 			Alert alert = new Alert(AlertType.WARNING);
 			alert.setTitle("Invalid Input");
-			alert.setHeaderText("There was a problem processing your file" +System.lineSeparator() +"due to the following line in your file:" + e.getMessage());
-			alert.setContentText(
-					"We are sorry. We were unable to fully process your file." 
-			+System.lineSeparator()+"Please consider removing the line that contains" 
-							+e.getMessage() +System.lineSeparator() +
-							"Only the date before this line has been processed.");
+			alert.setHeaderText(
+					"There was a problem processing your file" + System.lineSeparator()
+							+ "due to the following line in your file:" + e.getMessage());
+			alert.setContentText("We are sorry. We were unable to fully process your file."
+					+ System.lineSeparator() + "Please consider removing the line that contains"
+					+ e.getMessage() + System.lineSeparator()
+					+ "Only the date before this line has been processed.");
 			alert.showAndWait();
-		}
-		catch (ArrayIndexOutOfBoundsException e) {
+		} catch (ArrayIndexOutOfBoundsException e) {
 			Alert alert = new Alert(AlertType.WARNING);
 			alert.setTitle("Missing Data");
-			alert.setHeaderText("There might be missing data in your file at Line "+ e.getMessage());
-			alert.setContentText(
-					"We are sorry. We were unable to fully process your file." 
-					+ System.lineSeparator()+ "Please make sure your file does not contain missing data."
-					+ System.lineSeparator() + "Only the lines before " +e.getMessage() + " has been processed.");
+			alert.setHeaderText(
+					"There might be missing data in your file at Line " + e.getMessage());
+			alert.setContentText("We are sorry. We were unable to fully process your file."
+					+ System.lineSeparator()
+					+ "Please make sure your file does not contain missing data."
+					+ System.lineSeparator() + "Only the lines before " + e.getMessage()
+					+ " has been processed.");
 			alert.showAndWait();
-		}
-		catch (Exception e) {
-			//System.out.println("Exception Caught");
+		} catch (Exception e) {
+			// System.out.println("Exception Caught");
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle("Duplicate Data");
 			alert.setHeaderText("There might be some duplicate data in your file.");
-			alert.setContentText("All duplicate data have been overwritten."+System.lineSeparator()
-			+ "Consider exporting it as a csv file"+System.lineSeparator() +""
-					+ "to see the current data in our system.");
+			alert.setContentText("All duplicate data have been overwritten."
+					+ System.lineSeparator() + "Consider exporting it as a csv file"
+					+ System.lineSeparator() + "" + "to see the current data in our system.");
 			alert.showAndWait();
-		}			
+		}
 		this.updateComboBoxes(farmComboBox, yearComboBox);
 	}
 
@@ -517,13 +515,13 @@ public class Main extends Application {
 		newFarmBox.getChildren().addAll(new Label("Enter the name of the farm: "), farmName,
 				addFarm);
 		root.setCenter(newFarmBox);
-		
+
 		addFarm.setOnAction(userClickedAdd -> {
 			boolean dupe = false;
 			this.userFarmChoice = farmName.getText();
-		    farmName.clear();
+			farmName.clear();
 			System.out.println("The user wants to add a new farm named " + this.userFarmChoice);
-			
+
 			for (Farm f : farms) {
 				if (f.getFarmID().equals(this.userFarmChoice)) {
 					Alert alert = new Alert(AlertType.ERROR);
@@ -537,7 +535,7 @@ public class Main extends Application {
 					dupe = true;
 				}
 			}
-			
+
 			if (!dupe) {
 				Alert alert = new Alert(AlertType.CONFIRMATION);
 				alert.setTitle("New Farm To Be Added");
@@ -555,13 +553,14 @@ public class Main extends Application {
 	}
 
 	/**
-	 * Handles adding new farm data for a specific farm and day when button is pressed
+	 * Handles adding new farm data for a specific farm and day when button is
+	 * pressed
 	 */
 	private void addNewMilkDataButtonAction() {
 		System.out.println("Add new milk data Button Pressed");
 		root.setCenter(new Label("No farm available in the system."));
 		ComboBox<String> farmIDs = new ComboBox<String>();
-		
+
 		if (farms.size() == 0) {
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle("There is no farm in our system.");
@@ -586,14 +585,14 @@ public class Main extends Application {
 			HBox farmBar = new HBox();
 			farmBar.getChildren().add(new Label("Farm ID : "));
 			farmBar.getChildren().add(farmIDs);
-			
+
 			HBox yearBar = new HBox();
 			yearBar.getChildren().add(new Label("Year : "));
 			TextField yearText = new TextField();
 			yearText.setPromptText("Ex: 2019");
 			yearBar.getChildren().add(yearText);
 			yearText.setOnMouseClicked(e -> yearText.clear());
-			
+
 			HBox monthBar = new HBox();
 			monthBar.getChildren().add(new Label("Month : "));
 			ComboBox<String> months = new ComboBox<String>();
@@ -606,14 +605,14 @@ public class Main extends Application {
 				this.userMonthChoice = months.getValue();
 				System.out.println("User selected month of " + this.userMonthChoice);
 			});
-			
+
 			HBox milkBar = new HBox();
 			milkBar.getChildren().add(new Label("Amount of Milk Sold (lb) :"));
 			TextField milkText = new TextField();
 			milkText.setPromptText("Ex: 293489");
 			milkBar.getChildren().add(milkText);
 			milkText.setOnMouseClicked(e -> milkText.clear());
-			
+
 			HBox dateBar = new HBox();
 			ComboBox<String> dates = new ComboBox<String>();
 			ObservableList<String> numbers = FXCollections.observableArrayList();
@@ -627,7 +626,7 @@ public class Main extends Application {
 				this.userDateChoice = dates.getValue();
 				System.out.println("User chose the date " + userDateChoice);
 			});
-			
+
 			VBox mainPanel = new VBox();
 			Button record = new Button("Record");
 			mainPanel.getChildren().addAll(farmBar, monthBar, dateBar, yearBar, milkBar, record);
@@ -637,9 +636,9 @@ public class Main extends Application {
 				int weight = 0;
 				int year = 0;
 				boolean ready = true;
-				
+
 				System.out.println("User wants to record a new data");
-				
+
 				try {
 					year = Integer.parseInt(yearText.getText());
 				} catch (Exception exp) {
@@ -650,7 +649,7 @@ public class Main extends Application {
 					alert.setContentText("Year can only be an integer value!");
 					alert.showAndWait();
 				}
-				
+
 				try {
 					weight = Integer.parseInt(milkText.getText());
 				} catch (Exception exp) {
@@ -661,19 +660,19 @@ public class Main extends Application {
 					alert.setContentText("Weight can only be an integer value!");
 					alert.showAndWait();
 				}
-				
+
 				if (ready) {
-					
+
 					Alert alert = new Alert(AlertType.CONFIRMATION);
 					alert.setTitle("The following data is being recorded.");
 					alert.setHeaderText("Adding Data for Farm ID: " + this.userFarmChoice + ".");
 					alert.setContentText("Date: " + this.userMonthChoice + " "
 							+ this.userDateChoice + ", " + year + "." + System.lineSeparator()
-							+ "Weight: " + weight + " lb" + System.lineSeparator() +
-							"If there is an existing weight for this date," + System.lineSeparator() +
-							"this new weight will overwrite it." );
+							+ "Weight: " + weight + " lb" + System.lineSeparator()
+							+ "If there is an existing weight for this date,"
+							+ System.lineSeparator() + "this new weight will overwrite it.");
 					final Optional<ButtonType> result = alert.showAndWait();
-					
+
 					if (result.isPresent() && result.get() == ButtonType.OK) {
 						for (Farm f : farms) {
 							if (f.getFarmID().equals(this.userFarmChoice)) {
@@ -685,11 +684,13 @@ public class Main extends Application {
 									Alert alert2 = new Alert(AlertType.INFORMATION);
 									alert2.setTitle(e1.getMessage());
 									alert2.setHeaderText("Data Overwritten!");
-									alert2.setContentText("There was an existing data for: " + this.userMonthChoice + " "
-											+ this.userDateChoice + ", " + year + "." + System.lineSeparator()
-											+ "The new weight " + weight + " lb replaced the existing value.");
+									alert2.setContentText("There was an existing data for: "
+											+ this.userMonthChoice + " " + this.userDateChoice
+											+ ", " + year + "." + System.lineSeparator()
+											+ "The new weight " + weight
+											+ " lb replaced the existing value.");
 									alert2.showAndWait();
-								
+
 								}
 								break;
 							}
@@ -701,7 +702,7 @@ public class Main extends Application {
 			});
 		}
 	}
-	
+
 	/**
 	 * Handles removing a farm
 	 */
@@ -729,12 +730,13 @@ public class Main extends Application {
 				}
 			}
 			Alert removeAlert = new Alert(AlertType.CONFIRMATION);
-			removeAlert.setContentText("Are you sure you would like to remove " + userFarmChoice + "?");
+			removeAlert.setContentText(
+					"Are you sure you would like to remove " + userFarmChoice + "?");
 			final Optional<ButtonType> result = removeAlert.showAndWait();
 			if (result.isPresent() && result.get() == ButtonType.OK) {
 				farms.remove(farmIndex);
 			}
-			
+
 		});
 		removeFarmBox.getChildren().add(removeFarm);
 		root.setCenter(removeFarmBox);
@@ -774,14 +776,11 @@ public class Main extends Application {
 		percentWeightCol.setCellValueFactory(e -> e.getValue().get(2));
 
 		/*
-		// set up pie chart for report
-		pieChart = new PieChart();
+		 * // set up pie chart for report pieChart = new PieChart();
+		 * 
+		 * pieChart.setTitle("Total Weight by Month");
+		 */
 
-		pieChart.setTitle("Total Weight by Month");
-		*/
-		
-
-        
 		tableGroup.setCenter(table);
 		tableGroup.setRight(pieChart);
 		farmReportPanel.setPadding(new Insets(15, 15, 15, 15));
@@ -792,7 +791,6 @@ public class Main extends Application {
 		submitGroup.getChildren().addAll(farmIDGroup, yearGroup, farmReportSubmitButton);
 		farmReportPanel.setBottom(submitGroup);
 		root.setCenter(farmReportPanel);
-		
 
 	}
 
@@ -802,7 +800,7 @@ public class Main extends Application {
 	private void annualReportButtonAction() {
 		System.out.println("Annual Report Button Pressed");
 		this.updateComboBoxesWithoutAll(farmComboBox, yearComboBox);
-		
+
 		sortFarms();
 		// Create new button to be used specifically for farm report
 		Button annualReportSubmitButton = new Button("View Annual Report");
@@ -847,7 +845,8 @@ public class Main extends Application {
 	}
 
 	/**
-	 * Creates an report for a specified month upon pressing the monthly report button
+	 * Creates an report for a specified month upon pressing the monthly report
+	 * button
 	 */
 	private void monthlyReportButtonAction() {
 		System.out.println("Monthly Report Button Pressed");
@@ -890,7 +889,7 @@ public class Main extends Application {
 
 		// Add relevant buttons for farm report
 		submitGroup.getChildren().clear();
-		submitGroup.getChildren().addAll(yearGroup,monthGroup, monthlyReportSubmitButton);
+		submitGroup.getChildren().addAll(yearGroup, monthGroup, monthlyReportSubmitButton);
 		farmReportPanel.setBottom(submitGroup);
 		root.setCenter(farmReportPanel);
 	}
@@ -935,14 +934,14 @@ public class Main extends Application {
 		tableGroup.setRight(pieChart);
 		farmReportPanel.setPadding(new Insets(15, 15, 15, 15));
 		farmReportPanel.setCenter(tableGroup);
-		
+
 		startInfo.getChildren().clear();
 		endInfo.getChildren().clear();
 		bottomInfo.getChildren().clear();
 		startInfo.getChildren().add(new Label("Start Year: "));
 		endInfo.getChildren().add(new Label("End Year: "));
-		
-		ComboBox<String> startYear= new ComboBox<String>();
+
+		ComboBox<String> startYear = new ComboBox<String>();
 		ComboBox<String> endYear = new ComboBox<String>();
 		startYear.setItems(yearComboBox.getItems());
 		endYear.setItems(yearComboBox.getItems());
@@ -955,20 +954,20 @@ public class Main extends Application {
 			this.endYearChoice = endYear.getValue();
 			System.out.println("User chose the end year " + endYearChoice);
 		});
-		
+
 		startInfo.getChildren().add(startYear);
 		endInfo.getChildren().add(endYear);
-		
+
 		startInfo.getChildren().add(new Label("Start Month: "));
 		endInfo.getChildren().add(new Label("End Month: "));
-		
-		ComboBox<String> startMonth= new ComboBox<String>();
+
+		ComboBox<String> startMonth = new ComboBox<String>();
 		ComboBox<String> endMonth = new ComboBox<String>();
 		startMonth.setItems(monthComboBox.getItems());
 		startMonth.getItems().remove("ALL");
 		endMonth.setItems(monthComboBox.getItems());
 		endMonth.getItems().remove("ALL");
-		
+
 		startMonth.setOnAction(e -> {
 			this.startMonthChoice = startMonth.getValue();
 			System.out.println("User chose the start month " + startMonthChoice);
@@ -979,10 +978,10 @@ public class Main extends Application {
 		});
 		startInfo.getChildren().add(startMonth);
 		endInfo.getChildren().add(endMonth);
-		
+
 		startInfo.getChildren().add(new Label("Start Date: "));
 		endInfo.getChildren().add(new Label("End Date: "));
-		
+
 		ComboBox<String> startDate = new ComboBox<String>();
 		ComboBox<String> endDate = new ComboBox<String>();
 		ObservableList<String> numbers = FXCollections.observableArrayList();
@@ -1002,7 +1001,7 @@ public class Main extends Application {
 		});
 		startInfo.getChildren().add(startDate);
 		endInfo.getChildren().add(endDate);
-		
+
 		endInfo.getChildren().add(rangeReportSubmitButton);
 		// Add relevant buttons for farm report
 		bottomInfo.getChildren().addAll(startInfo, endInfo);
@@ -1013,7 +1012,7 @@ public class Main extends Application {
 	/**
 	 * Updates farm and year combo boxes
 	 * 
-	 * @param farmComboBox 
+	 * @param farmComboBox
 	 * @param yearComboBox
 	 */
 	private void updateComboBoxes(ComboBox<String> farmComboBox, ComboBox<String> yearComboBox) {
@@ -1030,14 +1029,15 @@ public class Main extends Application {
 		}
 		sortFarms();
 	}
-	
+
 	/**
 	 * Updates farm and year combo boxes
 	 * 
-	 * @param farmComboBox 
+	 * @param farmComboBox
 	 * @param yearComboBox
 	 */
-	private void updateComboBoxesWithoutAll(ComboBox<String> farmComboBox, ComboBox<String> yearComboBox) {
+	private void updateComboBoxesWithoutAll(ComboBox<String> farmComboBox,
+			ComboBox<String> yearComboBox) {
 		if (farms.size() != 0) {
 			ObservableList<String> newFarms = FXCollections.observableArrayList();
 			ObservableList<String> newYearItems = FXCollections.observableArrayList();
@@ -1078,14 +1078,13 @@ public class Main extends Application {
 						Integer.parseInt(this.userYearChoice), monthItems.get(month));
 				System.out.println("User Selected Report is produced");
 				reportRow = new ArrayList<StringProperty>();
-		    	reportRow.add(0, new SimpleStringProperty(this.textReport.get(0)));
+				reportRow.add(0, new SimpleStringProperty(this.textReport.get(0)));
 				reportRow.add(1, new SimpleStringProperty(this.textReport.get(1)));
 				reportRow.add(2, new SimpleStringProperty(this.textReport.get(2)));
-		    	reportData.add(reportRow);
-		 		System.out.println(month + textReport.get(3));
-				lineChartData.add(new XYChart.Data(month+1,
-				Double.parseDouble(textReport.get(3))));
-				
+				reportData.add(reportRow);
+				System.out.println(month + textReport.get(3));
+				lineChartData
+						.add(new XYChart.Data(month + 1, Double.parseDouble(textReport.get(3))));
 
 			} catch (Exception e) {
 
@@ -1097,36 +1096,34 @@ public class Main extends Application {
 			farmReportExportButton.setOnAction(e -> this.farmReportExportFile());
 			submitGroup.getChildren().add(farmReportExportButton);
 		}
-		
-		table.setItems(reportData);
-        //defining the axes
-        final NumberAxis xAxis = new NumberAxis();
-        final NumberAxis yAxis = new NumberAxis();
-        xAxis.setLabel("Month");
-        yAxis.setLabel(userFarm.getFarmID()+"'s percent of the total of all farms");
-        LineChart<Number,Number> lineChart = 
-                new LineChart<Number,Number>(xAxis,yAxis);
-        if (this.userYearChoice.equals("-1")) {
-        	lineChart.setTitle("Farm Report from All Available Years" + System.lineSeparator()
-        	+ "Farm ID: " + userFarm.getFarmID());
-        }
-        else {
-        	lineChart.setTitle("Farm Report for Year " + this.userYearChoice+ System.lineSeparator()
-        	+ "Farm ID: " + userFarm.getFarmID());
-        }         
-        XYChart.Series series = new XYChart.Series();
-        for (int i = 0 ; i < lineChartData.size() ; i ++) {
-            series.getData().add(lineChartData.get(i));
-        }
-        lineChart.getData().add(series);
-        lineChart.autosize();
-        lineChart.setLegendVisible(false);
 
-	//	pieChart = new PieChart(pieChartData);
-	//	pieChart.setTitle("Total Weight by Month");
+		table.setItems(reportData);
+		// defining the axes
+		final NumberAxis xAxis = new NumberAxis();
+		final NumberAxis yAxis = new NumberAxis();
+		xAxis.setLabel("Month");
+		yAxis.setLabel(userFarm.getFarmID() + "'s percent of the total of all farms");
+		LineChart<Number, Number> lineChart = new LineChart<Number, Number>(xAxis, yAxis);
+		if (this.userYearChoice.equals("-1")) {
+			lineChart.setTitle("Farm Report from All Available Years" + System.lineSeparator()
+					+ "Farm ID: " + userFarm.getFarmID());
+		} else {
+			lineChart.setTitle("Farm Report for Year " + this.userYearChoice
+					+ System.lineSeparator() + "Farm ID: " + userFarm.getFarmID());
+		}
+		XYChart.Series series = new XYChart.Series();
+		for (int i = 0; i < lineChartData.size(); i++) {
+			series.getData().add(lineChartData.get(i));
+		}
+		lineChart.getData().add(series);
+		lineChart.autosize();
+		lineChart.setLegendVisible(false);
+
+		// pieChart = new PieChart(pieChartData);
+		// pieChart.setTitle("Total Weight by Month");
 		tableGroup.setRight(lineChart);
 	}
-	
+
 	/**
 	 * Creates a file for export with the farm data
 	 */
@@ -1143,28 +1140,29 @@ public class Main extends Application {
 				new Label("Enter the name to give the output file: "), fileNameField,
 				exportFileButton);
 		root.setCenter(exportBox);
-		
-		exportFileButton.setOnAction(userClick ->{
+
+		exportFileButton.setOnAction(userClick -> {
 			File filePath = new File(filePathField.getText());
 			boolean pathExists = filePath.exists();
-			
+
 			if (pathExists) {
 				File fileName = new File(filePath, fileNameField.getText() + ".txt");
 				boolean nameAlreadyExists = fileName.exists();
 				boolean writeFile = true;
-				
+
 				if (nameAlreadyExists) {
 					writeFile = false;
 					Alert nameAlert = new Alert(AlertType.CONFIRMATION);
 					nameAlert.setTitle(null);
-					nameAlert.setContentText("A file with that name already exists." + System.lineSeparator()
-						+ "Pressing \"OK\" will overwrite the existing file.");
+					nameAlert.setContentText(
+							"A file with that name already exists." + System.lineSeparator()
+									+ "Pressing \"OK\" will overwrite the existing file.");
 					final Optional<ButtonType> nameResult = nameAlert.showAndWait();
 					if (nameResult.isPresent() && nameResult.get() == ButtonType.OK) {
 						writeFile = true;
 					}
 				}
-				
+
 				if (writeFile) {
 					try {
 						Farm userFarm = null;
@@ -1173,23 +1171,23 @@ public class Main extends Application {
 								userFarm = f;
 							}
 						}
-						
+
 						if (!nameAlreadyExists) {
 							fileName.createNewFile();
 						}
-						
+
 						FileWriter output = new FileWriter(fileName);
 						String titleString = "Farm Report for " + userFarmChoice;
 						if (userYearChoice.equals("ALL")) {
-							 titleString += " using all available data.";
-							 this.userYearChoice = "-1";
+							titleString += " using all available data.";
+							this.userYearChoice = "-1";
 						} else {
 							titleString += " for the year " + userYearChoice;
 						}
-						
+
 						output.write(titleString + "\n");
 						output.write("Month, Total Weight, Percent of All Farms\n");
-						
+
 						for (int month = 0; month < 12; month++) {
 							this.textReport = Report.farmReport(userFarm,
 									Integer.parseInt(this.userYearChoice), monthItems.get(month));
@@ -1198,7 +1196,7 @@ public class Main extends Application {
 							monthString += textReport.get(1) + ", ";
 							monthString += textReport.get(2) + "\n";
 							output.write(monthString);
-							
+
 						}
 						output.close();
 
@@ -1211,7 +1209,8 @@ public class Main extends Application {
 					} catch (Exception e) {
 						Alert fileMakingError = new Alert(AlertType.ERROR);
 						fileMakingError.setTitle("Error");
-						fileMakingError.setContentText("Sorry, there was an error writing the file.");
+						fileMakingError
+								.setContentText("Sorry, there was an error writing the file.");
 						fileMakingError.showAndWait();
 					}
 				}
@@ -1253,7 +1252,7 @@ public class Main extends Application {
 		}
 
 		System.out.println("User Selected Report is produced");
-		
+
 		// If we haven't already done so, add a export button
 		if (submitGroup.getChildren().size() == 2) {
 			Button annualReportExportButton = new Button("Export Report Results");
@@ -1268,7 +1267,7 @@ public class Main extends Application {
 		tableGroup.setRight(pieChart);
 
 	}
-	
+
 	/**
 	 * Handles the submit button for requesting a report for monthly data
 	 */
@@ -1282,7 +1281,8 @@ public class Main extends Application {
 		table.getItems().clear();
 		for (Farm f : farms) {
 			try {
-				this.textReport = Report.monthlyReport(f, Integer.parseInt(this.userYearChoice), this.userMonthChoice);
+				this.textReport = Report.monthlyReport(f, Integer.parseInt(this.userYearChoice),
+						this.userMonthChoice);
 				reportRow = new ArrayList<StringProperty>();
 				reportRow.add(0, new SimpleStringProperty(this.textReport.get(0)));
 				reportRow.add(1, new SimpleStringProperty(this.textReport.get(1)));
@@ -1298,7 +1298,7 @@ public class Main extends Application {
 		}
 
 		System.out.println("User Selected Report is produced");
-		
+
 		// If we haven't already done so, add a export button
 		if (submitGroup.getChildren().size() == 3) {
 			Button monthlyReportExportButton = new Button("Export Report Results");
@@ -1313,7 +1313,7 @@ public class Main extends Application {
 		tableGroup.setRight(pieChart);
 
 	}
-	
+
 	/**
 	 * Handles the submit button for requesting a report for a range of dates
 	 */
@@ -1327,7 +1327,10 @@ public class Main extends Application {
 		table.getItems().clear();
 		for (Farm f : farms) {
 			try {
-				this.textReport = Report.rangeReport(f, Integer.parseInt(this.startYearChoice), this.startMonthChoice,Integer.parseInt(this.startDateChoice),Integer.parseInt(this.endYearChoice), this.endMonthChoice,Integer.parseInt(this.endDateChoice));
+				this.textReport = Report.rangeReport(f, Integer.parseInt(this.startYearChoice),
+						this.startMonthChoice, Integer.parseInt(this.startDateChoice),
+						Integer.parseInt(this.endYearChoice), this.endMonthChoice,
+						Integer.parseInt(this.endDateChoice));
 				reportRow = new ArrayList<StringProperty>();
 				reportRow.add(0, new SimpleStringProperty(this.textReport.get(0)));
 				reportRow.add(1, new SimpleStringProperty(this.textReport.get(1)));
@@ -1337,24 +1340,24 @@ public class Main extends Application {
 				pieChartData.add(new PieChart.Data(this.textReport.get(0),
 						Integer.parseInt(this.textReport.get(1))));
 
-			}
-			catch(IllegalArgumentException rangeExcpn) {
+			} catch (IllegalArgumentException rangeExcpn) {
 				Alert rangeAlert = new Alert(AlertType.ERROR);
-				rangeAlert.setContentText("That is not a valid range. The start date should occur before the end date.");
+				rangeAlert.setContentText(
+						"That is not a valid range. The start date should occur before the end date.");
 				rangeAlert.showAndWait();
 				if (rangeAlert.getResult() == ButtonType.OK) {
 					dateRangeReportButtonAction();
 				}
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				System.out.println("EXCEPTION IN RANGE REPORT SUBMIT BUTTON ACTION");
 			}
 		}
 
 		System.out.println("User Selected Report is produced");
-		
+
 		// If we haven't already done so, add a export button
-		if (endInfo != null && endInfo.getChildren()!= null && endInfo.getChildren().size() == 7) {
+		if (endInfo != null && endInfo.getChildren() != null
+				&& endInfo.getChildren().size() == 7) {
 			Button rangeReportExportButton = new Button("Export Report Results");
 			rangeReportExportButton.setOnAction(e -> this.rangeReportExportFile());
 			endInfo.getChildren().add(rangeReportExportButton);
@@ -1367,11 +1370,11 @@ public class Main extends Application {
 		tableGroup.setRight(pieChart);
 
 	}
-	
+
 	/**
 	 * Creates an export file for the annual report
 	 */
- 	private void annualReportExportFile() {
+	private void annualReportExportFile() {
 		// Setting up the annual report export page
 		VBox exportBox = new VBox();
 		TextField filePathField = new TextField();
@@ -1384,28 +1387,29 @@ public class Main extends Application {
 				new Label("Enter the name to give the output file: "), fileNameField,
 				exportFileButton);
 		root.setCenter(exportBox);
-				
-		exportFileButton.setOnAction(userClick ->{
+
+		exportFileButton.setOnAction(userClick -> {
 			File filePath = new File(filePathField.getText());
 			boolean pathExists = filePath.exists();
-				
+
 			if (pathExists) {
 				File fileName = new File(filePath, fileNameField.getText() + ".txt");
 				boolean nameAlreadyExists = fileName.exists();
 				boolean writeFile = true;
-						
+
 				if (nameAlreadyExists) {
 					writeFile = false;
 					Alert nameAlert = new Alert(AlertType.CONFIRMATION);
 					nameAlert.setTitle(null);
-					nameAlert.setContentText("A file with that name already exists." + System.lineSeparator()
-						+ "Pressing \"OK\" will overwrite the existing file.");
+					nameAlert.setContentText(
+							"A file with that name already exists." + System.lineSeparator()
+									+ "Pressing \"OK\" will overwrite the existing file.");
 					final Optional<ButtonType> nameResult = nameAlert.showAndWait();
 					if (nameResult.isPresent() && nameResult.get() == ButtonType.OK) {
 						writeFile = true;
 					}
 				}
-						
+
 				if (writeFile) {
 					try {
 						if (!nameAlreadyExists) {
@@ -1414,11 +1418,12 @@ public class Main extends Application {
 						FileWriter output = new FileWriter(fileName);
 						String titleString = "Farm Report for " + userYearChoice;
 						output.write(titleString + "\n");
-								
+
 						output.write("Farm ID, Total Weight, Percent of All Farms\n");
 						for (Farm f : farms) {
 							String farmString = "";
-							this.textReport = Report.annualReport(f, Integer.parseInt(this.userYearChoice));
+							this.textReport = Report.annualReport(f,
+									Integer.parseInt(this.userYearChoice));
 							farmString += textReport.get(0) + ", ";
 							farmString += textReport.get(1) + ", ";
 							farmString += textReport.get(2) + "\n";
@@ -1432,16 +1437,15 @@ public class Main extends Application {
 						confirmExport.showAndWait();
 						submitGroup.getChildren().remove(2);
 						this.annualReportButtonAction();
-					}
-					catch (Exception e) {
+					} catch (Exception e) {
 						Alert fileMakingError = new Alert(AlertType.ERROR);
 						fileMakingError.setTitle("Error");
-						fileMakingError.setContentText("Sorry, there was an error writing the file.");
+						fileMakingError
+								.setContentText("Sorry, there was an error writing the file.");
 						fileMakingError.showAndWait();
 					}
 				}
-			}
-			else {
+			} else {
 				Alert pathAlert = new Alert(AlertType.ERROR);
 				pathAlert.setTitle("Error");
 				pathAlert.setContentText("There was an error finding the correct path.");
@@ -1449,10 +1453,10 @@ public class Main extends Application {
 			}
 		});
 	}
-	
- 	/**
- 	 * Creates an export file with a monthly report
- 	 */
+
+	/**
+	 * Creates an export file with a monthly report
+	 */
 	private void monthlyReportExportFile() {
 		// Setting up the monthly report export page
 		VBox exportBox = new VBox();
@@ -1466,41 +1470,44 @@ public class Main extends Application {
 				new Label("Enter the name to give the output file: "), fileNameField,
 				exportFileButton);
 		root.setCenter(exportBox);
-				
-		exportFileButton.setOnAction(userClick ->{
+
+		exportFileButton.setOnAction(userClick -> {
 			File filePath = new File(filePathField.getText());
 			boolean pathExists = filePath.exists();
-				
+
 			if (pathExists) {
 				File fileName = new File(filePath, fileNameField.getText() + ".txt");
 				boolean nameAlreadyExists = fileName.exists();
 				boolean writeFile = true;
-						
+
 				if (nameAlreadyExists) {
 					writeFile = false;
 					Alert nameAlert = new Alert(AlertType.CONFIRMATION);
 					nameAlert.setTitle(null);
-					nameAlert.setContentText("A file with that name already exists." + System.lineSeparator()
-						+ "Pressing \"OK\" will overwrite the existing file.");
+					nameAlert.setContentText(
+							"A file with that name already exists." + System.lineSeparator()
+									+ "Pressing \"OK\" will overwrite the existing file.");
 					final Optional<ButtonType> nameResult = nameAlert.showAndWait();
 					if (nameResult.isPresent() && nameResult.get() == ButtonType.OK) {
 						writeFile = true;
 					}
 				}
-						
+
 				if (writeFile) {
 					try {
 						if (!nameAlreadyExists) {
 							fileName.createNewFile();
 						}
 						FileWriter output = new FileWriter(fileName);
-						String titleString = "Farm Report for " +userMonthChoice + " " + userYearChoice;
+						String titleString = "Farm Report for " + userMonthChoice + " "
+								+ userYearChoice;
 						output.write(titleString + "\n");
-								
+
 						output.write("Farm ID, Total Weight, Percent of All Farms\n");
 						for (Farm f : farms) {
 							String farmString = "";
-							this.textReport = Report.monthlyReport(f, Integer.parseInt(this.userYearChoice), this.userMonthChoice);
+							this.textReport = Report.monthlyReport(f,
+									Integer.parseInt(this.userYearChoice), this.userMonthChoice);
 							farmString += textReport.get(0) + ", ";
 							farmString += textReport.get(1) + ", ";
 							farmString += textReport.get(2) + "\n";
@@ -1514,24 +1521,23 @@ public class Main extends Application {
 						confirmExport.showAndWait();
 						submitGroup.getChildren().remove(3);
 						this.monthlyReportButtonAction();
-					}
-					catch (Exception e) {
+					} catch (Exception e) {
 						Alert fileMakingError = new Alert(AlertType.ERROR);
 						fileMakingError.setTitle("Error");
-						fileMakingError.setContentText("Sorry, there was an error writing the file.");
+						fileMakingError
+								.setContentText("Sorry, there was an error writing the file.");
 						fileMakingError.showAndWait();
 					}
 				}
-			}
-			else {
+			} else {
 				Alert pathAlert = new Alert(AlertType.ERROR);
 				pathAlert.setTitle("Error");
 				pathAlert.setContentText("There was an error finding the correct path.");
 				pathAlert.showAndWait();
 			}
-		});		
+		});
 	}
-	
+
 	/**
 	 * Creates an export file of data from a range of dates
 	 */
@@ -1548,42 +1554,49 @@ public class Main extends Application {
 				new Label("Enter the name to give the output file: "), fileNameField,
 				exportFileButton);
 		root.setCenter(exportBox);
-				
-		exportFileButton.setOnAction(userClick ->{
+
+		exportFileButton.setOnAction(userClick -> {
 			File filePath = new File(filePathField.getText());
 			boolean pathExists = filePath.exists();
-				
+
 			if (pathExists) {
 				File fileName = new File(filePath, fileNameField.getText() + ".txt");
 				boolean nameAlreadyExists = fileName.exists();
 				boolean writeFile = true;
-						
+
 				if (nameAlreadyExists) {
 					writeFile = false;
 					Alert nameAlert = new Alert(AlertType.CONFIRMATION);
 					nameAlert.setTitle(null);
-					nameAlert.setContentText("A file with that name already exists." + System.lineSeparator()
-						+ "Pressing \"OK\" will overwrite the existing file.");
+					nameAlert.setContentText(
+							"A file with that name already exists." + System.lineSeparator()
+									+ "Pressing \"OK\" will overwrite the existing file.");
 					final Optional<ButtonType> nameResult = nameAlert.showAndWait();
 					if (nameResult.isPresent() && nameResult.get() == ButtonType.OK) {
 						writeFile = true;
 					}
 				}
-						
+
 				if (writeFile) {
 					try {
 						if (!nameAlreadyExists) {
 							fileName.createNewFile();
 						}
 						FileWriter output = new FileWriter(fileName);
-						String titleString = "Farm Report starting at " + this.startMonthChoice + " " + this.startDateChoice + " " + this.startYearChoice;
-						titleString += " and ending at " + this.endMonthChoice + " " + this.endDateChoice  + " " + this.endYearChoice;
+						String titleString = "Farm Report starting at " + this.startMonthChoice
+								+ " " + this.startDateChoice + " " + this.startYearChoice;
+						titleString += " and ending at " + this.endMonthChoice + " "
+								+ this.endDateChoice + " " + this.endYearChoice;
 						output.write(titleString + "\n");
-								
+
 						output.write("Farm ID, Total Weight, Percent of All Farms\n");
 						for (Farm f : farms) {
 							String farmString = "";
-							this.textReport = Report.rangeReport(f, Integer.parseInt(this.startYearChoice), this.startMonthChoice,Integer.parseInt(this.startDateChoice),Integer.parseInt(this.endYearChoice), this.endMonthChoice,Integer.parseInt(this.endDateChoice));
+							this.textReport = Report.rangeReport(f,
+									Integer.parseInt(this.startYearChoice), this.startMonthChoice,
+									Integer.parseInt(this.startDateChoice),
+									Integer.parseInt(this.endYearChoice), this.endMonthChoice,
+									Integer.parseInt(this.endDateChoice));
 							farmString += textReport.get(0) + ", ";
 							farmString += textReport.get(1) + ", ";
 							farmString += textReport.get(2) + "\n";
@@ -1597,23 +1610,22 @@ public class Main extends Application {
 						confirmExport.showAndWait();
 						endInfo.getChildren().remove(7);
 						this.dateRangeReportButtonAction();
-					}
-					catch (Exception e) {
+					} catch (Exception e) {
 						Alert fileMakingError = new Alert(AlertType.ERROR);
 						e.printStackTrace();
 						fileMakingError.setTitle("Error");
-						fileMakingError.setContentText("Sorry, there was an error writing the file.");
+						fileMakingError
+								.setContentText("Sorry, there was an error writing the file.");
 						fileMakingError.showAndWait();
 					}
 				}
-			}
-			else {
+			} else {
 				Alert pathAlert = new Alert(AlertType.ERROR);
 				pathAlert.setTitle("Error");
 				pathAlert.setContentText("There was an error finding the correct path.");
 				pathAlert.showAndWait();
 			}
-		});		
+		});
 	}
 
 	private void reportSubmitButtonAction() {

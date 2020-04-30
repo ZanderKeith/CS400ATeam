@@ -71,7 +71,7 @@ public class Farm {
 	 * @param month
 	 * @param day
 	 * @param weight
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public void addInput(int year, int month, int day, int weight) throws Exception {
 		try {
@@ -101,8 +101,8 @@ public class Farm {
 	 * @return total milk weight of the year
 	 */
 	public int getTotalWeightYear(int year) {
-		int totalWeight = 0; //running total
-		
+		int totalWeight = 0; // running total
+
 		// Sum over the months in a year
 		for (int i = 1; i <= 12; i++) {
 			totalWeight += getTotalWeightMonth(year, i);
@@ -130,10 +130,11 @@ public class Farm {
 
 	/**
 	 * 
-	 * Returns the total milk from the time starting at year1/month1/day1
-	 * until year2/month2/day2, including both entered days.
+	 * Returns the total milk from the time starting at year1/month1/day1 until
+	 * year2/month2/day2, including both entered days.
 	 * 
-	 * If an invalid range is entered, this method throws an illegal argument exception.
+	 * If an invalid range is entered, this method throws an illegal argument
+	 * exception.
 	 * 
 	 * @param year1
 	 * @param month1
@@ -145,8 +146,8 @@ public class Farm {
 	 * @return total milk weight between specified dates
 	 */
 	public int getTotalWeightRange(int year1, int month1, int day1, int year2, int month2,
-			int day2) throws IllegalArgumentException{
-		// Invalid range returns 0.  Or should we throw error?
+			int day2) throws IllegalArgumentException {
+		// Invalid range returns 0. Or should we throw error?
 		if (year1 > year2) {
 			throw new IllegalArgumentException("That is not a valid range.");
 		}
@@ -156,9 +157,9 @@ public class Farm {
 		if (year1 == year2 && month1 == month2 && day1 > day2) {
 			throw new IllegalArgumentException("That is not a valid range.");
 		}
-		
+
 		int totalWeight = 0;
-		
+
 		// We will consider two separate cases, whether or not year1 = year2
 		if (year1 == year2) {
 			// Again, separate cases whether or not month1 = month2
@@ -167,40 +168,40 @@ public class Farm {
 					totalWeight += milkData.get(year1, month1, i);
 				}
 			}
-			
+
 			// Case where months aren't equal
 			else {
 				// First, add in the rest of the days of month1
 				for (int day = day1; day <= 31; day++) {
 					totalWeight += milkData.get(year1, month1, day);
 				}
-				
+
 				// Next, add in months in between month1 and month2
 				for (int month = month1 + 1; month < month2; month++) {
 					totalWeight += getTotalWeightMonth(year1, month);
 				}
-				
+
 				// Finally, add in the days before month2/day2
 				for (int day = 1; day <= day2; day++) {
 					totalWeight += milkData.get(year1, month2, day);
 				}
 			}
 		}
-		
+
 		// Case where year1 < year2
 		else {
 			// First, we add up all of the milk from year1 using our previous work
-			totalWeight += getTotalWeightRange(year1,month1,day1,year1,12,31);
-			
+			totalWeight += getTotalWeightRange(year1, month1, day1, year1, 12, 31);
+
 			// Next, we add in all of the years in between
 			for (int year = year1 + 1; year < year2; year++) {
 				totalWeight += getTotalWeightYear(year);
 			}
-			
+
 			// Finally, add up all of the milk from year2
-			totalWeight += getTotalWeightRange(year2,1,1,year2,month2,day2);
+			totalWeight += getTotalWeightRange(year2, 1, 1, year2, month2, day2);
 		}
-			
+
 		return totalWeight;
 	}
 
@@ -208,68 +209,92 @@ public class Farm {
 	public String getFarmID() {
 		return this.farmID;
 	}
-	
-	public Set<String> getYearSet(){
+
+	public Set<String> getYearSet() {
 		TreeSet<String> castSet = new TreeSet<String>();
-		for(Integer i : milkData.getYearList()) {
+		for (Integer i : milkData.getYearList()) {
 			castSet.add(Integer.toString(i));
 		}
 		return castSet;
 	}
-	
-	public List<Integer> getYearIntList(){
+
+	public List<Integer> getYearIntList() {
 		return milkData.getYearList();
 	}
-	
+
 	public int getTotalWeightDay(int year, int month, int day) {
 		return milkData.get(year, month, day);
 	}
-	
+
 	/**
 	 * Overloaded method for adding using a string month
+	 * 
 	 * @param year
 	 * @param userMonthChoice - a string E.g. January, February, etc
 	 * @param day
 	 * @param weight
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public void addInput(int year, String month, int day, int weight) throws Exception {
 		try {
 			addInput(year, monthStringToInt(month), day, weight);
 		}
-		
+
 		// There won't be any exceptions when this is called in main
-		catch(Exception e) {
+		catch (Exception e) {
 			throw e;
 		}
 	}
-	
-	
-	
+
 	/**
-	 * Given a String representing a month, this returns the integer of the 
-	 * month.  Capitalization doesn't matter.  So january should return 1,
-	 * and MAY should return 5. 
+	 * Given a String representing a month, this returns the integer of the month.
+	 * Capitalization doesn't matter. So january should return 1, and MAY should
+	 * return 5.
+	 * 
 	 * @param month - a string meant to be the name of the month
 	 * @throws IllegalArgumentException if month input does not match a month
 	 * @return the integer
 	 */
-	public static int monthStringToInt(String month) throws IllegalArgumentException{
-		if (month.equalsIgnoreCase("January")) {return 1;}
-		if (month.equalsIgnoreCase("February")) {return 2;}
-		if (month.equalsIgnoreCase("March")) {return 3;}
-		if (month.equalsIgnoreCase("April")) {return 4;}
-		if (month.equalsIgnoreCase("May")) {return 5;}
-		if (month.equalsIgnoreCase("June")) {return 6;}
-		if (month.equalsIgnoreCase("July")) {return 7;}
-		if (month.equalsIgnoreCase("August")) {return 8;}
-		if (month.equalsIgnoreCase("September")) {return 9;}
-		if (month.equalsIgnoreCase("October")) {return 10;}
-		if (month.equalsIgnoreCase("November")) {return 11;}
-		if (month.equalsIgnoreCase("December")) {return 12;}
-		
+	public static int monthStringToInt(String month) throws IllegalArgumentException {
+		if (month.equalsIgnoreCase("January")) {
+			return 1;
+		}
+		if (month.equalsIgnoreCase("February")) {
+			return 2;
+		}
+		if (month.equalsIgnoreCase("March")) {
+			return 3;
+		}
+		if (month.equalsIgnoreCase("April")) {
+			return 4;
+		}
+		if (month.equalsIgnoreCase("May")) {
+			return 5;
+		}
+		if (month.equalsIgnoreCase("June")) {
+			return 6;
+		}
+		if (month.equalsIgnoreCase("July")) {
+			return 7;
+		}
+		if (month.equalsIgnoreCase("August")) {
+			return 8;
+		}
+		if (month.equalsIgnoreCase("September")) {
+			return 9;
+		}
+		if (month.equalsIgnoreCase("October")) {
+			return 10;
+		}
+		if (month.equalsIgnoreCase("November")) {
+			return 11;
+		}
+		if (month.equalsIgnoreCase("December")) {
+			return 12;
+		}
+
 		throw new IllegalArgumentException();
-		
+
 	}
 
 }
