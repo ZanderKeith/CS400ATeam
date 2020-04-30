@@ -36,46 +36,44 @@ import java.util.ArrayList;
 /**
  * Report - Does all more involved analysis required for project to run such as
  * parsing CSV files and calculating milk percentages
- * 
- * @author TODO
  *
  */
 public class Report {
-	// TODO: use Enume for month name print.
 
 	/**
 	 * Takes in source file's name and adds data to all farms in farmList
 	 * 
-	 * TEST DIRECTORY
-	 * C:\Users\16125\eclipse-workspace\CS400ATeam\MilkWeight\csv\small\2019-1.csv
-	 * TODO Gonna have to clean this up eventually, just getting it working for now
-	 * 
-	 * @param sourceFile
-	 * @param farmList
+	 * @param sourceFile the file we are importing data from
+	 * @param farmList   list of farms to add data to
 	 * @return altered farms with new data added
-	 * @throws Exception
+	 * @throws Exception if encounters problem while parsing file
 	 */
 	public static ArrayList<Farm> parseFile(String sourceFile, ArrayList<Farm> farmList)
 			throws Exception {
-		int counter = 1;
+		int counter = 1; // Counter used for finding where index is out of bounds
 		try {
+			// Create new file reader for current file
 			FileReader fr = new FileReader(sourceFile);
 			BufferedReader buff = new BufferedReader(fr);
 			String fileLine = buff.readLine(); // Skip first entry of CSV
+			// String array for splitting up entire line of file
 			String[] CSVLine;
+			// String array for splitting up date of file
 			String[] dateLine;
 
-			boolean match; // one way flag for while parsing
+			boolean match; // one way flag for finding farm while parsing
 			// Keep going until reach end of file
 			while ((fileLine = buff.readLine()) != null) {
-				counter ++;
-				match = false;
-				CSVLine = fileLine.split(",");
-				dateLine = CSVLine[0].split("-");
+				counter++; // increment counter
+				match = false; // set found farm match to false
+				CSVLine = fileLine.split(","); // split CSV by date, ID, weight
+				dateLine = CSVLine[0].split("-"); // split date by '-'
 				// Find farm with matching ID
 				for (Farm farm : farmList) {
+					// see if second line entry (ID) matches farm we're looking for
 					if (farm.getFarmID().equals(CSVLine[1])) {
 						match = true;
+						// found match, input data into it
 						farm.addInput(Integer.parseInt(dateLine[0]),
 								Integer.parseInt(dateLine[1]), Integer.parseInt(dateLine[2]),
 								Integer.parseInt(CSVLine[2]));
@@ -84,54 +82,43 @@ public class Report {
 				}
 				// no farm with matching ID created yet
 				if (!match) {
+					// Create new farm with new ID
 					Farm newFarm = new Farm(CSVLine[1]);
+					// put data into it
 					newFarm.addInput(Integer.parseInt(dateLine[0]), Integer.parseInt(dateLine[1]),
 							Integer.parseInt(dateLine[2]), Integer.parseInt(CSVLine[2]));
+					// place farm in farmList
 					farmList.add(newFarm);
 				}
 
 			}
-
-			buff.close();
+			fr.close(); // close file
+			buff.close(); // Close buffered reader
 		} catch (FileNotFoundException e) {
-
-			System.out.println("UNEXPECTED EXCEPTION PARSING FILE");
+			// Throw FileNotFoundException to wherever this was called to be handled
+			System.out.println("File not found");
 			throw new FileNotFoundException();
-		}
-		catch (NumberFormatException e) {
+		} catch (NumberFormatException e) {
+			// Get information about what caused format exception and throw that to
+			// wherever this was called
 			StringWriter errors = new StringWriter();
-			e.printStackTrace(new PrintWriter(errors));
 			String line1 = errors.toString().split(System.lineSeparator())[0];
-			line1=line1.split(":")[2];
-		//	System.out.println(errors.toString());
+			line1 = line1.split(":")[2];
 			throw new NumberFormatException(line1);
-		}
-		catch (ArrayIndexOutOfBoundsException e) {
-			e.printStackTrace();
+		} catch (ArrayIndexOutOfBoundsException e) {
+			// Give information about what index caused error
 			throw new ArrayIndexOutOfBoundsException(Integer.toString(counter));
-		}
-		catch (Exception e) {
-			System.out.println("Other Exception");
-			e.printStackTrace();
+		} catch (Exception e) {
+			// Something unusual happened, just throw regular exception
+			System.out.println("Unexpected Other Exception");
 			throw new Exception();
-			
+
 		}
+		// return updated farmList
 		return farmList;
 	}
 
-	/**
-	 * Get all farm ID's from a specified source file. TODO actual exception
-	 * handling
-	 * 
-	 * @param sourceFile
-	 * @return
-	 */
-	private ArrayList<String> getFarmsInSource(String sourceFile) {
-		ArrayList<String> farmIDs = new ArrayList<String>();
-
-		return null;
-	}
-
+	// Month enum with all months included
 	enum Month {
 		ALL, January, February, March, April, May, June, July, August, September, October,
 		November, December;
@@ -147,53 +134,57 @@ public class Report {
 	 * @param farmID farmID
 	 * @param year   12 means all
 	 * @param month  12 means all
-	 * @return ArrayList with index 0 = Month, 1 = Total Weight, and 2 =
-	 *         Percentage.
+	 * @return ArrayList with index 0 = Month, 1 = Total Weight, and 2 = Percentage.
 	 * @return null if farmID is not in the list of farms.
 	 * @return null if year == -1 and month !=-1 because that doesn't make sense...
 	 * @throws Exception
 	 */
 	protected static ArrayList<String> farmReport(Farm farmID, int year, String monthString)
 			throws Exception {
-		double total = 0.0;
-		double percent = 0.0;
+		double total = 0.0; // running total of weight
+		double percent = 0.0; // percent weight
+		// check that farmID is valid
 		if (farmID == null) {
 			System.out.print("doesn't look like there is any farm under this name...");
 			throw new Exception("farmID is null");
 		}
-		int month = -1;
+		int month = -1; // start month enum at a non-month value
+		// iterate through all months until find one that matches
 		for (Month s : Month.values()) {
 			if (s.toString().equals(monthString)) {
 				month = s.ordinal();
 			}
 
 		}
+		// if user selected ALL then 
 		if (monthString.equals("ALL")) {
 			month = -1;
 		}
 		if (year == -1 && month != -1) {
 			ArrayList<String> data = new ArrayList<String>();
 			for (int i = 0; i < Main.farms.size(); i++) {
-				for (int j = 0 ; j < Main.farms.get(i).getYearIntList().size() ; j ++ ) {
-					total = total + (double) Main.farms.get(i).getTotalWeightMonth(Main.farms.get(i).getYearIntList().get(j), month);
+				for (int j = 0; j < Main.farms.get(i).getYearIntList().size(); j++) {
+					total = total + (double) Main.farms.get(i).getTotalWeightMonth(
+							Main.farms.get(i).getYearIntList().get(j), month);
 				}
 			}
 			double farmShare = 0.0;
-			for (int j = 0 ; j < farmID.getYearIntList().size() ; j ++ ) {
-				farmShare = farmShare + ((double) farmID.getTotalWeightMonth(farmID.getYearIntList().get(j), month));
+			for (int j = 0; j < farmID.getYearIntList().size(); j++) {
+				farmShare = farmShare + ((double) farmID
+						.getTotalWeightMonth(farmID.getYearIntList().get(j), month));
 			}
-			
+
 			percent = farmShare / (total) * 100;
 			if (Double.isNaN(percent)) {
 				percent = 0;
 			}
 			data.add(monthString); // month
 			data.add(Double.toString(farmShare)); // total weight for month
-			data.add(String.format("%.2f", percent)+ " %"); // percent for month
+			data.add(String.format("%.2f", percent) + " %"); // percent for month
 			data.add(Double.toString(percent));
 			return data;
 
- 		}
+		}
 
 		if (!Main.farms.contains(farmID))
 			return null;
@@ -219,16 +210,17 @@ public class Report {
 				percent = 0;
 			}
 			data.add(monthString); // month
-			data.add(Integer.toString(farmID.getTotalWeightMonth(year, month))); // total weight for month
-			data.add(String.format("%.2f", percent)+ " %"); // percent for month
+			data.add(Integer.toString(farmID.getTotalWeightMonth(year, month))); // total weight
+																					// for month
+			data.add(String.format("%.2f", percent) + " %"); // percent for month
 			data.add(Double.toString(percent));
 			return data;
 
 		}
 	}
-	
+
 	/**
-	 * ANNUAL REPORT Requirement: Prompt user for a year Then, 
+	 * ANNUAL REPORT Requirement: Prompt user for a year Then,
 	 * 
 	 * @param farmID farmID
 	 * @param year   year for data we're collecting
@@ -241,7 +233,7 @@ public class Report {
 		ArrayList<String> data = new ArrayList<String>();
 		double total = 0.0;
 		double percent = 0.0;
-			
+
 		for (int i = 0; i < Main.farms.size(); i++) {
 			total = total + (double) Main.farms.get(i).getTotalWeightYear(year);
 		}
@@ -251,63 +243,82 @@ public class Report {
 		}
 		data.add(farmID.getFarmID()); // farm ID
 		data.add(Integer.toString(farmID.getTotalWeightYear(year))); // total weight for year
-		data.add(String.format("%.2f", percent)+ " %"); // percent for year
+		data.add(String.format("%.2f", percent) + " %"); // percent for year
 		return data;
 	}
-	
+
 	/**
-	 * ANNUAL REPORT Requirement: Prompt user for a year and a month Then, 
+	 * ANNUAL REPORT Requirement: Prompt user for a year and a month Then,
 	 * 
 	 * @param farmID farmID
 	 * @param year   year for data we're collecting
-	 * @param month  the name of the month (as a string) for the data we're collecting
+	 * @param month  the name of the month (as a string) for the data we're
+	 *               collecting
 	 * @return ArrayList with index 0 = FarmID, 1 = Total Weight, and 2 =
 	 *         Percentage.
 	 * @return null if farmID is not in the list of farms.
 	 * @throws Exception
 	 */
-	protected static ArrayList<String> monthlyReport(Farm farmID, int year, String month) throws Exception {
+	protected static ArrayList<String> monthlyReport(Farm farmID, int year, String month)
+			throws Exception {
 		ArrayList<String> data = new ArrayList<String>();
 		double total = 0.0;
 		double percent = 0.0;
-			
+
 		for (int i = 0; i < Main.farms.size(); i++) {
-			total = total + (double) Main.farms.get(i).getTotalWeightMonth(year, Farm.monthStringToInt(month));
+			total = total + (double) Main.farms.get(i).getTotalWeightMonth(year,
+					Farm.monthStringToInt(month));
 		}
-		percent = ((double) farmID.getTotalWeightMonth(year, Farm.monthStringToInt(month))) / (total) * 100;
+		percent = ((double) farmID.getTotalWeightMonth(year, Farm.monthStringToInt(month)))
+				/ (total) * 100;
 		if (Double.isNaN(percent)) {
 			percent = 0;
 		}
 		data.add(farmID.getFarmID()); // farm ID
-		data.add(Integer.toString(farmID.getTotalWeightMonth(year, Farm.monthStringToInt(month)))); // total weight for month
-		data.add(String.format("%.2f", percent)+ " %"); // percent for month
+		data.add(
+				Integer.toString(farmID.getTotalWeightMonth(year, Farm.monthStringToInt(month)))); // total
+																									// weight
+																									// for
+																									// month
+		data.add(String.format("%.2f", percent) + " %"); // percent for month
 		return data;
 	}
-	
-	// Generates a report for a given range of dates.  I'm going to assume that the user 
+
+	// Generates a report for a given range of dates. I'm going to assume that the
+	// user
 	// enters a valid date range
-	protected static ArrayList<String> rangeReport(Farm farmID, int startYear, String startMonth, int startDay, int endYear, String endMonth, int endDay) throws Exception {
+	protected static ArrayList<String> rangeReport(Farm farmID, int startYear, String startMonth,
+			int startDay, int endYear, String endMonth, int endDay) throws Exception {
 		ArrayList<String> data = new ArrayList<String>();
 		double total = 0.0;
 		double percent = 0.0;
-			
+
 		for (int i = 0; i < Main.farms.size(); i++) {
-			total = total + (double) Main.farms.get(i).getTotalWeightRange(startYear, Farm.monthStringToInt(startMonth), startDay, endYear, Farm.monthStringToInt(endMonth), endDay);
+			total = total + (double) Main.farms.get(i).getTotalWeightRange(startYear,
+					Farm.monthStringToInt(startMonth), startDay, endYear,
+					Farm.monthStringToInt(endMonth), endDay);
 		}
-		percent = ((double) farmID.getTotalWeightRange(startYear, Farm.monthStringToInt(startMonth), startDay, endYear, Farm.monthStringToInt(endMonth), endDay)) / (total) * 100;
+		percent = ((double) farmID.getTotalWeightRange(startYear,
+				Farm.monthStringToInt(startMonth), startDay, endYear,
+				Farm.monthStringToInt(endMonth), endDay)) / (total) * 100;
 		if (Double.isNaN(percent)) {
 			percent = 0;
 		}
 		data.add(farmID.getFarmID()); // farm ID
-		data.add(Integer.toString(farmID.getTotalWeightRange(startYear, Farm.monthStringToInt(startMonth), startDay, endYear, Farm.monthStringToInt(endMonth), endDay))); // total weight for range
-		data.add(String.format("%.2f", percent)+ " %"); // percent for range
+		data.add(Integer
+				.toString(farmID.getTotalWeightRange(startYear, Farm.monthStringToInt(startMonth),
+						startDay, endYear, Farm.monthStringToInt(endMonth), endDay))); // total
+																						// weight
+																						// for
+																						// range
+		data.add(String.format("%.2f", percent) + " %"); // percent for range
 		return data;
 	}
-	
+
 	/**
-	 * EDITED I think this function is still useful but shouldn't just be relegated to farm report
-	 * These stats are probably good to print for all reports and the labels are there anyway
-	 * Just shouldn't be made for only farm report
+	 * EDITED I think this function is still useful but shouldn't just be relegated
+	 * to farm report These stats are probably good to print for all reports and the
+	 * labels are there anyway Just shouldn't be made for only farm report
 	 * 
 	 * 
 	 * @param farmID farmID
@@ -390,21 +401,19 @@ public class Report {
 
 		}
 	}
-	
-	
+
 	/*
 	 * main method just to see if it works comment this out for the Main.java
 	 */
 	public static void main(String[] args) throws Exception {
 		/*
-		ArrayList<Farm> farms = new ArrayList<Farm>();
-		Report.parseFile("./csv/small/2019-1.csv", farms);
-		Report.parseFile("./csv/small/2019-2.csv", farms);
-		Main.farms = farms;
-		System.out.println(Report.farmReport(farms.get(1), -1, "ALL"));
-		System.out.println(Report.farmReport(farms.get(2), 2019, "January"));
-		System.out.println(Report.farmReport(farms.get(2), 2019, "ALL"));
-		*/
+		 * ArrayList<Farm> farms = new ArrayList<Farm>();
+		 * Report.parseFile("./csv/small/2019-1.csv", farms);
+		 * Report.parseFile("./csv/small/2019-2.csv", farms); Main.farms = farms;
+		 * System.out.println(Report.farmReport(farms.get(1), -1, "ALL"));
+		 * System.out.println(Report.farmReport(farms.get(2), 2019, "January"));
+		 * System.out.println(Report.farmReport(farms.get(2), 2019, "ALL"));
+		 */
 
 	}
 
