@@ -57,18 +57,15 @@ public class Report {
 	 */
 	public static ArrayList<Farm> parseFile(String sourceFile, ArrayList<Farm> farmList)
 			throws Exception {
-		int counter = 1;
 		try {
 			FileReader fr = new FileReader(sourceFile);
 			BufferedReader buff = new BufferedReader(fr);
 			String fileLine = buff.readLine(); // Skip first entry of CSV
 			String[] CSVLine;
 			String[] dateLine;
-
 			boolean match; // one way flag for while parsing
 			// Keep going until reach end of file
 			while ((fileLine = buff.readLine()) != null) {
-				counter ++;
 				match = false;
 				CSVLine = fileLine.split(",");
 				dateLine = CSVLine[0].split("-");
@@ -107,8 +104,7 @@ public class Report {
 			throw new NumberFormatException(line1);
 		}
 		catch (ArrayIndexOutOfBoundsException e) {
-			e.printStackTrace();
-			throw new ArrayIndexOutOfBoundsException(Integer.toString(counter));
+			throw e;
 		}
 		catch (Exception e) {
 			System.out.println("Other Exception");
@@ -155,8 +151,6 @@ public class Report {
 	 */
 	protected static ArrayList<String> farmReport(Farm farmID, int year, String monthString)
 			throws Exception {
-		double total = 0.0;
-		double percent = 0.0;
 		if (farmID == null) {
 			System.out.print("doesn't look like there is any farm under this name...");
 			throw new Exception("farmID is null");
@@ -171,33 +165,12 @@ public class Report {
 		if (monthString.equals("ALL")) {
 			month = -1;
 		}
-		if (year == -1 && month != -1) {
-			ArrayList<String> data = new ArrayList<String>();
-			for (int i = 0; i < Main.farms.size(); i++) {
-				for (int j = 0 ; j < Main.farms.get(i).getYearIntList().size() ; j ++ ) {
-					total = total + (double) Main.farms.get(i).getTotalWeightMonth(Main.farms.get(i).getYearIntList().get(j), month);
-				}
-			}
-			double farmShare = 0.0;
-			for (int j = 0 ; j < farmID.getYearIntList().size() ; j ++ ) {
-				farmShare = farmShare + ((double) farmID.getTotalWeightMonth(farmID.getYearIntList().get(j), month));
-			}
-			
-			percent = farmShare / (total) * 100;
-			if (Double.isNaN(percent)) {
-				percent = 0;
-			}
-			data.add(monthString); // month
-			data.add(Double.toString(farmShare)); // total weight for month
-			data.add(String.format("%.2f", percent)+ " %"); // percent for month
-			data.add(Double.toString(percent));
-			return data;
-
- 		}
-
+		if (year == -1 && month != -1)
+			return null;
 		if (!Main.farms.contains(farmID))
 			return null;
-
+		double total = 0.0;
+		double percent = 0.0;
 		ArrayList<String> data = new ArrayList<String>();
 		if (year == -1) {
 			for (int i = 0; i < Main.farms.size(); i++) {
@@ -221,7 +194,6 @@ public class Report {
 			data.add(monthString); // month
 			data.add(Integer.toString(farmID.getTotalWeightMonth(year, month))); // total weight for month
 			data.add(String.format("%.2f", percent)+ " %"); // percent for month
-			data.add(Double.toString(percent));
 			return data;
 
 		}
