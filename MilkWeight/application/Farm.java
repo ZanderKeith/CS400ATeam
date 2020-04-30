@@ -73,13 +73,10 @@ public class Farm {
 	 * @param weight
 	 * @throws Exception 
 	 */
-
-	public void addInput(int year, int month, int day, int weight) throws Exception{
+	public void addInput(int year, int month, int day, int weight) throws Exception {
 		try {
 			milkData.insert(year, month, day, weight);
-		}
-		catch(Exception e) {
-
+		} catch (Exception e) {
 			throw e;
 		}
 	}
