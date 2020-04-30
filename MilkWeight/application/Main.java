@@ -155,7 +155,7 @@ public class Main extends Application {
 	// Useful global
 	private ObservableList<String> monthItems = FXCollections.observableArrayList("January",
 			"February", "March", "April", "May", "June", "July", "August", "September", "October",
-			"November", "December", "ALL");
+			"November", "December");
 
 	/**
 	 * Sets up all GUI elements.
@@ -812,6 +812,8 @@ public class Main extends Application {
 	 */
 	private void annualReportButtonAction() {
 		System.out.println("Annual Report Button Pressed");
+		this.updateComboBoxesWithoutAll(farmComboBox, yearComboBox);
+		
 		sortFarms();
 		// Create new button to be used specifically for farm report
 		Button annualReportSubmitButton = new Button("View Annual Report");
@@ -953,10 +955,8 @@ public class Main extends Application {
 		ComboBox<String> startYear= new ComboBox<String>();
 		ComboBox<String> endYear = new ComboBox<String>();
 		startYear.setItems(yearComboBox.getItems());
-		startYear.getItems().remove("ALL");
 		endYear.setItems(yearComboBox.getItems());
-		endYear.getItems().remove("ALL");
-		
+
 		startYear.setOnAction(e -> {
 			this.startYearChoice = startYear.getValue();
 			System.out.println("User chose the start year " + startYearChoice);
@@ -1035,6 +1035,26 @@ public class Main extends Application {
 			farms.forEach(e -> newFarms.add(e.getFarmID()));
 			newYearItems.addAll(allYears);
 			newYearItems.add("ALL");
+			yearComboBox.setItems(newYearItems);
+			farmComboBox.setItems(newFarms);
+		}
+		sortFarms();
+	}
+	
+	/**
+	 * Updates farm and year combo boxes
+	 * 
+	 * @param farmComboBox 
+	 * @param yearComboBox
+	 */
+	private void updateComboBoxesWithoutAll(ComboBox<String> farmComboBox, ComboBox<String> yearComboBox) {
+		if (farms.size() != 0) {
+			ObservableList<String> newFarms = FXCollections.observableArrayList();
+			ObservableList<String> newYearItems = FXCollections.observableArrayList();
+			TreeSet<String> allYears = new TreeSet<String>();
+			farms.forEach(e -> allYears.addAll(e.getYearSet()));
+			farms.forEach(e -> newFarms.add(e.getFarmID()));
+			newYearItems.addAll(allYears);
 			yearComboBox.setItems(newYearItems);
 			farmComboBox.setItems(newFarms);
 		}
