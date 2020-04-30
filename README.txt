@@ -16,3 +16,10 @@ Members 1, 2, 3, & 5 were on the same xteam.
 
 Other notes or comments to the grader:
 
+Known Bugs:
+Images do not show up on OSX. Unknown if they work on Linux.
+Reports sort weights and percentages lexographically instead of numerically.
+
+Planned:
+Implementing "All" funcitonality on Annual and Monthly Report 
+

@@ -133,8 +133,8 @@ public class Report {
 	 * Prepares arrayList of strings for all data required by Farm Report
 	 * 
 	 * @param farmID farmID
-	 * @param year   12 means all
-	 * @param month  12 means all
+	 * @param year   -1 means all
+	 * @param month  -1 means all
 	 * @return ArrayList with index 0 = Month, 1 = Total Weight, and 2 = Percentage.
 	 * @return null if farmID is not in the list of farms.
 	 * @return null if year == -1 and month !=-1 because that doesn't make sense...
