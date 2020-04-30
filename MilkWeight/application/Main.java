@@ -32,7 +32,6 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Optional;
 import java.util.TreeSet;
 
@@ -79,9 +78,6 @@ import javafx.stage.Stage;
  *
  */
 public class Main extends Application {
-	// store any command-line arguments that were entered.
-	// NOTE: this.getParameters().getRaw() will get these also
-	private List<String> args;
 
 	// The field farms hold list of farms that user inputs to the program
 
@@ -89,7 +85,6 @@ public class Main extends Application {
 
 	// Fields related to GUI
 
-	private static final int WINDOW_WIDTH = 1000;
 	private static final int WINDOW_HEIGHT = 640;
 	private static final String APP_TITLE = "MilkWeight";
 
@@ -169,9 +164,6 @@ public class Main extends Application {
 		Label totalWeightLabel = new Label("Total Weight Sold: No Data");
 		Label percentWeightLabel = new Label("Percent of total: No Data");
 
-		// Text Field
-		TextField inputText = new TextField();
-
 		// Initialize Drop Downs
 		monthComboBox.setItems(monthItems);
 		monthComboBox.setOnAction((event) -> {
@@ -211,9 +203,6 @@ public class Main extends Application {
 			}
 		});
 		// --- End file import UI functionality ---
-
-		// used in the event a user wants to input a file or farm
-		Button inputSubmit = new Button("Submit");
 
 		Button exportAsCSVButton = new Button("Export as CSV");
 		exportAsCSVButton.setOnAction(e -> exportAsCSVButtonAction());
