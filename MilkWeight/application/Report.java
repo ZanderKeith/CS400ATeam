@@ -257,7 +257,7 @@ public class Report {
 	 * @return ArrayList with index 0 = FarmID, 1 = Total Weight, and 2 =
 	 *         Percentage.
 	 * @return null if farmID is not in the list of farms.
-	 * @throws Exception
+	 * @throws Exception if error encountered while gathering data
 	 */
 	protected static ArrayList<String> monthlyReport(Farm farmID, int year, String month)
 			throws Exception {
@@ -274,19 +274,29 @@ public class Report {
 		if (Double.isNaN(percent)) {
 			percent = 0;
 		}
+		// add various things to data
 		data.add(farmID.getFarmID()); // farm ID
+		// total weight for month
 		data.add(
-				Integer.toString(farmID.getTotalWeightMonth(year, Farm.monthStringToInt(month)))); // total
-																									// weight
-																									// for
-																									// month
+				Integer.toString(farmID.getTotalWeightMonth(year, Farm.monthStringToInt(month))));
 		data.add(String.format("%.2f", percent) + " %"); // percent for month
 		return data;
 	}
 
-	// Generates a report for a given range of dates. I'm going to assume that the
-	// user
-	// enters a valid date range
+	/**
+	 * Generate report for a given range of dates. Assumes user enters valid date
+	 * range, otherwise returns report with no data
+	 * 
+	 * @param farmID the ID of the farm
+	 * @param startYear earliest year for data
+	 * @param startMonth earliest month for data
+	 * @param startDay earliest day for data
+	 * @param endYear latest year for data
+	 * @param endMonth latest month for data
+	 * @param endDay latest day for data
+	 * @return arrayList with gathered data in 
+	 * @throws Exception if error encountered while collecting data
+	 */
 	protected static ArrayList<String> rangeReport(Farm farmID, int startYear, String startMonth,
 			int startDay, int endYear, String endMonth, int endDay) throws Exception {
 		ArrayList<String> data = new ArrayList<String>();
@@ -305,12 +315,10 @@ public class Report {
 			percent = 0;
 		}
 		data.add(farmID.getFarmID()); // farm ID
+		// total weight for range
 		data.add(Integer
 				.toString(farmID.getTotalWeightRange(startYear, Farm.monthStringToInt(startMonth),
-						startDay, endYear, Farm.monthStringToInt(endMonth), endDay))); // total
-																						// weight
-																						// for
-																						// range
+						startDay, endYear, Farm.monthStringToInt(endMonth), endDay)));
 		data.add(String.format("%.2f", percent) + " %"); // percent for range
 		return data;
 	}
