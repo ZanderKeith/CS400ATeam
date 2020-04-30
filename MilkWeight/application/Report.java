@@ -29,7 +29,6 @@ package application;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 
@@ -401,20 +400,4 @@ public class Report {
 
 		}
 	}
-
-	/*
-	 * main method just to see if it works comment this out for the Main.java
-	 */
-	public static void main(String[] args) throws Exception {
-		/*
-		 * ArrayList<Farm> farms = new ArrayList<Farm>();
-		 * Report.parseFile("./csv/small/2019-1.csv", farms);
-		 * Report.parseFile("./csv/small/2019-2.csv", farms); Main.farms = farms;
-		 * System.out.println(Report.farmReport(farms.get(1), -1, "ALL"));
-		 * System.out.println(Report.farmReport(farms.get(2), 2019, "January"));
-		 * System.out.println(Report.farmReport(farms.get(2), 2019, "ALL"));
-		 */
-
-	}
-
 }
