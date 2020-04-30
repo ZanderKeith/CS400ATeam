@@ -241,6 +241,12 @@ public class Main extends Application {
 			this.updateComboBoxes(farmComboBox, yearComboBox);
 			sortFarms();
 		});
+		
+		Button removeFarmButton = new Button("Remove Farm");
+		removeFarmButton.setOnAction(e -> {
+			removeFarmButtonAction();
+			this.updateComboBoxes(farmComboBox, yearComboBox);
+		});
 
 		Button farmReportButton = new Button("Farm Report");
 		farmReportButton.setOnAction(e -> {
@@ -263,7 +269,7 @@ public class Main extends Application {
 		// Create left panel of buttons (dependencies first)
 		VBox fileOptionGroup = new VBox();
 		fileOptionGroup.getChildren().addAll(fileLabel, importFileButton, exportAsCSVButton,
-				addNewFarmButton, addNewMilkDataButton);
+				addNewFarmButton, addNewMilkDataButton, removeFarmButton);
 
 		VBox reportOptionGroup = new VBox(reportLabel, farmReportButton, annualReportButton,
 				monthlyReportButton, dateRangeReportButton);
@@ -322,14 +328,14 @@ public class Main extends Application {
 		// Home panel with instructions
 
 
-		ImageView homeTop = new ImageView(new Image("file:hometop.png"));
+		ImageView homeTop = new ImageView(new Image("hometop.png"));
 		homeTop.setFitHeight(200);
 		homeTop.setPreserveRatio(true);
 		homePanel.setTop(homeTop);
-		ImageView homeLeft = new ImageView(new Image("file:homeleft.png"));
+		ImageView homeLeft = new ImageView(new Image("homeleft.png"));
 		homeLeft.setFitHeight(420);
 		homeLeft.setPreserveRatio(true);
-		ImageView homeRight = new ImageView(new Image("file:homeright.png"));
+		ImageView homeRight = new ImageView(new Image("homeright.png"));
 		homeRight.setFitHeight(420);
 		homeRight.setPreserveRatio(true);
 		homePanel.setTop(homeTop);
@@ -684,6 +690,45 @@ public class Main extends Application {
 				}
 			});
 		}
+	}
+	
+	/**
+	 * Handles removing a farm
+	 */
+	private void removeFarmButtonAction() {
+		ComboBox<String> farmIDs = new ComboBox<String>();
+		ObservableList<String> newFarms = FXCollections.observableArrayList();
+		farms.forEach(e -> newFarms.add(e.getFarmID()));
+		farmIDs.setItems(newFarms);
+		farmIDs.setOnAction(e -> {
+			this.userFarmChoice = farmIDs.getValue();
+			System.out.println("User wants to remove " + userFarmChoice);
+		});
+		VBox removeFarmBox = new VBox();
+		removeFarmBox.getChildren().add(new Label("Select the farm to remove:"));
+		HBox farmBar = new HBox();
+		removeFarmBox.getChildren().add(farmBar);
+		farmBar.getChildren().add(new Label("Farm ID : "));
+		farmBar.getChildren().add(farmIDs);
+		Button removeFarm = new Button("Remove");
+		removeFarm.setOnAction(e -> {
+			int farmIndex = -1;
+			for (int i = 0; i < farms.size(); i++) {
+				if (farms.get(i).getFarmID().equals(userFarmChoice)) {
+					farmIndex = i;
+				}
+			}
+			Alert removeAlert = new Alert(AlertType.CONFIRMATION);
+			removeAlert.setContentText("Are you sure you would like to remove " + userFarmChoice + "?");
+			final Optional<ButtonType> result = removeAlert.showAndWait();
+			if (result.isPresent() && result.get() == ButtonType.OK) {
+				farms.remove(farmIndex);
+			}
+			
+		});
+		removeFarmBox.getChildren().add(removeFarm);
+		root.setCenter(removeFarmBox);
+
 	}
 
 	/**
