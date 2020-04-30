@@ -252,7 +252,10 @@ public class Report {
 	}
 
 	/**
-	 * ANNUAL REPORT Requirement: Prompt user for a year and a month Then,
+	 * MONTHLY REPORT Requirement: Prompt user for a year and a month Then,display a
+	 * list of totals and percent of total by farm
+	 * 
+	 * Prepares arrayList of strings for all data required by Monthly Report
 	 * 
 	 * @param farmID farmID
 	 * @param year   year for data we're collecting
@@ -288,6 +291,10 @@ public class Report {
 	}
 
 	/**
+	 * DATE RANGE REPORT Requirements: Propt user for start date (year-month-day)
+	 * and end month-day. Then display the total milk weight per farm and the
+	 * percentage of the total for each farm over that date range.
+	 * 
 	 * Generate report for a given range of dates. Assumes user enters valid date
 	 * range, otherwise returns report with no data
 	 * 
