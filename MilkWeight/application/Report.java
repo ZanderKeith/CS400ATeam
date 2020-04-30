@@ -130,6 +130,8 @@ public class Report {
 	 * of all farm for each month. Sort, the list by month number 1-12, show total
 	 * weight, then that farm's percent of the total milk received for each month.
 	 * 
+	 * Prepares arrayList of strings for all data required by Farm Report
+	 * 
 	 * @param farmID farmID
 	 * @param year   12 means all
 	 * @param month  12 means all
@@ -219,14 +221,17 @@ public class Report {
 	}
 
 	/**
-	 * ANNUAL REPORT Requirement: Prompt user for a year Then,
+	 * ANNUAL REPORT Requirement: Prompt user for a year Then, display list of
+	 * totals and percent of total by farm. List must be sorted by Farm ID
+	 * 
+	 * Prepares arrayList of strings for all data required by Annual Report
 	 * 
 	 * @param farmID farmID
 	 * @param year   year for data we're collecting
 	 * @return ArrayList with index 0 = FarmID, 1 = Total Weight, and 2 =
 	 *         Percentage.
 	 * @return null if farmID is not in the list of farms.
-	 * @throws Exception
+	 * @throws Exception if error encountered while collecting data
 	 */
 	protected static ArrayList<String> annualReport(Farm farmID, int year) throws Exception {
 		ArrayList<String> data = new ArrayList<String>();
@@ -286,14 +291,14 @@ public class Report {
 	 * Generate report for a given range of dates. Assumes user enters valid date
 	 * range, otherwise returns report with no data
 	 * 
-	 * @param farmID the ID of the farm
-	 * @param startYear earliest year for data
+	 * @param farmID     the ID of the farm
+	 * @param startYear  earliest year for data
 	 * @param startMonth earliest month for data
-	 * @param startDay earliest day for data
-	 * @param endYear latest year for data
-	 * @param endMonth latest month for data
-	 * @param endDay latest day for data
-	 * @return arrayList with gathered data in 
+	 * @param startDay   earliest day for data
+	 * @param endYear    latest year for data
+	 * @param endMonth   latest month for data
+	 * @param endDay     latest day for data
+	 * @return arrayList with gathered data in
 	 * @throws Exception if error encountered while collecting data
 	 */
 	protected static ArrayList<String> rangeReport(Farm farmID, int startYear, String startMonth,
