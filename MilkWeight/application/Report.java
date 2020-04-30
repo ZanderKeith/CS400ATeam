@@ -157,36 +157,44 @@ public class Report {
 			}
 
 		}
-		// if user selected ALL then
+		// if user selected ALL then set month to -1
 		if (monthString.equals("ALL")) {
 			month = -1;
 		}
+		// if doing ALL years but not ALL months
 		if (year == -1 && month != -1) {
+			// initialize new data array
 			ArrayList<String> data = new ArrayList<String>();
+			// iterate through all farms
 			for (int i = 0; i < Main.farms.size(); i++) {
+				// iterate through all available years
 				for (int j = 0; j < Main.farms.get(i).getYearIntList().size(); j++) {
+					// increment total by given month
 					total = total + (double) Main.farms.get(i).getTotalWeightMonth(
 							Main.farms.get(i).getYearIntList().get(j), month);
 				}
 			}
-			double farmShare = 0.0;
+			double farmShare = 0.0; // sum of how much milk farm produced in time range
+			// iterate through all years for farm ID
 			for (int j = 0; j < farmID.getYearIntList().size(); j++) {
+				// Add up milk weight for month in year
 				farmShare = farmShare + ((double) farmID
 						.getTotalWeightMonth(farmID.getYearIntList().get(j), month));
 			}
-
+			// calculate percentage
 			percent = farmShare / (total) * 100;
+			// If no data available, total will be 0. In this case return 0 instead of NaN
 			if (Double.isNaN(percent)) {
 				percent = 0;
 			}
+			// Add calculated fields to data.
 			data.add(monthString); // month
 			data.add(Double.toString(farmShare)); // total weight for month
 			data.add(String.format("%.2f", percent) + " %"); // percent for month
 			data.add(Double.toString(percent));
 			return data;
-
 		}
-
+		// If farm doesn't exist return null
 		if (!Main.farms.contains(farmID))
 			return null;
 
