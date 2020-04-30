@@ -304,14 +304,14 @@ public class Main extends Application {
 
 		// Home panel with instructions
 
-		ImageView homeTop = new ImageView(new Image("hometop.png"));
+		ImageView homeTop = new ImageView(new Image("file:hometop.png"));
 		homeTop.setFitHeight(200);
 		homeTop.setPreserveRatio(true);
 		homePanel.setTop(homeTop);
-		ImageView homeLeft = new ImageView(new Image("homeleft.png"));
+		ImageView homeLeft = new ImageView(new Image("file:homeleft.png"));
 		homeLeft.setFitHeight(420);
 		homeLeft.setPreserveRatio(true);
-		ImageView homeRight = new ImageView(new Image("homeright.png"));
+		ImageView homeRight = new ImageView(new Image("file:homeright.png"));
 		homeRight.setFitHeight(420);
 		homeRight.setPreserveRatio(true);
 		homePanel.setTop(homeTop);
