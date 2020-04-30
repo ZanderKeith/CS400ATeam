@@ -27,7 +27,7 @@
 package application;
 
 // Java Import Statements
-import java.io.File;
+import java.io.File;	
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.util.ArrayList;
@@ -216,12 +216,6 @@ public class Main extends Application {
 
 		// used in the event a user wants to input a file or farm
 		Button inputSubmit = new Button("Submit");
-		//inputSubmit.setOnAction((event) -> this.importFileButtonAction(inputText));
-
-		//Button importFileButton = new Button("Import File");
-		//importFileButton.setOnAction(new InputHandler(importFileButton,
-				//"Enter file name. Example : C:\\Users\\<User>\\eclipse-workspace\\CS400ATeam\\MilkWeight\\csv\\small\\2019-1.csv",
-				//inputSubmit, inputText));
 
 
 		Button exportAsCSVButton = new Button("Export as CSV");
@@ -408,6 +402,14 @@ public class Main extends Application {
 			alert.showAndWait();
 		}
 		catch (Exception e) {
+			//System.out.println("Exception Caught");
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle("Duplicate Data");
+			alert.setHeaderText("There might be some duplicate data in your file.");
+			alert.setContentText("All duplicate data have been overwritten."+System.lineSeparator()
+			+ "Consider exporting it as a csv file"+System.lineSeparator() +""
+					+ "to see the current data in our system.");
+			alert.showAndWait();
 		}			
 		this.updateComboBoxes(farmComboBox, yearComboBox);
 	}
@@ -849,6 +851,7 @@ public class Main extends Application {
 	 */
 	private void monthlyReportButtonAction() {
 		System.out.println("Monthly Report Button Pressed");
+		this.updateComboBoxesWithoutAll(farmComboBox, yearComboBox);
 		sortFarms();
 		// Create new button to be used specifically for farm report
 		Button monthlyReportSubmitButton = new Button("View Monthly Report");
