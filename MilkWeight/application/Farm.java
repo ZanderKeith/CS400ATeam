@@ -33,11 +33,7 @@ import java.util.TreeSet;
 /**
  * Farm - Stores milk data related to specific farm and can retrieve it from
  * various time windows
- * 
- * @author zkeith
  *
- */
-/**
  * @author yun91
  *
  */
