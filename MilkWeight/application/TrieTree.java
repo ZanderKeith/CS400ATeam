@@ -112,12 +112,15 @@ public class TrieTree {
 	 * month = 1 and day = 1 means the date January 1st. Expects date to be valid
 	 * ex: no February 31st.
 	 * 
-	 * @param year   the date's year
-	 * @param month  the date's month
-	 * @param day    the date's day
-	 * @param weight the weight for day
+
+	 * @param year
+	 * @param month
+	 * @param day
+	 * @param weight
+	 * @throws Exception 
+
 	 */
-	public void insert(int year, int month, int day, int weight) {
+	public void insert(int year, int month, int day, int weight) throws Exception {
 		// First, check if this year is already in the array
 		if (!this.treeYearMap.containsKey(year)) {
 			this.treeYearMap.put(year, new TrieTreeYearNode());
@@ -146,8 +149,12 @@ public class TrieTree {
 			// No data for day yet, create it
 			this.treeYearMap.get(year).months[month - 1].days[day - 1] = new TrieTreeDayNode();
 		}
-		// Put weight in given day. If it already existed this will replace it
-		this.treeYearMap.get(year).months[month - 1].days[day - 1].weight = weight;
+
+		else {
+			this.treeYearMap.get(year).months[month - 1].days[day - 1].weight = weight;
+			throw new Exception("Data Overwritten.");
+		}
+		
 	}
 
 	/**

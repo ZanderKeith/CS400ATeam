@@ -71,9 +71,14 @@ public class Farm {
 	 * @param month
 	 * @param day
 	 * @param weight
+	 * @throws Exception 
 	 */
-	public void addInput(int year, int month, int day, int weight) {
-		milkData.insert(year, month, day, weight);
+	public void addInput(int year, int month, int day, int weight) throws Exception {
+		try {
+			milkData.insert(year, month, day, weight);
+		} catch (Exception e) {
+			throw e;
+		}
 	}
 
 	/**
@@ -128,7 +133,7 @@ public class Farm {
 	 * Returns the total milk from the time starting at year1/month1/day1
 	 * until year2/month2/day2, including both entered days.
 	 * 
-	 * If an invalid range is entered, this method returns 0.
+	 * If an invalid range is entered, this method throws an illegal argument exception.
 	 * 
 	 * @param year1
 	 * @param month1
@@ -136,19 +141,20 @@ public class Farm {
 	 * @param year2
 	 * @param month2
 	 * @param day2
+	 * @throws illegal argument exception if an invalid range is entered
 	 * @return total milk weight between specified dates
 	 */
 	public int getTotalWeightRange(int year1, int month1, int day1, int year2, int month2,
-			int day2) {
+			int day2) throws IllegalArgumentException{
 		// Invalid range returns 0.  Or should we throw error?
 		if (year1 > year2) {
-			return 0;
+			throw new IllegalArgumentException("That is not a valid range.");
 		}
 		if (year1 == year2 && month1 > month2) {
-			return 0;
+			throw new IllegalArgumentException("That is not a valid range.");
 		}
 		if (year1 == year2 && month1 == month2 && day1 > day2) {
-			return 0;
+			throw new IllegalArgumentException("That is not a valid range.");
 		}
 		
 		int totalWeight = 0;
@@ -225,14 +231,17 @@ public class Farm {
 	 * @param userMonthChoice - a string E.g. January, February, etc
 	 * @param day
 	 * @param weight
+	 * @throws Exception 
 	 */
-	public void addInput(int year, String month, int day, int weight) {
+	public void addInput(int year, String month, int day, int weight) throws Exception {
 		try {
 			addInput(year, monthStringToInt(month), day, weight);
 		}
 		
 		// There won't be any exceptions when this is called in main
-		catch(Exception e) {}
+		catch(Exception e) {
+			throw e;
+		}
 	}
 	
 	
