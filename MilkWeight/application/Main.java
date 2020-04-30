@@ -175,14 +175,14 @@ public class Main extends Application {
 		yearComboBox.setItems(yearItems);
 		yearComboBox.setOnAction((event) -> {
 			this.userYearChoice = yearComboBox.getValue();
-			System.out.println("User picked the year : " + userYearChoice);
+			// System.out.println("User picked the year : " + userYearChoice);
 		});
 
 		ObservableList<String> farmItems = FXCollections.observableArrayList("No Data Yet");
 		farmComboBox.setItems(farmItems);
 		farmComboBox.setOnAction((event) -> {
 			this.userFarmChoice = farmComboBox.getValue();
-			System.out.println("User picked farm : " + userFarmChoice);
+			// System.out.println("User picked farm : " + userFarmChoice);
 		});
 
 		// Buttons
@@ -296,8 +296,6 @@ public class Main extends Application {
 				reportSubmitButton);
 		IDYearSubmitGroup.setSpacing(15.0);
 
-		// TODO reorganize and set these to globals
-
 		reportPanel.setBottom(IDYearSubmitGroup);
 		reportPanel.setCenter(chartGroup);
 		reportPanel.setPadding(new Insets(15, 15, 15, 15));
@@ -317,8 +315,6 @@ public class Main extends Application {
 		homePanel.setTop(homeTop);
 		homePanel.setLeft(homeLeft);
 		homePanel.setRight(homeRight);
-		// homePanel.setTop(new Label(
-//				"Welcome! \n How to use: \n Go to import CSV file and input path to file you want to read, then click submit \n Then go to Farm Report to see data. There you can select a farm ID and year to see data."));
 
 		homePanel.setMinWidth(800);
 
@@ -347,11 +343,6 @@ public class Main extends Application {
 	}
 
 	private void importFileButtonAction(String inputText) {
-		// System.out.println("User entered: \"" + inputText + "\"");
-
-		// This is super cringe rn sorry team, just here to make it work and no further
-		// Shouldn't take long to move though, just this one line is what's needed to
-		// get the input
 		try {
 			Main.farms = Report.parseFile(inputText, farms);
 			Alert alert = new Alert(AlertType.INFORMATION);
@@ -389,7 +380,6 @@ public class Main extends Application {
 					+ " has been processed.");
 			alert.showAndWait();
 		} catch (Exception e) {
-			// System.out.println("Exception Caught");
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle("Duplicate Data");
 			alert.setHeaderText("There might be some duplicate data in your file.");
@@ -489,7 +479,7 @@ public class Main extends Application {
 			}
 		});
 
-		System.out.println("Export as CSV File Button Pressed");
+		//System.out.println("Export as CSV File Button Pressed");
 	}
 
 	/**
@@ -514,8 +504,8 @@ public class Main extends Application {
 			for (Farm f : farms) {
 				if (f.getFarmID().equals(this.userFarmChoice)) {
 					Alert alert = new Alert(AlertType.ERROR);
-					System.out.println(
-							"user is trying to enter a duplicate farm, warning message popped");
+					//System.out.println(
+					//		"user is trying to enter a duplicate farm, warning message popped");
 					alert.setTitle("This farm already exists!");
 					alert.setHeaderText("Farm ID entered : " + this.userFarmChoice);
 					alert.setContentText("Farm ID you entered already exists in our system."

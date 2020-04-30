@@ -256,7 +256,7 @@ public class Report {
 	 * @return ArrayList with index 0 = FarmID, 1 = Total Weight, and 2 =
 	 *         Percentage.
 	 * @return null if farmID is not in the list of farms.
-	 * @throws Exception
+	 * @throws Exception if error encountered while gathering data
 	 */
 	protected static ArrayList<String> monthlyReport(Farm farmID, int year, String month)
 			throws Exception {
@@ -273,19 +273,29 @@ public class Report {
 		if (Double.isNaN(percent)) {
 			percent = 0;
 		}
+		// add various things to data
 		data.add(farmID.getFarmID()); // farm ID
+		// total weight for month
 		data.add(
-				Integer.toString(farmID.getTotalWeightMonth(year, Farm.monthStringToInt(month)))); // total
-																									// weight
-																									// for
-																									// month
+				Integer.toString(farmID.getTotalWeightMonth(year, Farm.monthStringToInt(month))));
 		data.add(String.format("%.2f", percent) + " %"); // percent for month
 		return data;
 	}
 
-	// Generates a report for a given range of dates. I'm going to assume that the
-	// user
-	// enters a valid date range
+	/**
+	 * Generate report for a given range of dates. Assumes user enters valid date
+	 * range, otherwise returns report with no data
+	 * 
+	 * @param farmID the ID of the farm
+	 * @param startYear earliest year for data
+	 * @param startMonth earliest month for data
+	 * @param startDay earliest day for data
+	 * @param endYear latest year for data
+	 * @param endMonth latest month for data
+	 * @param endDay latest day for data
+	 * @return arrayList with gathered data in 
+	 * @throws Exception if error encountered while collecting data
+	 */
 	protected static ArrayList<String> rangeReport(Farm farmID, int startYear, String startMonth,
 			int startDay, int endYear, String endMonth, int endDay) throws Exception {
 		ArrayList<String> data = new ArrayList<String>();
@@ -304,100 +314,11 @@ public class Report {
 			percent = 0;
 		}
 		data.add(farmID.getFarmID()); // farm ID
+		// total weight for range
 		data.add(Integer
 				.toString(farmID.getTotalWeightRange(startYear, Farm.monthStringToInt(startMonth),
-						startDay, endYear, Farm.monthStringToInt(endMonth), endDay))); // total
-																						// weight
-																						// for
-																						// range
+						startDay, endYear, Farm.monthStringToInt(endMonth), endDay)));
 		data.add(String.format("%.2f", percent) + " %"); // percent for range
 		return data;
-	}
-
-	/**
-	 * EDITED I think this function is still useful but shouldn't just be relegated
-	 * to farm report These stats are probably good to print for all reports and the
-	 * labels are there anyway Just shouldn't be made for only farm report
-	 * 
-	 * 
-	 * @param farmID farmID
-	 * @param year   12 means all
-	 * @param month  12 means all
-	 * @return ArrayList with index 0 = Farm ID, 1 = Total Weight, and 2 =
-	 *         Percentage.
-	 * @return null if farmID is not in the list of farms.
-	 * @return null if year == -1 and month !=-1 because that doesn't make sense...
-	 * @throws Exception
-	 */
-	protected static ArrayList<String> generalReport(Farm farmID, int year, String monthString)
-			throws Exception {
-		if (farmID == null) {
-			System.out.print("doesn't look like there is any farm under this name...");
-			throw new Exception("farmID is null");
-		}
-		int month = -1;
-		for (Month s : Month.values()) {
-			if (s.toString().equals(monthString)) {
-				month = s.ordinal();
-			}
-
-		}
-		if (monthString.equals("ALL")) {
-			month = -1;
-		}
-		if (year == -1 && month != -1)
-			return null;
-		if (!Main.farms.contains(farmID))
-			return null;
-		double total = 0.0;
-		double percent = 0.0;
-		ArrayList<String> data = new ArrayList<String>();
-		if (year == -1 && month == -1) {
-			for (int i = 0; i < Main.farms.size(); i++) {
-				total = total + (double) Main.farms.get(i).getTotalWeightAll();
-			}
-			percent = ((double) farmID.getTotalWeightAll()) / (total) * 100;
-			if (Double.isNaN(percent)) {
-				percent = 0;
-			}
-			data.add(farmID.getFarmID() + " Report from All Available Data");
-			data.add("Total Weight Sold from All Available Data from All Farms: "
-					+ Double.toString(total) + " lb");
-			data.add("Percent for " + farmID.getFarmID() + " : " + String.format("%.2f", percent)
-					+ " %");
-			return data;
-		} else if (month == -1) {
-			for (int i = 0; i < Main.farms.size(); i++) {
-				total = total + (double) Main.farms.get(i).getTotalWeightYear(year);
-			}
-
-			percent = ((double) farmID.getTotalWeightYear(year)) / (total) * 100;
-			if (Double.isNaN(percent)) {
-				percent = 0;
-			}
-			data.add(farmID.getFarmID() + " Report for " + Integer.toString(year));
-			data.add("Total Weight Sold for Year " + Integer.toString(year) + " from All Farms: "
-					+ Double.toString(total) + " lb");
-			data.add("Percent for " + farmID.getFarmID() + " : " + String.format("%.2f", percent)
-					+ " %");
-			return data;
-		} else {
-			for (int i = 0; i < Main.farms.size(); i++) {
-				total = total + (double) Main.farms.get(i).getTotalWeightMonth(year, month);
-			}
-
-			percent = ((double) farmID.getTotalWeightMonth(year, month)) / (total) * 100;
-			if (Double.isNaN(percent)) {
-				percent = 0;
-			}
-			data.add(farmID.getFarmID() + " Report for " + Month.values()[month] + ", "
-					+ Integer.toString(year));
-			data.add("Total Weight Sold for " + monthString + ", " + Integer.toString(year)
-					+ " from ALL Farms : " + Double.toString(total) + " lb");
-			data.add("Percent for " + farmID.getFarmID() + " : " + String.format("%.2f", percent)
-					+ " %");
-			return data;
-
-		}
 	}
 }
