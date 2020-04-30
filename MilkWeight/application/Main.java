@@ -1093,7 +1093,7 @@ public class Main extends Application {
         final NumberAxis xAxis = new NumberAxis();
         final NumberAxis yAxis = new NumberAxis();
         xAxis.setLabel("Month");
-        yAxis.setLabel(userFarm.getFarmID()+"'s percent of the total of all farm");
+        yAxis.setLabel(userFarm.getFarmID()+"'s percent of the total of all farms");
         LineChart<Number,Number> lineChart = 
                 new LineChart<Number,Number>(xAxis,yAxis);
         if (this.userYearChoice.equals("-1")) {
@@ -1327,7 +1327,16 @@ public class Main extends Application {
 				pieChartData.add(new PieChart.Data(this.textReport.get(0),
 						Integer.parseInt(this.textReport.get(1))));
 
-			} catch (Exception e) {
+			}
+			catch(IllegalArgumentException rangeExcpn) {
+				Alert rangeAlert = new Alert(AlertType.ERROR);
+				rangeAlert.setContentText("That is not a valid range. The start date should occur before the end date.");
+				rangeAlert.showAndWait();
+				if (rangeAlert.getResult() == ButtonType.OK) {
+					dateRangeReportButtonAction();
+				}
+			}
+			catch (Exception e) {
 				System.out.println("EXCEPTION IN RANGE REPORT SUBMIT BUTTON ACTION");
 			}
 		}
