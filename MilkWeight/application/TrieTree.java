@@ -32,40 +32,58 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * TrieTree - This class holds the data for a TrieTree. This Trie is sorted
- * first by year, then by month, then by date. Each date holds an integer value
- * weight.
+ * TrieTree - This class holds the data for a TrieTree, sorted first by year, 
+ * then by month, then by date. Each date holds an integer value weight. 
+ * The methods use standard human convention for months and days, rather
+ * than array indexing.  That is, January is the 1st month of the year, not the
+ * 0th month of the year, and similarly for days.
  * 
- * @author sparenti
  */
 public class TrieTree {
-	// Private class containing all of the data we will need for the whole year.
+	
+	/**
+	 * TrieTreeYearNode: A private inner class which stores an array of month 
+	 * nodes.
+	 */
 	private class TrieTreeYearNode {
 		TrieTreeMonthNode[] months;
 
+		/**
+		 * This constructor creates an array of month nodes
+		 * @param year
+		 */
 		private TrieTreeYearNode(int year) {
 			this.months = new TrieTreeMonthNode[12];
 		}
 	}
 
 	/**
-	 *
 	 * TrieTreeMonthNode -This class holds an array corresponding to the days of the
 	 * month
-	 *
 	 */
 	private class TrieTreeMonthNode {
 		TrieTreeDayNode[] days;
 
+		/**
+		 * This constructor creates an array of day nodes
+		 * @param daysInMonth - how many days are in the month
+		 */
 		private TrieTreeMonthNode(int daysInMonth) {
 			this.days = new TrieTreeDayNode[daysInMonth];
 		}
 
 	}
 
+	/**
+	 * TrieTreeDayNode: For each day, we store an integer value meant to 
+	 * represent the weight of milk from that day
+	 */
 	private class TrieTreeDayNode {
 		int weight;
 
+		/**
+		 * This constructor sets the weight to 0
+		 */
 		private TrieTreeDayNode() {
 			this.weight = 0;
 		}
@@ -74,6 +92,9 @@ public class TrieTree {
 	// HashMap of YearNodes to store our trietree data
 	private HashMap<Integer, TrieTreeYearNode> treeYearMap;
 
+	/**
+	 * The constructor of the TrieTree
+	 */
 	public TrieTree() {
 		this.treeYearMap = new HashMap<Integer, TrieTreeYearNode>();
 	}
@@ -88,7 +109,7 @@ public class TrieTree {
 	 * @param month
 	 * @param day
 	 * @param weight
-	 * @throws Exception
+	 * @throws Exception if the data is overwritten
 	 */
 	public void insert(int year, int month, int day, int weight) throws Exception {
 		// First, check if this year is already in the array
@@ -140,7 +161,16 @@ public class TrieTree {
 		}
 	}
 
-	// Gets weight for specified date. Returns 0 if no data for this date exists
+	/**
+	 * This method returns the weight stored by this trietree on a given date.
+	 * If there is no data for the given date, this method returns 0. Recall
+	 * that the month and day use normal calendar conventions.
+	 * @param year
+	 * @param month
+	 * @param day
+	 * @return the weight at the given date, or 0 if there is no data for the 
+	 * given date
+	 */
 	public int get(int year, int month, int day) {
 		if (!contains(year, month, day)) {
 			return 0;
@@ -148,7 +178,16 @@ public class TrieTree {
 		return this.treeYearMap.get(year).months[month - 1].days[day - 1].weight;
 	}
 
-	// True if data for date exists, false otherwise
+	/**
+	 * This method returns true or false based on whether or not this trie tree 
+	 * contains data for the given date. Recall that the month and the day use
+	 * normal calendar conventions.
+	 * @param year
+	 * @param month
+	 * @param day
+	 * @return true if data exists for the given date in this trie tree, false
+	 * otherwise.
+	 */
 	public boolean contains(int year, int month, int day) {
 		// First, check if we have data for that year
 		if (!this.treeYearMap.containsKey(year)) {
@@ -174,8 +213,18 @@ public class TrieTree {
 
 	}
 
-	// Removes node for date. Returns true if successfully removed,
-	// false otherwise
+
+	/**
+	 * This method removes any data on the given date from the trie tree if it 
+	 * exists.  This method returns true if the remove was successful, false if
+	 * the trie tree doesn't have data for that date. Recall that the month and
+	 * day use normal calendar conventions.
+	 * @param year
+	 * @param month
+	 * @param day
+	 * @return true if the data was removed successfully, false if the trie
+	 * tree does not contain data for the given date.
+	 */
 	public boolean remove(int year, int month, int day) {
 		if (!contains(year, month, day)) {
 			return false;
@@ -212,7 +261,8 @@ public class TrieTree {
 	 * This method returns a sorted list of integers containing all of the years in
 	 * which this trietree has data for
 	 * 
-	 * @return
+	 * @return a sorted list of integers containing all of the years that this 
+	 * trie tree has data for.
 	 */
 	public List<Integer> getYearList() {
 		List<Integer> yearList = new ArrayList<Integer>();
