@@ -46,8 +46,10 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -293,7 +295,7 @@ public class Main extends Application {
 		// Create Chart group
 		// this image is just a placeholder for the actual chart.
 		ImageView placeholdImage = new ImageView();
-		placeholdImage.setImage(new Image("file:basically.png")); // file: prefix completes a valid relative URI
+		placeholdImage.setImage(new Image("basically.png")); // file: prefix completes a valid relative URI
 		placeholdImage.setFitHeight(WINDOW_HEIGHT / 2);
 		placeholdImage.setPreserveRatio(true);
 
@@ -396,15 +398,20 @@ public class Main extends Application {
 			alert.setTitle("Invalid Input");
 			alert.setHeaderText("There was a problem processing your file" +System.lineSeparator() +"due to the following line in your file:" + e.getMessage());
 			alert.setContentText(
-					"We are sorry. We were unable to process your file." +System.lineSeparator()+"Please consider removing the line that contains" +e.getMessage());
+					"We are sorry. We were unable to fully process your file." 
+			+System.lineSeparator()+"Please consider removing the line that contains" 
+							+e.getMessage() +System.lineSeparator() +
+							"Only the date before this line has been processed.");
 			alert.showAndWait();
 		}
 		catch (ArrayIndexOutOfBoundsException e) {
 			Alert alert = new Alert(AlertType.WARNING);
 			alert.setTitle("Missing Data");
-			alert.setHeaderText("There might be missing data in your file.");
+			alert.setHeaderText("There might be missing data in your file at Line "+ e.getMessage());
 			alert.setContentText(
-					"We are sorry. We were unable to process your file." +System.lineSeparator()+"Please make sure your file does not contain missing data.");
+					"We are sorry. We were unable to fully process your file." 
+					+ System.lineSeparator()+ "Please make sure your file does not contain missing data."
+					+ System.lineSeparator() + "Only the lines before " +e.getMessage() + " has been processed.");
 			alert.showAndWait();
 		}
 		catch (Exception e) {
@@ -412,7 +419,7 @@ public class Main extends Application {
 			alert.setTitle("Unexpected Error");
 			alert.setHeaderText(null);
 			alert.setContentText(
-					"We are sorry. We were unable to read the file. Please try again.");
+					"We are sorry. We were unable to process the file. Please try again.");
 			alert.showAndWait();
 		}			
 		this.updateComboBoxes(farmComboBox, yearComboBox);
@@ -667,20 +674,34 @@ public class Main extends Application {
 				}
 				
 				if (ready) {
+					
 					Alert alert = new Alert(AlertType.CONFIRMATION);
 					alert.setTitle("The following data is being recorded.");
 					alert.setHeaderText("Adding Data for Farm ID: " + this.userFarmChoice + ".");
 					alert.setContentText("Date: " + this.userMonthChoice + " "
 							+ this.userDateChoice + ", " + year + "." + System.lineSeparator()
-							+ "Weight: " + weight + " lb");
+							+ "Weight: " + weight + " lb" + System.lineSeparator() +
+							"If there is an existing weight for this date," + System.lineSeparator() +
+							"this new weight will overwrite it." );
 					final Optional<ButtonType> result = alert.showAndWait();
 					
 					if (result.isPresent() && result.get() == ButtonType.OK) {
 						for (Farm f : farms) {
 							if (f.getFarmID().equals(this.userFarmChoice)) {
 								System.out.println("New data added");
-								f.addInput(year, this.userMonthChoice,
-										Integer.parseInt(userDateChoice), weight);
+								try {
+									f.addInput(year, this.userMonthChoice,
+											Integer.parseInt(userDateChoice), weight);
+								} catch (Exception e1) {
+									Alert alert2 = new Alert(AlertType.INFORMATION);
+									alert2.setTitle(e1.getMessage());
+									alert2.setHeaderText("Data Overwritten!");
+									alert2.setContentText("There was an existing data for: " + this.userMonthChoice + " "
+											+ this.userDateChoice + ", " + year + "." + System.lineSeparator()
+											+ "The new weight " + weight + " lb replaced the existing value.");
+									alert2.showAndWait();
+								
+								}
 								break;
 							}
 						}
@@ -763,11 +784,15 @@ public class Main extends Application {
 		totalWeightCol.setCellValueFactory(e -> e.getValue().get(1));
 		percentWeightCol.setCellValueFactory(e -> e.getValue().get(2));
 
+		/*
 		// set up pie chart for report
 		pieChart = new PieChart();
 
 		pieChart.setTitle("Total Weight by Month");
+		*/
+		
 
+        
 		tableGroup.setCenter(table);
 		tableGroup.setRight(pieChart);
 		farmReportPanel.setPadding(new Insets(15, 15, 15, 15));
@@ -778,6 +803,7 @@ public class Main extends Application {
 		submitGroup.getChildren().addAll(farmIDGroup, yearGroup, farmReportSubmitButton);
 		farmReportPanel.setBottom(submitGroup);
 		root.setCenter(farmReportPanel);
+		
 
 	}
 
@@ -1023,7 +1049,7 @@ public class Main extends Application {
 		sortFarms();
 		ObservableList<ArrayList<StringProperty>> reportData = FXCollections
 				.observableArrayList();
-		ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
+		ObservableList<XYChart.Data> lineChartData = FXCollections.observableArrayList();
 		ArrayList<StringProperty> reportRow;
 		table.getItems().clear();
 		Farm userFarm = null;
@@ -1041,25 +1067,15 @@ public class Main extends Application {
 				this.textReport = Report.farmReport(userFarm,
 						Integer.parseInt(this.userYearChoice), monthItems.get(month));
 				System.out.println("User Selected Report is produced");
-
-				if (this.textReport == null) {
-					Alert alert = new Alert(AlertType.WARNING);
-					alert.setTitle("Invalid Time Range");
-					alert.setHeaderText("Year: All, " + "Month: " + this.userMonthChoice
-							+ " is not supported.");
-					alert.setContentText("We are sorry." + System.lineSeparator()
-							+ "We don't support reports for specific months across all years.");
-					alert.showAndWait();
-				} else {
-					reportRow = new ArrayList<StringProperty>();
-					reportRow.add(0, new SimpleStringProperty(this.textReport.get(0)));
-					reportRow.add(1, new SimpleStringProperty(this.textReport.get(1)));
-					reportRow.add(2, new SimpleStringProperty(this.textReport.get(2)));
-					reportData.add(reportRow);
-
-					pieChartData.add(new PieChart.Data(this.textReport.get(0),
-							Integer.parseInt(this.textReport.get(1))));
-				}
+				reportRow = new ArrayList<StringProperty>();
+		    	reportRow.add(0, new SimpleStringProperty(this.textReport.get(0)));
+				reportRow.add(1, new SimpleStringProperty(this.textReport.get(1)));
+				reportRow.add(2, new SimpleStringProperty(this.textReport.get(2)));
+		    	reportData.add(reportRow);
+		 		System.out.println(month + textReport.get(3));
+				lineChartData.add(new XYChart.Data(month+1,
+				Double.parseDouble(textReport.get(3))));
+				
 
 			} catch (Exception e) {
 
@@ -1073,9 +1089,32 @@ public class Main extends Application {
 		}
 		
 		table.setItems(reportData);
-		pieChart = new PieChart(pieChartData);
-		pieChart.setTitle("Total Weight by Month");
-		tableGroup.setRight(pieChart);
+        //defining the axes
+        final NumberAxis xAxis = new NumberAxis();
+        final NumberAxis yAxis = new NumberAxis();
+        xAxis.setLabel("Month");
+        yAxis.setLabel(userFarm.getFarmID()+"'s percent of the total of all farm");
+        LineChart<Number,Number> lineChart = 
+                new LineChart<Number,Number>(xAxis,yAxis);
+        if (this.userYearChoice.equals("-1")) {
+        	lineChart.setTitle("Farm Report from All Available Years" + System.lineSeparator()
+        	+ "Farm ID: " + userFarm.getFarmID());
+        }
+        else {
+        	lineChart.setTitle("Farm Report for Year " + this.userYearChoice+ System.lineSeparator()
+        	+ "Farm ID: " + userFarm.getFarmID());
+        }         
+        XYChart.Series series = new XYChart.Series();
+        for (int i = 0 ; i < lineChartData.size() ; i ++) {
+            series.getData().add(lineChartData.get(i));
+        }
+        lineChart.getData().add(series);
+        lineChart.autosize();
+        lineChart.setLegendVisible(false);
+
+	//	pieChart = new PieChart(pieChartData);
+	//	pieChart.setTitle("Total Weight by Month");
+		tableGroup.setRight(lineChart);
 	}
 	
 	/**

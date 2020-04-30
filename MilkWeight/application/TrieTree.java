@@ -88,8 +88,9 @@ public class TrieTree {
 	 * @param month
 	 * @param day
 	 * @param weight
+	 * @throws Exception 
 	 */
-	public void insert(int year, int month, int day, int weight) {
+	public void insert(int year, int month, int day, int weight) throws Exception {
 		// First, check if this year is already in the array
 		if (!this.treeYearMap.containsKey(year)) {
 			this.treeYearMap.put(year, new TrieTreeYearNode(year));
@@ -114,6 +115,11 @@ public class TrieTree {
 		if (this.treeYearMap.get(year).months[month - 1].days[day - 1] == null) {
 			this.treeYearMap.get(year).months[month - 1].days[day - 1] = new TrieTreeDayNode();
 		}
+		else {
+			this.treeYearMap.get(year).months[month - 1].days[day - 1].weight = weight;
+			throw new Exception("Data Overwritten.");
+		}
+		
 		this.treeYearMap.get(year).months[month - 1].days[day - 1].weight = weight;
 	}
 

@@ -71,9 +71,14 @@ public class Farm {
 	 * @param month
 	 * @param day
 	 * @param weight
+	 * @throws Exception 
 	 */
-	public void addInput(int year, int month, int day, int weight) {
-		milkData.insert(year, month, day, weight);
+	public void addInput(int year, int month, int day, int weight) throws Exception {
+		try {
+			milkData.insert(year, month, day, weight);
+		} catch (Exception e) {
+			throw e;
+		}
 	}
 
 	/**
@@ -225,14 +230,17 @@ public class Farm {
 	 * @param userMonthChoice - a string E.g. January, February, etc
 	 * @param day
 	 * @param weight
+	 * @throws Exception 
 	 */
-	public void addInput(int year, String month, int day, int weight) {
+	public void addInput(int year, String month, int day, int weight) throws Exception {
 		try {
 			addInput(year, monthStringToInt(month), day, weight);
 		}
 		
 		// There won't be any exceptions when this is called in main
-		catch(Exception e) {}
+		catch(Exception e) {
+			throw e;
+		}
 	}
 	
 	
