@@ -167,6 +167,7 @@ public class Main extends Application {
 		// Initialize Drop Downs
 		monthComboBox.setItems(monthItems);
 		monthComboBox.setOnAction((event) -> {
+			// Sets the user's Month choice field if there is a change
 			this.userMonthChoice = monthComboBox.getValue();
 			// System.out.println("User picked the month : " + userMonthChoice);
 		});
@@ -174,6 +175,7 @@ public class Main extends Application {
 		ObservableList<String> yearItems = FXCollections.observableArrayList("No Data Yet");
 		yearComboBox.setItems(yearItems);
 		yearComboBox.setOnAction((event) -> {
+			// Sets the user's Year choice field if there is a change
 			this.userYearChoice = yearComboBox.getValue();
 			// System.out.println("User picked the year : " + userYearChoice);
 		});
@@ -181,11 +183,12 @@ public class Main extends Application {
 		ObservableList<String> farmItems = FXCollections.observableArrayList("No Data Yet");
 		farmComboBox.setItems(farmItems);
 		farmComboBox.setOnAction((event) -> {
+			// Sets the user's Farm choice field if there is a change
 			this.userFarmChoice = farmComboBox.getValue();
 			// System.out.println("User picked farm : " + userFarmChoice);
 		});
 
-		// Buttons
+		// Home button
 		Button homeButton = new Button("Home");
 		homeButton.setOnAction(e -> homeButtonAction());
 
@@ -204,6 +207,7 @@ public class Main extends Application {
 		});
 		// --- End file import UI functionality ---
 
+		// More Buttons. On clicking it calls an appropriate method 
 		Button exportAsCSVButton = new Button("Export as CSV");
 		exportAsCSVButton.setOnAction(e -> exportAsCSVButtonAction());
 
@@ -256,11 +260,9 @@ public class Main extends Application {
 		cowImage.setPreserveRatio(true);
 
 		VBox leftOptionPanel = new VBox();
-		leftOptionPanel.setSpacing(20); // TODO no magic numbers in spacing. define constants
-										// elsewhere
-		leftOptionPanel.setPadding(new Insets(15, 15, 15, 15)); // TODO verify insets are allowed
-																// (javafx.geometry)
-		leftOptionPanel.setStyle("-fx-background-color: #1d4c2c;");
+		leftOptionPanel.setSpacing(20); 										
+		leftOptionPanel.setPadding(new Insets(15, 15, 15, 15)); 																
+		leftOptionPanel.setStyle("-fx-background-color: #1d4c2c;"); //Dark Green
 		leftOptionPanel.getChildren().addAll(homeButton, fileOptionGroup, reportOptionGroup,
 				cowImage);
 
@@ -339,7 +341,7 @@ public class Main extends Application {
 	 */
 	private void homeButtonAction() {
 		root.setCenter(homePanel);
-		System.out.println("Home Button Pressed");
+		//System.out.println("Home Button Pressed");
 	}
 
 	private void importFileButtonAction(String inputText) {
@@ -395,7 +397,7 @@ public class Main extends Application {
 	 * Handles exporting data as a csv page when button is pressed
 	 */
 	private void exportAsCSVButtonAction() {
-		System.out.println("User wants to export their work.");
+		//System.out.println("User wants to export their work.");
 
 		// Setting up the Export as CSV Page
 		VBox exportBox = new VBox();
@@ -486,7 +488,7 @@ public class Main extends Application {
 	 * Handles adding new farm for which data can be added
 	 */
 	private void addNewFarmButtonAction() {
-		System.out.println("User wants to enter a new farm!");
+		//System.out.println("User wants to enter a new farm!");
 		VBox newFarmBox = new VBox();
 		TextField farmName = new TextField();
 		farmName.setPromptText("Ex: Farm 999");
@@ -499,7 +501,7 @@ public class Main extends Application {
 			boolean dupe = false;
 			this.userFarmChoice = farmName.getText();
 			farmName.clear();
-			System.out.println("The user wants to add a new farm named " + this.userFarmChoice);
+			//System.out.println("The user wants to add a new farm named " + this.userFarmChoice);
 
 			for (Farm f : farms) {
 				if (f.getFarmID().equals(this.userFarmChoice)) {
@@ -523,7 +525,7 @@ public class Main extends Application {
 				final Optional<ButtonType> addResult = alert.showAndWait();
 
 				if (addResult.isPresent() && addResult.get() == ButtonType.OK) {
-					System.out.println("A new farm named " + this.userFarmChoice + " added");
+					//System.out.println("A new farm named " + this.userFarmChoice + " added");
 					Farm newFarm = new Farm(this.userFarmChoice);
 					farms.add(newFarm);
 				}
@@ -536,7 +538,7 @@ public class Main extends Application {
 	 * pressed
 	 */
 	private void addNewMilkDataButtonAction() {
-		System.out.println("Add new milk data Button Pressed");
+		//System.out.println("Add new milk data Button Pressed");
 		root.setCenter(new Label("No farm available in the system."));
 		ComboBox<String> farmIDs = new ComboBox<String>();
 
@@ -558,7 +560,7 @@ public class Main extends Application {
 			farmIDs.setItems(newFarms);
 			farmIDs.setOnAction(e -> {
 				this.userFarmChoice = farmIDs.getValue();
-				System.out.println("User wants to enter data for Farm ID " + userFarmChoice);
+				//System.out.println("User wants to enter data for Farm ID " + userFarmChoice);
 			});
 
 			HBox farmBar = new HBox();
@@ -582,7 +584,7 @@ public class Main extends Application {
 			monthBar.getChildren().add(months);
 			months.setOnAction(e -> {
 				this.userMonthChoice = months.getValue();
-				System.out.println("User selected month of " + this.userMonthChoice);
+				//System.out.println("User selected month of " + this.userMonthChoice);
 			});
 
 			HBox milkBar = new HBox();
@@ -603,7 +605,7 @@ public class Main extends Application {
 
 			dates.setOnAction(e -> {
 				this.userDateChoice = dates.getValue();
-				System.out.println("User chose the date " + userDateChoice);
+				//System.out.println("User chose the date " + userDateChoice);
 			});
 
 			VBox mainPanel = new VBox();
@@ -616,7 +618,7 @@ public class Main extends Application {
 				int year = 0;
 				boolean ready = true;
 
-				System.out.println("User wants to record a new data");
+				//System.out.println("User wants to record a new data");
 
 				try {
 					year = Integer.parseInt(yearText.getText());
@@ -655,7 +657,7 @@ public class Main extends Application {
 					if (result.isPresent() && result.get() == ButtonType.OK) {
 						for (Farm f : farms) {
 							if (f.getFarmID().equals(this.userFarmChoice)) {
-								System.out.println("New data added");
+								//System.out.println("New data added");
 								try {
 									f.addInput(year, this.userMonthChoice,
 											Integer.parseInt(userDateChoice), weight);
@@ -692,7 +694,7 @@ public class Main extends Application {
 		farmIDs.setItems(newFarms);
 		farmIDs.setOnAction(e -> {
 			this.userFarmChoice = farmIDs.getValue();
-			System.out.println("User wants to remove " + userFarmChoice);
+			//System.out.println("User wants to remove " + userFarmChoice);
 		});
 		VBox removeFarmBox = new VBox();
 		removeFarmBox.getChildren().add(new Label("Select the farm to remove:"));
@@ -727,7 +729,7 @@ public class Main extends Application {
 	 */
 	private void farmReportButtonAction() {
 		sortFarms();
-		System.out.println("Farm Report Button Pressed");
+		//System.out.println("Farm Report Button Pressed");
 
 		// Create new button to be used specifically for farm report
 		Button farmReportSubmitButton = new Button("View Farm Report");
@@ -777,7 +779,7 @@ public class Main extends Application {
 	 * Creates an report for a specified year upon pressing the annual report button
 	 */
 	private void annualReportButtonAction() {
-		System.out.println("Annual Report Button Pressed");
+		//System.out.println("Annual Report Button Pressed");
 		this.updateComboBoxesWithoutAll(farmComboBox, yearComboBox);
 
 		sortFarms();
@@ -828,7 +830,7 @@ public class Main extends Application {
 	 * button
 	 */
 	private void monthlyReportButtonAction() {
-		System.out.println("Monthly Report Button Pressed");
+		//System.out.println("Monthly Report Button Pressed");
 		this.updateComboBoxesWithoutAll(farmComboBox, yearComboBox);
 		sortFarms();
 		// Create new button to be used specifically for farm report
@@ -877,7 +879,7 @@ public class Main extends Application {
 	 * Creates a visual data representation for a range of dates
 	 */
 	private void dateRangeReportButtonAction() {
-		System.out.println("Range Report Button Pressed");
+		//System.out.println("Range Report Button Pressed");
 		sortFarms();
 		// Create new button to be used specifically for farm report
 		Button rangeReportSubmitButton = new Button("View Range Report");
@@ -927,11 +929,11 @@ public class Main extends Application {
 
 		startYear.setOnAction(e -> {
 			this.startYearChoice = startYear.getValue();
-			System.out.println("User chose the start year " + startYearChoice);
+			//System.out.println("User chose the start year " + startYearChoice);
 		});
 		endYear.setOnAction(e -> {
 			this.endYearChoice = endYear.getValue();
-			System.out.println("User chose the end year " + endYearChoice);
+			//System.out.println("User chose the end year " + endYearChoice);
 		});
 
 		startInfo.getChildren().add(startYear);
@@ -949,11 +951,11 @@ public class Main extends Application {
 
 		startMonth.setOnAction(e -> {
 			this.startMonthChoice = startMonth.getValue();
-			System.out.println("User chose the start month " + startMonthChoice);
+			//System.out.println("User chose the start month " + startMonthChoice);
 		});
 		endMonth.setOnAction(e -> {
 			this.endMonthChoice = endMonth.getValue();
-			System.out.println("User chose the end Month " + endMonthChoice);
+			//System.out.println("User chose the end Month " + endMonthChoice);
 		});
 		startInfo.getChildren().add(startMonth);
 		endInfo.getChildren().add(endMonth);
@@ -972,11 +974,11 @@ public class Main extends Application {
 
 		startDate.setOnAction(e -> {
 			this.startDateChoice = startDate.getValue();
-			System.out.println("User chose the starting date " + startDateChoice);
+			//System.out.println("User chose the starting date " + startDateChoice);
 		});
 		endDate.setOnAction(e -> {
 			this.endDateChoice = endDate.getValue();
-			System.out.println("User chose the end date " + endDateChoice);
+			//System.out.println("User chose the end date " + endDateChoice);
 		});
 		startInfo.getChildren().add(startDate);
 		endInfo.getChildren().add(endDate);
@@ -1034,7 +1036,7 @@ public class Main extends Application {
 	 * Handler for pushing submit after entering a farm
 	 */
 	private void farmReportSubmitButtonAction() {
-		System.out.println("User may have selected farmID, Year pressed submit button.");
+		//System.out.println("User may have selected farmID, Year pressed submit button.");
 		sortFarms();
 		ObservableList<ArrayList<StringProperty>> reportData = FXCollections
 				.observableArrayList();
@@ -1055,13 +1057,13 @@ public class Main extends Application {
 				}
 				this.textReport = Report.farmReport(userFarm,
 						Integer.parseInt(this.userYearChoice), monthItems.get(month));
-				System.out.println("User Selected Report is produced");
+				//System.out.println("User Selected Report is produced");
 				reportRow = new ArrayList<StringProperty>();
 				reportRow.add(0, new SimpleStringProperty(this.textReport.get(0)));
 				reportRow.add(1, new SimpleStringProperty(this.textReport.get(1)));
 				reportRow.add(2, new SimpleStringProperty(this.textReport.get(2)));
 				reportData.add(reportRow);
-				System.out.println(month + textReport.get(3));
+				//System.out.println(month + textReport.get(3));
 				lineChartData
 						.add(new XYChart.Data(month + 1, Double.parseDouble(textReport.get(3))));
 
@@ -1207,7 +1209,7 @@ public class Main extends Application {
 	 */
 	private void annualReportSubmitButtonAction() {
 		sortFarms();
-		System.out.println("User may have selected farmID, Year pressed submit button.");
+		//System.out.println("User may have selected farmID, Year pressed submit button.");
 		ObservableList<ArrayList<StringProperty>> reportData = FXCollections
 				.observableArrayList();
 		ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
@@ -1226,11 +1228,11 @@ public class Main extends Application {
 						Integer.parseInt(this.textReport.get(1))));
 
 			} catch (Exception e) {
-				System.out.println("EXCEPTION IN ANNUAL REPORT SUBMIT BUTTON ACTION");
+				System.out.print("");
 			}
 		}
 
-		System.out.println("User Selected Report is produced");
+		//System.out.println("User Selected Report is produced");
 
 		// If we haven't already done so, add a export button
 		if (submitGroup.getChildren().size() == 2) {
@@ -1252,7 +1254,7 @@ public class Main extends Application {
 	 */
 	private void monthlyReportSubmitButtonAction() {
 		sortFarms();
-		System.out.println("User may have selected farmID, Year pressed submit button.");
+		//System.out.println("User may have selected farmID, Year pressed submit button.");
 		ObservableList<ArrayList<StringProperty>> reportData = FXCollections
 				.observableArrayList();
 		ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
@@ -1272,11 +1274,11 @@ public class Main extends Application {
 						Integer.parseInt(this.textReport.get(1))));
 
 			} catch (Exception e) {
-				System.out.println("EXCEPTION IN MONTHLY REPORT SUBMIT BUTTON ACTION");
+				System.out.print("");
 			}
 		}
 
-		System.out.println("User Selected Report is produced");
+		//System.out.println("User Selected Report is produced");
 
 		// If we haven't already done so, add a export button
 		if (submitGroup.getChildren().size() == 3) {
@@ -1298,7 +1300,7 @@ public class Main extends Application {
 	 */
 	private void rangeReportSubmitButtonAction() {
 		sortFarms();
-		System.out.println("User may have selected farmID, range pressed submit button.");
+		//System.out.println("User may have selected farmID, range pressed submit button.");
 		ObservableList<ArrayList<StringProperty>> reportData = FXCollections
 				.observableArrayList();
 		ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
@@ -1328,11 +1330,11 @@ public class Main extends Application {
 					dateRangeReportButtonAction();
 				}
 			} catch (Exception e) {
-				System.out.println("EXCEPTION IN RANGE REPORT SUBMIT BUTTON ACTION");
+				System.out.print("");
 			}
 		}
 
-		System.out.println("User Selected Report is produced");
+		//System.out.println("User Selected Report is produced");
 
 		// If we haven't already done so, add a export button
 		if (endInfo != null && endInfo.getChildren() != null
@@ -1622,7 +1624,7 @@ public class Main extends Application {
 				this.userYearChoice = "-1";
 			this.textReport = Report.farmReport(userFarm, Integer.parseInt(this.userYearChoice),
 					this.userMonthChoice);
-			System.out.println("User Selected Report is produced");
+			//System.out.println("User Selected Report is produced");
 
 			if (this.textReport == null) {
 				Alert alert = new Alert(AlertType.WARNING);
@@ -1688,7 +1690,7 @@ public class Main extends Application {
 
 		@Override
 		public void handle(ActionEvent arg0) {
-			System.out.println("User entered: \"" + textBox.getText() + "\"");
+			// System.out.println("User entered: \"" + textBox.getText() + "\"");
 			// This is super cringe rn sorry team, just here to make it work and no further
 			// Shouldn't take long to move though, just this one line is what's needed to
 			// get the input
@@ -1698,7 +1700,7 @@ public class Main extends Application {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			System.out.println(farms.size());
+			//System.out.println(farms.size());
 			textBox.clear();
 
 		}
