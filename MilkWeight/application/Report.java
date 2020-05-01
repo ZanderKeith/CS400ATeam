@@ -29,6 +29,7 @@ package application;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 
@@ -101,6 +102,7 @@ public class Report {
 			// Get information about what caused format exception and throw that to
 			// wherever this was called
 			StringWriter errors = new StringWriter();
+			e.printStackTrace(new PrintWriter(errors));
 			String line1 = errors.toString().split(System.lineSeparator())[0];
 			line1 = line1.split(":")[2];
 			throw new NumberFormatException(line1);
